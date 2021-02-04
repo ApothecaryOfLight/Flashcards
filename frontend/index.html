@@ -1,6 +1,61 @@
 <!DOCTYPE html>
 <html>
+<head>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="script.js"></script>
+
+</head>
 <body>
-test
+
+<div id="setlist_interface">
+  <input id="setlist_interface_set_name" type="text"/>
+  <div id="setlist_interface_set_list"></div>
+  <button id="setlist_interface_create" class="wide_button">Create</button>
+  <button id="setlist_interface_edit" class="wide_button">Edit</button>
+  <button id="setlist_interface_play" class="wide_button">Play</button>
+  <button id="setlist_interface_play_for_ten" class="wide_button">Play for Ten</button>
+</div>
+
+<div id="cardlist_interface">
+  <div id="cardlist_interface_set_name"></div>
+  <div id="cardlist_interface_card_list"></div>
+  <div id="cardlist_interface_edit_button"></div>
+  <div id="cardlist_interface_toggle_buttons">
+    <button id="cardlist_interface_toggle_questions_button" class="half_button">
+      Questions
+    </button>
+    <button id="cardlist_interface_toggle_answers_button" class="half_button">
+      Answers
+    </button>
+  </div>
+</div>
+
+<div id="card_interface">
+  <div id="card_interface_set_name"></div>
+  <div id="card_interface_q_text"></div>
+  <div id="card_interface_a_text"></div>
+  <div id="card_interface_buttons">
+    <button id="card_interface_go_back_button" class="wide_button"><-</button>
+    <button id="card_interface_set_card_button" class="wide_button">Set</button>
+    <button id="card_interface_remove_button" class="wide_button">X</button>
+  </div>
+</div>
+
+<div id="runset_interface">
+  <div id="runset_interface_qa_space"></div>
+  <div id="runset_interface_buttons">
+    <button id="runset_interface_go_back_button" class="wide_button"><-</button>
+    <button id="runset_interface_missed_button" class="wide_button">X</button>
+    <button id="runset_interface_correct_button" class="wide_button">./</button>
+  </div>
+</div>
+
+<div id="modal_interface">
+  <div id="modal_interface_message"></div>
+  <div id="modal_interface_buttons"></div>
+</div>
+
 </body>
 </html>
