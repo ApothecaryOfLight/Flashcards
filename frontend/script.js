@@ -3,6 +3,93 @@ window.addEventListener( 'load', (loaded_event) => {
   launch_setlist_interface();
 });
 
+/*
+Runset Interface
+*/
+function launch_runset_interface( inSetID ) {
+  let card_set_obj = {
+    curr_card: 0,
+    side: 0
+  };
+  set_interface( "runset", card_set_obj );
+  console.log( "Go!" );
+
+  const get_cardlist = new Request(
+    'http://52.36.124.150:3000/get_cardlist/' + inSetID
+  );
+  fetch( get_cardlist )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "success" ) {
+        //set_name_element.innerHTML = json.set_name.name;
+        //cardlist_interface_populate_list( inSetID, json.cards );
+        console.dir( json.cards );
+        card_set_obj.cards = json.cards;
+        runset_render_qa( card_set_obj );
+      }
+    });
+}
+
+function runset_interface_go_back( cards_obj ) {
+/*  console.log( "Go back." );
+  if( cards_obj.curr_card > 0 ) {
+    cards_obj.curr_card--;
+    cards_obj.side = 0;
+    runset_render_qa( cards_obj );
+  }*/
+  launch_setlist_interface();
+}
+function runset_interface_missed( cards_obj ) {
+  console.log( "Missed!" );
+  console.log( cards_obj.cards.length );
+  if( cards_obj.curr_card <= cards_obj.cards.length ) {
+    cards_obj.curr_card++;
+    cards_obj.side = 0;
+    runset_render_qa( cards_obj );
+  }
+}
+function runset_interface_correct( cards_obj ) {
+  console.log( "Correct!" );
+  console.log( cards_obj.cards.length );
+  if( cards_obj.curr_card <= cards_obj.cards.length ) {
+    cards_obj.curr_card++;
+    cards_obj.side = 0;
+    runset_render_qa( cards_obj );
+  }
+}
+function runset_interface_flip_card( cards_obj ) {
+  console.log( "Flipping!" );
+  console.dir( cards_obj.cards );
+  if( cards_obj.side == 0 ) {
+    cards_obj.side = 1;
+  } else {
+    cards_obj.side = 0;
+  }
+  runset_render_qa( cards_obj );
+}
+
+
+//function switchSide( inCardSetObj ) {
+//  console.dir( inCardSetObj );
+//}
+
+function runset_render_qa( card_set_obj ) {
+  const qa_field = document.getElementById("runset_interface_qa_space");
+  console.dir( card_set_obj.cards );
+  if( card_set_obj.side == 0 ) {
+    const dom = "<span onclick=\"switchSide( 0 )\">" +
+      card_set_obj.cards[card_set_obj.curr_card].question +
+      "</span>";
+    qa_field.innerHTML = dom;
+  } else if( card_set_obj.side == 1 ) {
+    const dom = "<span onclick=\"switchSide( 0 )\">" +
+      card_set_obj.cards[card_set_obj.curr_card].answer +
+      "</span>";
+    qa_field.innerHTML = dom;
+  }
+}
+
+
 
 /*
 Card interface
@@ -140,6 +227,7 @@ function cardlist_interface_go_back() {
   launch_setlist_interface();
 }
 
+
 /*
 Setlist interface
 */
@@ -167,10 +255,17 @@ function renderSetList( setList ) {
   setList.forEach( set => {
     dom_string += "<div class=\'setlist_item\'>" +
       "<span onclick=\"getSet(\'" + set.name + "\'," + set.set_id + ")\">" + set.name +
-      "</span><button onclick=\"deleteSet(" + set.set_id + ")\">X</button>" +
+      "</span>" +
+      "<button onclick=\"playSet(" + set.set_id + ")\">Play</button>" +
+      "<button onclick=\"deleteSet(" + set.set_id + ")\">X</button>" +
       "</div>";
   });
   setlist_dom_obj.innerHTML = dom_string;
+}
+
+function playSet( inSetID ) {
+  console.log( "playSet " + inSetID );
+  launch_runset_interface( inSetID );
 }
 
 function getSet( inName, inSetID ) {
@@ -245,6 +340,12 @@ const functions = {
   "card": {
     "set_card": card_interface_set_card,
     "go_back": card_interface_go_back
+  },
+  "runset": {
+    "go_back": runset_interface_go_back,
+    "missed": runset_interface_missed,
+    "correct": runset_interface_correct,
+    "flip_card": runset_interface_flip_card
   }
 };
 
@@ -260,6 +361,12 @@ const bound_functions = {
   "card": {
     "set_card": null,
     "go_back": null
+  },
+  "runset": {
+    "go_back": null,
+    "missed": null,
+    "correct": null,
+    "flip": null
   }
 }
 
