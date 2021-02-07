@@ -98,8 +98,13 @@ function launchRoutes() {
   /*Add a new card*/
   app.post('/add_card', async function(req,res) {
     console.dir( req.body );
+
+    const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
+    const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
+    const new_card_id = new_card_id_row[0].new_card_id;
+
     const new_card_query = "INSERT INTO cards (card_id,question,answer,set_id) " +
-      "VALUES ( " + req.body.card_id + ", " +
+      "VALUES ( " + new_card_id + ", " +
       "\'" + req.body.question + "\', " +
       "\'" + req.body.answer + "\', " +
       req.body.set_id + ");"
@@ -131,7 +136,6 @@ function launchRoutes() {
     const get_cardlist_cards = "SELECT card_id, answer, question FROM cards " +
       "WHERE set_id = "  + req.params.set_id + ";";
     const [cardlist_row,cardlist_field] = await sqlPool.query( get_cardlist_cards );
-    
     const cardlist_obj = {
       result: "success",
       set_name: set_name_row[0],
