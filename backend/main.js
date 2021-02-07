@@ -43,6 +43,8 @@ function launchRoutes() {
     res.send( setlist );
   });
 
+
+  /*Add a new set of cards*/
   app.post('/new_set', async function(req,res) {
     console.log( "New set." );
 
@@ -65,17 +67,23 @@ function launchRoutes() {
     }));
   });
 
+
+  /**/
   app.get('/set/:set_name', async function(req,res) {
     console.log( req.params.set_name );
     res.send( 'placeholder' );
   });
 
+
+  /**/
   app.post('/request', function(req,res) {
     console.dir( req );
     console.log( "reqqy" );
     res.send('yuuuup');
   });
 
+
+  /*Generate a new card ID.*/
   app.post('/new_card', async function(req,res) {
     const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
     const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
@@ -85,6 +93,53 @@ function launchRoutes() {
       "result": "success",
       "card_id": new_card_id
     }));
+  });
+
+  /*Add a new card*/
+  app.post('/add_card', async function(req,res) {
+    console.dir( req.body );
+    const new_card_query = "INSERT INTO cards (card_id,question,answer,set_id) " +
+      "VALUES ( " + req.body.card_id + ", " +
+      "\'" + req.body.question + "\', " +
+      "\'" + req.body.answer + "\', " +
+      req.body.set_id + ");"
+    console.log( new_card_query );
+    const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
+    //TODO: On success, on error handling.
+    res.send( JSON.stringify({
+      "result": "success"
+    }));
+  });
+
+  app.get('/get_cardlist/:set_id', async function(req,res) {
+    console.log( "Getting cardlist for set " + req.params.set_id );
+    const get_cardlist_set_name_query = "SELECT name FROM sets WHERE set_id = " +
+      req.params.set_id + ";";
+    const [set_name_row,set_name_field] = await sqlPool.query( get_cardlist_set_name_query );
+    const get_cardlist_cards = "SELECT card_id, answer, question FROM cards " +
+      "WHERE set_id = "  + req.params.set_id + ";";
+    const [cardlist_row,cardlist_field] = await sqlPool.query( get_cardlist_cards );
+    
+    const cardlist_obj = {
+      result: "success",
+      set_name: set_name_row[0],
+      cards: cardlist_row
+    };
+
+    res.send( JSON.stringify( cardlist_obj ) );
+  });
+
+  app.get('/get_card/:card_id', async function(req,res) {
+    console.log( "Getting card " + req.params.card_id );
+    const get_card_query = "SELECT question, answer FROM cards WHERE card_id = " +
+      req.params.card_id + ";";
+    const [card_row,card_field] = await sqlPool.query( get_card_query );
+    console.dir( card_row );
+    const card_obj = {
+      result: "success",
+      card: card_row[0]
+    }
+    res.send( JSON.stringify( card_obj ) );
   });
 
   app.listen(3000);
