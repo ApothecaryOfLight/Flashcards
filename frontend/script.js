@@ -109,14 +109,35 @@ function cardlist_interface_populate_list( inSetID, inCards ) {
   const cardlist_interface_card_list = document.getElementById("cardlist_interface_card_list" );
   let dom = "";
   inCards.forEach( card => {
-    dom += "<div class=\"card_element\" " +
-      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
-      ">" +
-      card.question + "/" + card.answer
+    dom += "<div class=\"card_element\"> " +
+      "<span " +
+      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\">" +
+      card.question + "/" + card.answer +
+      "</span>" +
+      "<button onclick=\"deleteCard(" + card.card_id + ", " + inSetID + ")\">X</button>" +
       "</div>";
   });
   cardlist_interface_card_list.innerHTML = dom;
 }
+
+function deleteCard( inCardID, inSetID ) {
+  console.log( "Deleting card " + inCardID + "." );
+  const delete_card = new Request(
+    'http://52.36.124.150:3000/delete_card/' + inCardID,
+    {
+      method: 'POST'
+    }
+  );
+  fetch( delete_card )
+    .then( json => json.json() )
+    .then( json => {
+      console.dir( json );
+      if( json.result == "success" ) {
+        launch_cardlist_interface( inSetID );
+      }
+    });
+}
+
 function cardlist_interface_new_button() {
   console.log( "Creating card." );
   const new_card = new Request(
@@ -173,8 +194,10 @@ function renderSetList( setList ) {
   const setlist_dom_obj = document.getElementById("setlist_interface_set_list");
   let dom_string = "";
   setList.forEach( set => {
-    dom_string += "<div class=\'setlist_item\'" +
-      " onclick=\"getSet(\'" + set.name + "\'," + set.set_id + ")\">" + set.name + "</div>";
+    dom_string += "<div class=\'setlist_item\'>" +
+      "<span onclick=\"getSet(\'" + set.name + "\'," + set.set_id + ")\">" + set.name +
+      "</span><button onclick=\"deleteSet(" + set.set_id + ")\">X</button>" +
+      "</div>";
   });
   setlist_dom_obj.innerHTML = dom_string;
 }
@@ -182,6 +205,23 @@ function renderSetList( setList ) {
 function getSet( inName, inSetID ) {
   console.log( "Requesting " + inName + " @ " + inSetID );
   launch_cardlist_interface( inSetID );
+}
+
+function deleteSet( inSetID ) {
+  const delete_set = new Request(
+    'http://52.36.124.150:3000/delete_set/' + inSetID,
+    {
+      method: 'POST'
+    }
+  );
+  fetch( delete_set )
+    .then( json => json.json() )
+    .then( json => {
+      console.dir( json );
+      if( json.result == "success" ) {
+        launch_setlist_interface();
+      }
+    });
 }
 
 function setlist_interface_create() {

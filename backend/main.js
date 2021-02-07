@@ -111,6 +111,18 @@ function launchRoutes() {
     }));
   });
 
+  app.post('/delete_set/:set_id', async function(req,res) {
+    const delete_set_query = "DELETE FROM sets WHERE set_id = " + req.params.set_id + ";";
+    const [delete_row,delete_field] = await sqlPool.query( delete_set_query );
+    res.send( JSON.stringify( { result: "success" } ) );
+  });
+
+  app.post('/delete_card/:card_id', async function(req,res) {
+    const delete_card_query = "DELETE FROM cards WHERE card_id = " + req.params.card_id + ";";
+    const [delete_row,delete_field] = await sqlPool.query( delete_card_query );
+    res.send( JSON.stringify( { result: "success" } ) );
+  });
+
   app.get('/get_cardlist/:set_id', async function(req,res) {
     console.log( "Getting cardlist for set " + req.params.set_id );
     const get_cardlist_set_name_query = "SELECT name FROM sets WHERE set_id = " +
