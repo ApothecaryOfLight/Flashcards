@@ -1,38 +1,6 @@
 
-
-function getSetList() {
-  const test = new Request(
-    'http://52.36.124.150:3000/setlist',
-    { method: 'GET' }
-  );
-  fetch( test )
-    .then( obj => obj.json())
-    .then( obj => {
-      console.dir( obj );
-      renderSetList( obj );
-    });
-}
-
-function getSet( inName, inSetID ) {
-  console.log( "Requesting " + inName + " @ " + inSetID );
-  launch_cardlist_interface( inSetID );
-}
-
-function renderSetList( setList ) {
-  const setlist_dom_obj = document.getElementById("setlist_interface_set_list");
-  let dom_string = "";
-  setList.forEach( set => {
-    dom_string += "<div class=\'setlist_item\'" +
-      " onclick=\"getSet(\'" + set.name + "\'," + set.set_id + ")\">" + set.name + "</div>";
-  });
-  setlist_dom_obj.innerHTML = dom_string;
-}
-
-
-
 window.addEventListener( 'load', (loaded_event) => {
-  set_interface( "setlist" );
-  getSetList();
+  launch_setlist_interface();
 });
 
 
@@ -184,6 +152,36 @@ Setlist interface
 */
 function launch_setlist_interface() {
   set_interface( "setlist" );
+  getSetList();
+}
+
+function getSetList() {
+console.log( "getSetList()" );
+  const test = new Request(
+    'http://52.36.124.150:3000/setlist',
+    { method: 'GET' }
+  );
+  fetch( test )
+    .then( obj => obj.json())
+    .then( obj => {
+      console.dir( obj );
+      renderSetList( obj );
+    });
+}
+
+function renderSetList( setList ) {
+  const setlist_dom_obj = document.getElementById("setlist_interface_set_list");
+  let dom_string = "";
+  setList.forEach( set => {
+    dom_string += "<div class=\'setlist_item\'" +
+      " onclick=\"getSet(\'" + set.name + "\'," + set.set_id + ")\">" + set.name + "</div>";
+  });
+  setlist_dom_obj.innerHTML = dom_string;
+}
+
+function getSet( inName, inSetID ) {
+  console.log( "Requesting " + inName + " @ " + inSetID );
+  launch_cardlist_interface( inSetID );
 }
 
 function setlist_interface_create() {
@@ -262,7 +260,7 @@ function detach_functions( interface ) {
 }
 
 function set_interface( interface ) {
-//  console.log( "Setting interface to " + interface );
+  console.log( "Setting interface to " + interface );
   interfaces.forEach( interface_base_name => {
     const interface_name = interface_base_name + "_interface";
     const interface_handle = document.getElementById( interface_name );
