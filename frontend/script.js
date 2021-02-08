@@ -150,6 +150,8 @@ function card_interface_set_card( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+        card_q_handle.value = "";
+        card_a_handle.value = "";
         launch_cardlist_interface( inSetID );
       }
     });
