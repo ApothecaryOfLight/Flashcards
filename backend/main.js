@@ -32,6 +32,33 @@ sqlPool.getConnection()
     launchRoutes();
   });
 
+const replacement = {
+"\/\/g" : "<ESCAPECHAR>",
+"\/'\/g" : "<APOSTROPHE>",
+"\/\"\/g" : "<QUOTATIONMARK>", 
+"\/-/" : "<HYPHEN>",
+"=" : "<EQUALS>"
+}
+
+function process_input( inText ) {
+  let processed_text = "";
+//1) Make sure there are no SQL-injection characters.
+
+
+//2) Replace single and double quotation marks.
+  //for( regex in replacement ) {
+    processed_text = inText.replace(/['"]+/g,'&#39' );
+  //}
+//3) Replace line breaks.
+
+//4) Replace equals signs.
+
+//5) Ensure that the length of processed string is good.
+
+  //return inText;
+  return processed_text;
+}
+
 function launchRoutes() {
   app.get('/setlist', async function(req,res) {
     const [set_rows,field] = await sqlPool.query( "SELECT name, set_id FROM sets;" );
@@ -55,7 +82,7 @@ function launchRoutes() {
 
     //2) Insert new set name.
     let insert_query = "INSERT INTO sets (name,set_id) VALUES " +
-      "( \'" + req.body.set_name + "\', " + new_set_id + " );";
+      "( \'" + process_input(req.body.set_name) + "\', " + new_set_id + " );";
     const [new_set_row,new_set_field] = await sqlPool.query( insert_query );
 
     //3) Notify client of success.
@@ -102,13 +129,14 @@ function launchRoutes() {
     const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
     const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
     const new_card_id = new_card_id_row[0].new_card_id;
-
+console.log( process_input( req.body.question ) );
+console.log( process_input( req.body.answer ) );
     const new_card_query = "INSERT INTO cards (card_id,question,answer,set_id) " +
       "VALUES ( " + new_card_id + ", " +
-      "\'" + req.body.question + "\', " +
-      "\'" + req.body.answer + "\', " +
+      "\'" + process_input(req.body.question) + "\', " +
+      "\'" + process_input(req.body.answer) + "\', " +
       req.body.set_id + ");"
-    console.log( new_card_query );
+    console.log( "NEWCARD_QUERY: " + new_card_query );
     const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
     //TODO: On success, on error handling.
     res.send( JSON.stringify({
