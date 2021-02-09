@@ -144,6 +144,20 @@ console.log( process_input( req.body.answer ) );
     }));
   });
 
+  app.post( '/update_card', async function(req,res) {
+    const update_card_query = "UPDATE cards SET " +
+      "question = " + "\'" + req.body.question + "\', " +
+      "answer = " + "\'" + req.body.answer + "\'" +
+      "WHERE set_id = " + req.body.set_id +
+      " AND card_id = " + req.body.card_id + ";";
+console.log( update_card_query );
+    const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
+    //TODO: On success, on error
+    res.send( JSON.stringify({
+      "result": "success"
+    }));
+  });
+
   app.post('/delete_set/:set_id', async function(req,res) {
     const delete_set_query = "DELETE FROM sets WHERE set_id = " + req.params.set_id + ";";
     const [delete_row,delete_field] = await sqlPool.query( delete_set_query );

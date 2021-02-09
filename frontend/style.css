@@ -1,4 +1,8 @@
-
+body {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin: 0px;
+}
 
 .wide_button {
   width: 100%;
@@ -31,10 +35,53 @@ Cardlist interface
 #cardlist_interface {
   display: none;
   flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+#cardlist_interface_card_list {
+  flex-grow: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100vw;
+}
+#cardlist_interface_new {
+  flex-shrink: 1;
+}
+#cardlist_interface_go_back {
+  flex-shrink: 1;
 }
 #cardlist_interface_toggle_buttons {
   display: flex;
   flex-direction: row;
+}
+.card_element {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: none;
+/*  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;*/
+}
+.card_element:hover {
+  background-color: cyan;
+}
+.card_element_q {
+  flex-grow: 3;
+/*  white-space: nowrap;*/
+  overflow: hidden;
+  width: 45%;
+  text-overflow: ellipsis;
+}
+.card_element_a {
+  flex-grow: 3;
+/*  white-space: nowrap;*/
+  overflow:hidden;
+  width: 45%;
+  text-overflow: ellipsis;
+}
+.card_element_delete_button {
+  flex-shrink: 1;
 }
 
 
@@ -59,12 +106,16 @@ Runset interface
 */
 #runset_interface {
   display: none;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
 }
-#runset_qa_space {
-
+#runset_interface_qa_space {
+  flex-grow: 3;
 }
-#runset_buttons {
+#runset_interface_buttons {
   display: flex;
   flex-direction: row;
+  height: 15vh;
 }
 

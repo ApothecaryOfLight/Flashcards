@@ -98,9 +98,23 @@ function launch_card_interface( inCardID, inSetID, isNew ) {
   set_interface( "card", inSetID );
 
   if( isNew == false ) {
+    console.log( "Old card." );
     get_card( inCardID );
+    const set_card = document.getElementById("card_interface_set_card");
+    const func_ref = card_interface_update_card.bind( this, inSetID, inCardID );
+
+    if( bound_functions["card"]["set_card"] ) {
+      bound_functions["card"]["set_card"].forEach( (func)=> {
+console.log( "Removing func." );
+        set_card.removeEventListener( 'click', func );
+      });
+    }
+    bound_functions["card"]["set_card"] = [];
+
+    set_card.addEventListener( 'click', func_ref );
+    bound_functions["card"]["set_card"].push( func_ref );
   } else {
-    card_id = inCardID;
+    console.log( "New card." );
   }
 }
 
@@ -116,6 +130,39 @@ function get_card( inCardID ) {
       if( json.result == "success" ) {
         question_text.value = json.card.question;
         answer_text.value = json.card.answer;
+      }
+    });
+}
+
+function card_interface_update_card( inSetID, inCardID ) {
+  console.log( "card_interface_update_card" );
+  const card_q_handle = document.getElementById("card_interface_q_text");
+  const card_a_handle = document.getElementById("card_interface_a_text");
+  const question_text = card_q_handle.value;
+  const answer_text = card_a_handle.value;
+
+  const update_card = new Request(
+    'http://52.36.124.150:3000/update_card',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        "set_id": inSetID,
+        "card_id": inCardID,
+        "question": question_text,
+        "answer": answer_text
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  fetch( update_card )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "success" ) {
+        card_q_handle.value = "";
+        card_a_handle.value = "";
+        launch_cardlist_interface( inSetID );
       }
     });
 }
@@ -188,9 +235,11 @@ function cardlist_interface_populate_list( inSetID, inCards ) {
     dom += "<div class=\"card_element\"> " +
       "<span " +
       "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\">" +
-      card.question + "/" + card.answer +
+      "<span class=\"card_element_q\">" + card.question + "</span>" +
+      "<span class=\"card_element_a\">" + card.answer + "</span>" +
       "</span>" +
-      "<button onclick=\"deleteCard(" + card.card_id + ", " + inSetID + ")\">X</button>" +
+      "<button class=\"card_element_delete_button\" " +
+      "onclick=\"deleteCard(" + card.card_id + ", " + inSetID + ")\">X</button>" +
       "</div>";
   });
   cardlist_interface_card_list.innerHTML = dom;
@@ -214,15 +263,6 @@ function deleteCard( inCardID, inSetID ) {
 
 function cardlist_interface_new_button( inSetID ) {
   launch_card_interface( null, inSetID, true );
-}
-function cardlist_interface_edit_button() {
-  
-}
-function cardlist_interface_toggle_questions_button() {
-  
-}
-function cardlist_interface_toggle_answers_button() {
-  
 }
 function cardlist_interface_go_back() {
   //console.log( "cardlist_interface_go_back" );
@@ -318,10 +358,6 @@ function create_set( set_name ) {
     });
 }
 
-function setlist_interface_edit() {
-
-}
-
 
 /*
 Interface switching code.
@@ -332,8 +368,7 @@ const interfaces = [
 
 const functions = {
   "setlist" : {
-    "create": setlist_interface_create,
-    "edit": setlist_interface_edit
+    "create": setlist_interface_create
   },
   "cardlist" : {
     "new": cardlist_interface_new_button,
@@ -353,22 +388,21 @@ const functions = {
 
 const bound_functions = {
   "setlist" : {
-    "create": null,
-    "edit": null
+    "create": []
   },
   "cardlist" : {
-    "new": null,
-    "go_back": null
+    "new": [],
+    "go_back": []
   },
   "card": {
-    "set_card": null,
-    "go_back": null
+    "set_card": [],
+    "go_back": []
   },
   "runset": {
-    "go_back": null,
-    "missed": null,
-    "correct": null,
-    "flip": null
+    "go_back": [],
+    "missed": [],
+    "correct": [],
+    "flip": []
   }
 }
 
@@ -378,7 +412,8 @@ function attach_functions( interface, value ) {
     if( value ) {
       let func_ref = functions[interface][button_name].bind(null,value);
       button_ref.addEventListener( 'click', func_ref );
-      bound_functions[interface][button_name] = func_ref;
+      //bound_functions[interface][button_name] = func_ref;
+      bound_functions[interface][button_name].push( func_ref );
     } else {
       button_ref.addEventListener( 'click', functions[interface][button_name] );
     }
@@ -390,8 +425,14 @@ function detach_functions( interface ) {
     const button_ref = document.getElementById( interface + "_interface_" + button_name );
     button_ref.removeEventListener( 'click', functions[interface][button_name] );
     if( bound_functions[interface][button_name] ) {
-      button_ref.removeEventListener( 'click', bound_functions[interface][button_name] );
+      bound_functions[interface][button_name].forEach( func => {
+        button_ref.removeEventListener( 'click', func );
+      });
     }
+
+    /*if( bound_functions[interface][button_name] ) {
+      button_ref.removeEventListener( 'click', bound_functions[interface][button_name] );
+    }*/
   };
 }
 
