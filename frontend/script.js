@@ -219,7 +219,7 @@ function cardlist_interface_populate_list( inSetID, inCards ) {
   let dom = "";
   inCards.forEach( card => {
     dom += "<div class=\"card_element\"> " +
-      "<span " +
+      "<span class=\"card_button\" " +
       "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\">" +
       "<span class=\"card_element_q\">" + card.question + "</span>" +
       "<span class=\"card_element_a\">" + card.answer + "</span>" +

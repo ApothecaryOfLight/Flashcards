@@ -54,11 +54,21 @@ Cardlist interface
   display: flex;
   flex-direction: row;
 }
+.card_button {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  disaply: flex;
+}
 .card_element {
-  width: 100%;
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
   display: flex;
   flex-direction: row;
   flex-wrap: none;
+  justify-content: space-between;
+  margin-bottom: 1em;
 /*  overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;*/
@@ -72,6 +82,8 @@ Cardlist interface
   overflow: hidden;
   width: 45%;
   text-overflow: ellipsis;
+  margin-left: 3em;
+  margin-right: 3em;
 }
 .card_element_a {
   flex-grow: 3;
@@ -79,6 +91,8 @@ Cardlist interface
   overflow:hidden;
   width: 45%;
   text-overflow: ellipsis;
+  margin-left: 3em;
+  margin-right: 3em;
 }
 .card_element_delete_button {
   flex-shrink: 1;
