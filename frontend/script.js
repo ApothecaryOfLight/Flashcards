@@ -9,7 +9,8 @@ Runset Interface
 function launch_runset_interface( inSetID ) {
   let card_set_obj = {
     curr_card: 0,
-    side: 0
+    side: 0,
+    prev_cards: []
   };
   set_interface( "runset", card_set_obj );
   console.log( "Go!" );
@@ -28,26 +29,43 @@ function launch_runset_interface( inSetID ) {
     });
 }
 
+function next_card( cards_obj ) {
+  //1) Push the last card into the record of previous cards.
+  cards_obj.prev_cards.push( cards_obj.curr_card );
+
+  //2) Keep the record of past cards half as large as the set of cards.
+  if( cards_obj.prev_cards.length > cards_obj.cards.length/2 ) {
+    cards_obj.prev_cards.shift();
+  }
+
+  //3) Generate the next card.
+  const num_cards = cards_obj.cards.length;
+  let next_card_number = Math.floor( Math.random() * num_cards );
+
+  //4) Guarantee that the next card hasn't appeared recently.
+  while( cards_obj.prev_cards.some( (card_number) => {
+    return (card_number == next_card_number);
+  }) == true ) {
+    next_card_number = Math.floor( Math.random() * num_cards );
+  }
+
+  //5) Set the next card, set the card to the question side, render it.
+  cards_obj.curr_card = next_card_number;
+  cards_obj.side = 0;
+  runset_render_qa( cards_obj );
+}
 function runset_interface_go_back( cards_obj ) {
   launch_setlist_interface();
 }
 function runset_interface_missed( cards_obj ) {
   console.log( "Missed!" );
   console.log( cards_obj.cards.length );
-  if( cards_obj.curr_card <= cards_obj.cards.length ) {
-    cards_obj.curr_card++;
-    cards_obj.side = 0;
-    runset_render_qa( cards_obj );
-  }
+  next_card( cards_obj );
 }
 function runset_interface_correct( cards_obj ) {
   console.log( "Correct!" );
   console.log( cards_obj.cards.length );
-  if( cards_obj.curr_card <= cards_obj.cards.length ) {
-    cards_obj.curr_card++;
-    cards_obj.side = 0;
-    runset_render_qa( cards_obj );
-  }
+  next_card( cards_obj );
 }
 function runset_interface_flip_card( cards_obj ) {
   console.log( "Flipping!" );
@@ -62,7 +80,7 @@ function runset_interface_flip_card( cards_obj ) {
 
 function runset_render_qa( card_set_obj ) {
   const qa_field = document.getElementById("runset_interface_qa_space");
-  console.dir( card_set_obj.cards );
+//  console.dir( card_set_obj.cards );
   if( card_set_obj.side == 0 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
       card_set_obj.cards[card_set_obj.curr_card].question +

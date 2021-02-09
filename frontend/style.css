@@ -126,6 +126,11 @@ Runset interface
 }
 #runset_interface_qa_space {
   flex-grow: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  text-align: center;
 }
 #runset_interface_buttons {
   display: flex;
