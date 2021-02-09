@@ -388,7 +388,7 @@ const bound_functions = {
     "go_back": [],
     "missed": [],
     "correct": [],
-    "flip": []
+    "flip_card": []
   }
 }
 
