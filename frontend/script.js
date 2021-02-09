@@ -21,8 +21,6 @@ function launch_runset_interface( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        //set_name_element.innerHTML = json.set_name.name;
-        //cardlist_interface_populate_list( inSetID, json.cards );
         console.dir( json.cards );
         card_set_obj.cards = json.cards;
         runset_render_qa( card_set_obj );
@@ -31,12 +29,6 @@ function launch_runset_interface( inSetID ) {
 }
 
 function runset_interface_go_back( cards_obj ) {
-/*  console.log( "Go back." );
-  if( cards_obj.curr_card > 0 ) {
-    cards_obj.curr_card--;
-    cards_obj.side = 0;
-    runset_render_qa( cards_obj );
-  }*/
   launch_setlist_interface();
 }
 function runset_interface_missed( cards_obj ) {
@@ -67,11 +59,6 @@ function runset_interface_flip_card( cards_obj ) {
   }
   runset_render_qa( cards_obj );
 }
-
-
-//function switchSide( inCardSetObj ) {
-//  console.dir( inCardSetObj );
-//}
 
 function runset_render_qa( card_set_obj ) {
   const qa_field = document.getElementById("runset_interface_qa_space");
@@ -105,7 +92,6 @@ function launch_card_interface( inCardID, inSetID, isNew ) {
 
     if( bound_functions["card"]["set_card"] ) {
       bound_functions["card"]["set_card"].forEach( (func)=> {
-console.log( "Removing func." );
         set_card.removeEventListener( 'click', func );
       });
     }
