@@ -300,10 +300,15 @@ function renderSetList( setList ) {
   let dom_string = "";
   setList.forEach( set => {
     dom_string += "<div class=\'setlist_item\'>" +
-      "<span onclick=\"getSet(\'" + set.name + "\'," + set.set_id + ")\">" + set.name +
-      "</span>" +
-      "<button onclick=\"playSet(" + set.set_id + ")\">Play</button>" +
-      "<button onclick=\"deleteSet(" + set.set_id + ")\">X</button>" +
+      "<button class=\"button setlist_item_delete_button\" " +
+      "onclick=\"deleteSet(" + set.set_id + ")\">X</button>" +
+      "<div class=\"button setlist_item_text_container\"" +
+      "onclick=\"getSet(\'" + set.name + "\'," +
+      set.set_id + ")\">" + 
+      "<span class=\"setlist_item_text\">" +
+      set.name + "</span>" + "</div>" +
+      "<button class=\"button setlist_item_play_button\" " +
+      "onclick=\"playSet(" + set.set_id + ")\">Play</button>" +
       "</div>";
   });
   setlist_dom_obj.innerHTML = dom_string;
@@ -445,7 +450,11 @@ function set_interface( interface, value ) {
     const interface_name = interface_base_name + "_interface";
     const interface_handle = document.getElementById( interface_name );
     if( interface == interface_base_name ) {
-      interface_handle.style.display = "flex";
+      if( interface_base_name == "setlist" ) {
+        interface_handle.style.display = "grid"; 
+      } else {
+        interface_handle.style.display = "flex";
+      }
       attach_functions( interface, value );
     } else {
       interface_handle.style.display = "none";

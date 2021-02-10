@@ -13,17 +13,21 @@
 </head>
 <body>
 
+<!--div id="setlist_interface_menu">menu here</div-->
+
 <div id="setlist_interface">
-  <input id="setlist_interface_set_name" type="text"/>
+  <input id="setlist_interface_set_name" type="text" placeholder="Search here."/>
+  <button id="setlist_interface_create" class="button wide_button">Create</button>
   <div id="setlist_interface_set_list"></div>
-  <button id="setlist_interface_create" class="wide_button">Create</button>
 </div>
 
 <div id="cardlist_interface">
   <div id="cardlist_interface_set_name"></div>
   <div id="cardlist_interface_card_list"></div>
-  <button id="cardlist_interface_new">New Card</button>
-  <button id="cardlist_interface_go_back" class="wide_button">Go Back</button>
+  <button id="cardlist_interface_new" class="button">New Card</button>
+  <button id="cardlist_interface_go_back" class="button wide_button">
+    Go Back
+  </button>
 </div>
 
 <div id="card_interface">
@@ -31,18 +35,18 @@
   <textarea id="card_interface_q_text"></textarea>
   <textarea id="card_interface_a_text"></textarea>
   <div id="card_interface_buttons">
-    <button id="card_interface_go_back" class="wide_button"><-</button>
-    <button id="card_interface_set_card" class="wide_button">Set</button>
-    <button id="card_interface_remove" class="wide_button">X</button>
+    <button id="card_interface_go_back" class="button wide_button"><-</button>
+    <button id="card_interface_set_card" class="button wide_button">Set</button>
+    <button id="card_interface_remove" class="button wide_button">X</button>
   </div>
 </div>
 
 <div id="runset_interface">
   <div id="runset_interface_buttons">
-    <button id="runset_interface_flip_card" class="wide_button">Flip</button>
-    <button id="runset_interface_go_back" class="wide_button"><-</button>
-    <button id="runset_interface_missed" class="wide_button">X</button>
-    <button id="runset_interface_correct" class="wide_button">./</button>
+    <button id="runset_interface_flip_card" class="button wide_button">Flip</button>
+    <button id="runset_interface_go_back" class="button wide_button"><-</button>
+    <button id="runset_interface_missed" class="button wide_button">X</button>
+    <button id="runset_interface_correct" class="button wide_button">./</button>
   </div>
   <div id="runset_interface_qa_space"></div>
 </div>
