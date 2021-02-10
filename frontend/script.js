@@ -241,9 +241,9 @@ function cardlist_interface_populate_list( inSetID, inCards ) {
       "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\">" +
       "<span class=\"card_element_q\">" + card.question + "</span>" +
       "<span class=\"card_element_a\">" + card.answer + "</span>" +
-      "</span>" +
-      "<button class=\"card_element_delete_button\" " +
+      "<button class=\"button card_element_delete_button\" " +
       "onclick=\"deleteCard(" + card.card_id + ", " + inSetID + ")\">X</button>" +
+      "</span>" +
       "</div>";
   });
   cardlist_interface_card_list.innerHTML = dom;
