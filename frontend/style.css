@@ -142,10 +142,14 @@ Setlist interface
   border-radius: 16px;
   border: 0px;
 
--webkit-box-shadow: 0px 0px 15px 2px #000000; 
-box-shadow: 0px 0px 15px 2px #000000;
+/*-webkit-box-shadow: 0px 0px 15px 2px #000000; 
+box-shadow: 0px 0px 15px 2px #000000;*/
+-webkit-box-shadow: 0px 0px 10px -1px #000000; 
+box-shadow: 0px 0px 10px -1px #000000;
 
-  margin: 2em;
+  margin-top: 2em;
+
+  text-align: center;
 }
 #setlist_interface_create {
   margin-top: 1em;
