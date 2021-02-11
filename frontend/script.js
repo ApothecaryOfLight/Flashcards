@@ -216,7 +216,7 @@ function card_interface_set_card( inSetID ) {
       if( json.result == "success" ) {
         card_q_handle.value = "";
         card_a_handle.value = "";
-        launch_cardlist_interface( inSetID );
+        launch_cardlist_interface( inSetID, true );
       }
     });
 }
@@ -233,7 +233,7 @@ function card_interface_go_back( inSetID ) {
 /*
 Cardlist interface
 */
-function launch_cardlist_interface( inSetID ) {
+function launch_cardlist_interface( inSetID, go_to_end ) {
   set_interface( "cardlist", inSetID );
   const set_name_element = document.getElementById("cardlist_interface_set_name");
 
@@ -246,8 +246,15 @@ function launch_cardlist_interface( inSetID ) {
       if( json.result == "success" ) {
         set_name_element.innerHTML = json.set_name.name;
         cardlist_interface_populate_list( inSetID, json.cards );
+        if( go_to_end ) {
+          cardlist_interface_scroll_to_bottom();
+        }
       }
     });
+}
+function cardlist_interface_scroll_to_bottom() {
+  const cardlist_scr = document.getElementById("cardlist_interface_card_list");
+  cardlist_scr.scrollTo( 0, cardlist_scr.scrollHeight );
 }
 function cardlist_interface_populate_list( inSetID, inCards ) {
   const cardlist_interface_card_list = document.getElementById("cardlist_interface_card_list" );
@@ -309,12 +316,11 @@ function renderSetList( setList ) {
       "<button class=\"button setlist_item_delete_button\" " +
       "onclick=\"prompt_delete_set(" + set.set_id + ")\">X</button>" +
       "<div class=\"button setlist_item_text_container\"" +
-      "onclick=\"getSet(\'" + set.name + "\'," +
-      set.set_id + ")\">" + 
+      "onclick=\"playSet(" + set.set_id + ")\">" + 
       "<span class=\"setlist_item_text\">" +
       set.name + "</span>" + "</div>" +
       "<button class=\"button setlist_item_play_button\" " +
-      "onclick=\"playSet(" + set.set_id + ")\">Play</button>" +
+      "onclick=\"getSet(" + set.set_id + ")\">Edit</button>" +
       "</div>";
   });
   setlist_dom_obj.innerHTML = dom_string;
@@ -325,7 +331,7 @@ function playSet( inSetID ) {
   launch_runset_interface( inSetID );
 }
 
-function getSet( inName, inSetID ) {
+function getSet( inSetID ) {
   launch_cardlist_interface( inSetID );
 }
 
