@@ -211,22 +211,28 @@ Cardlist interface
   grid-column: 1;
 
   overflow: hidden;
+
   text-overflow: ellipsis;
   white-space: nowrap;
 
   padding-top: 1em;
   padding-left: 3em;
+
+  height: 1.5em;
 }
 .card_element_a {
   grid-row: 2;
   grid-column: 1;
 
   overflow:hidden;
+
   text-overflow: ellipsis;
   white-space: nowrap;
 
   padding-top: 1em;
   padding-left: 3em;
+
+  height: 1.5em;
 }
 .card_element_delete_button {
   grid-row-start: 1;
