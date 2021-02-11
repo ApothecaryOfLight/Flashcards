@@ -259,17 +259,20 @@ Setlist interface
 #setlist_interface {
   display: grid;
   grid-template-rows: 4em 3em auto;
-  grid-template-columns: 10% 10% 60% 10% 10%;
+  grid-template-columns: 10% 80% 10%;
 }
 #setlist_interface_set_name {
-  width: 100%;
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
+
   height: 2.5em;
 
 
   grid-row: 1;
 
-  grid-column-start: 2;
-  grid-column-end: 5;
+  grid-column: 2;
+  /*grid-column-end: 4;*/
 
   border-radius: 16px;
   border: 0px;
@@ -289,19 +292,22 @@ box-shadow: 0px 0px 10px -1px #000000;
   margin-right: 10%;
   margin-bottom: 1em;
 
-  width: 80%;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
+
   height: 2.5em;
 
   grid-row: 2;
-
-  grid-column: 3
+  grid-column: 2;
 }
 #setlist_interface_set_list {
   width: 100%;
 
   grid-row: 3;
 
-  grid-column: 3;
+  grid-column-start: 1;
+  grid-column-end: 4;
 }
 .setlist_item {
   display: grid;
@@ -310,7 +316,7 @@ box-shadow: 0px 0px 10px -1px #000000;
   /*justify-content: center;*/
   align-self: center;
 
-  height: 2em;
+  min-height: 3em;
 
   padding: 0.5em;
   margin: 0.5em;
@@ -354,7 +360,8 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#3f5efb",endCo
   grid-column: 2;
 
   width: 80%;
-  height: 3em;
+  min-height: 3em;
+
   margin-left: 10%;
   margin-right: 10%;
 }
