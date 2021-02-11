@@ -403,8 +403,42 @@ Modal interface
   width: 100vw;
   height: 100vh;
   background: #000000DD;
+  position: absolute;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  justify-content: center;
 }
 #modal_interface {
-  display: none;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-template-columns: auto auto auto;
+
+  width: 50%;
+  height: 50%;
+  align-self: center;
+  background: white;
+  border-radius: 16px;
+}
+#modal_interface_message {
+  grid-row: 1;
+  grid-column: 2;
+  margin-top: 4em;
+  font-weight: bold;
+  text-align: center;
+}
+#modal_interface_button_container {
+  grid-row: 3;
+  grid-column-start: 1;
+  grid-column-end: 4;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+
+
+  margin-bottom: 1em;
+}
+.modal_button {
+  height: 4em;
 }
 

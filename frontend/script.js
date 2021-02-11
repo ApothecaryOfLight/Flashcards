@@ -248,27 +248,10 @@ function cardlist_interface_populate_list( inSetID, inCards ) {
       ">" + card.answer + "</div>" +
 /*      "</span>" +*/
       "<button class=\"button card_element_delete_button\" " +
-      "onclick=\"deleteCard(" + card.card_id + ", " + inSetID + ")\">X</button>" +
+      "onclick=\"prompt_delete_card(" + card.card_id + ", " + inSetID + ")\">X</button>" +
       "</div>";
   });
   cardlist_interface_card_list.innerHTML = dom;
-}
-
-function deleteCard( inCardID, inSetID ) {
-  console.log( "delling" );
-/*  const delete_card = new Request(
-    'http://52.36.124.150:3000/delete_card/' + inCardID,
-    {
-      method: 'POST'
-    }
-  );
-  fetch( delete_card )
-    .then( json => json.json() )
-    .then( json => {
-      if( json.result == "success" ) {
-        launch_cardlist_interface( inSetID );
-      }
-    });*/
 }
 
 function cardlist_interface_new_button( inSetID ) {
@@ -307,7 +290,7 @@ function renderSetList( setList ) {
   setList.forEach( set => {
     dom_string += "<div class=\'setlist_item\'>" +
       "<button class=\"button setlist_item_delete_button\" " +
-      "onclick=\"deleteSet(" + set.set_id + ")\">X</button>" +
+      "onclick=\"prompt_delete_set(" + set.set_id + ")\">X</button>" +
       "<div class=\"button setlist_item_text_container\"" +
       "onclick=\"getSet(\'" + set.name + "\'," +
       set.set_id + ")\">" + 
@@ -327,23 +310,6 @@ function playSet( inSetID ) {
 
 function getSet( inName, inSetID ) {
   launch_cardlist_interface( inSetID );
-}
-
-function deleteSet( inSetID ) {
-  console.log( "delling set" );
-/*  const delete_set = new Request(
-    'http://52.36.124.150:3000/delete_set/' + inSetID,
-    {
-      method: 'POST'
-    }
-  );
-  fetch( delete_set )
-    .then( json => json.json() )
-    .then( json => {
-      if( json.result == "success" ) {
-        launch_setlist_interface();
-      }
-    });*/
 }
 
 function setlist_interface_create() {
@@ -373,6 +339,96 @@ function create_set( set_name ) {
       }
     });
 }
+
+
+/*
+Modal interface
+*/
+let modal_buttons_storage = {};
+function modal_button( button_name ) {
+  console.log( button_name );
+  modal_buttons_storage[button_name]();
+}
+
+function launch_modal( isPrompt, inMessage, inButtons ) {
+  const modal_handle = document.getElementById("modal_interface_screen_cover");
+  modal_handle.style.display = "flex";
+
+  const modal_message = document.getElementById( "modal_interface_message" );
+  modal_message.innerHTML = inMessage;
+
+  let dom = "";
+  for( button_name in inButtons ) {
+    console.log( typeof( inButtons[button_name] ) );
+    modal_buttons_storage[button_name] = inButtons[button_name];
+    dom += "<button class=\"button modal_button\" " +
+      "onclick=\"modal_button(\'" + button_name + "\')\">" +
+      button_name + "</button>"
+  }
+  console.log( dom );
+  const modal_buttons = document.getElementById( "modal_interface_button_container" );
+  modal_buttons.innerHTML = dom;
+}
+
+function close_modal() {
+  console.log( "close_modal" );
+  const modal_handle = document.getElementById("modal_interface_screen_cover");
+  modal_handle.style.display = "none";
+}
+
+function delete_card( inCardID, inSetID ) {
+  console.log( inCardID + "/" + inSetID );
+  const delete_card = new Request(
+    'http://52.36.124.150:3000/delete_card/' + inCardID,
+    {
+      method: 'POST'
+    }
+  );
+  fetch( delete_card )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "success" ) {
+        launch_cardlist_interface( inSetID );
+      }
+    });
+  close_modal();
+}
+
+function delete_set( inSetID ) {
+  const delete_set_req = new Request(
+    'http://52.36.124.150:3000/delete_set/' + inSetID,
+    {
+      method: 'POST'
+    }
+  );
+  fetch( delete_set_req )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "success" ) {
+        launch_setlist_interface();
+      }
+    });
+  close_modal();
+}
+
+function prompt_delete_card( inCardID, inSetID ) {
+  const options = {
+    "Delete Card": delete_card.bind( this, inCardID, inSetID ),
+    "Cancel": close_modal
+  }
+
+  launch_modal( null, "Are you sure you want to delete this card?", options );
+}
+
+function prompt_delete_set( inSetID ) {
+  const options = {
+    "Delete Set": delete_set.bind( this, inSetID ),
+    "Cancel": close_modal
+  }
+
+  launch_modal( null, "Are you sure you want to delete this set?", options );
+}
+
 
 
 /*
