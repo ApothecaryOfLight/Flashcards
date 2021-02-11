@@ -236,21 +236,27 @@ function cardlist_interface_populate_list( inSetID, inCards ) {
   const cardlist_interface_card_list = document.getElementById("cardlist_interface_card_list" );
   let dom = "";
   inCards.forEach( card => {
-    dom += "<div class=\"card_element\"> " +
-      "<span class=\"card_button\" " +
-      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\">" +
-      "<span class=\"card_element_q\">" + card.question + "</span>" +
-      "<span class=\"card_element_a\">" + card.answer + "</span>" +
+    dom +=
+      "<div class=\"card_element\"> " +
+/*      "<span class=\"card_button\" " +
+      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\">" +*/
+      "<div class=\"card_element_q\" " +
+      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
+      ">" + card.question + "</div>" +
+      "<div class=\"card_element_a\" " +
+      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
+      ">" + card.answer + "</div>" +
+/*      "</span>" +*/
       "<button class=\"button card_element_delete_button\" " +
       "onclick=\"deleteCard(" + card.card_id + ", " + inSetID + ")\">X</button>" +
-      "</span>" +
       "</div>";
   });
   cardlist_interface_card_list.innerHTML = dom;
 }
 
 function deleteCard( inCardID, inSetID ) {
-  const delete_card = new Request(
+  console.log( "delling" );
+/*  const delete_card = new Request(
     'http://52.36.124.150:3000/delete_card/' + inCardID,
     {
       method: 'POST'
@@ -262,7 +268,7 @@ function deleteCard( inCardID, inSetID ) {
       if( json.result == "success" ) {
         launch_cardlist_interface( inSetID );
       }
-    });
+    });*/
 }
 
 function cardlist_interface_new_button( inSetID ) {
@@ -324,7 +330,8 @@ function getSet( inName, inSetID ) {
 }
 
 function deleteSet( inSetID ) {
-  const delete_set = new Request(
+  console.log( "delling set" );
+/*  const delete_set = new Request(
     'http://52.36.124.150:3000/delete_set/' + inSetID,
     {
       method: 'POST'
@@ -336,7 +343,7 @@ function deleteSet( inSetID ) {
       if( json.result == "success" ) {
         launch_setlist_interface();
       }
-    });
+    });*/
 }
 
 function setlist_interface_create() {

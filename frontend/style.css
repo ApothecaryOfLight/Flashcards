@@ -160,44 +160,51 @@ Cardlist interface
   display: flex;
   flex-direction: row;
 }*/
-.card_element {
-  display: flex;
-  flex-direction: row;
 
-  width: 80%;
-  height: 4em;
-
-  margin-left: 10%;
-  margin-right: 10%;
-  margin-bottom: 1em;
-  margin-top: 1em;
-
-  justify-content: space-between;
-
-  border-radius: 16px;
-  border: 2px solid;
-}
 .card_button {
-  text-overflow: ellipsis;
+/*  text-overflow: ellipsis;
   overflow: hidden;
-  white-space: nowrap;
+  white-space: nowrap;*/
+
+  display: flex;
+  flex-direction: column;
 
 /*  display: grid;
   grid-template-columns: 50% 50%;*/
-  display: flex;
+/*  display: flex;
   justify-content: space-between;
 
   width: 100%;
 
   display: grid;
   grid-template-rows: 2em 2em;
-  grid-template-columns: auto 2em;
+  grid-template-columns: auto 2em;*/
+  grid-row-start: 1;
+  grid-row-end: 2;
+  grid-column: 1;
+}
+
+
+
+.card_element {
+  display: grid;
+  grid-template-rows: 2em 2em;
+  grid-template-columns: auto 4em;
+
+  width: 80%;
+  height: 5em;
+
+  margin-left: 10%;
+  margin-right: 10%;
+  margin-bottom: 1em;
+  margin-top: 1em;
+
+
+  border-radius: 16px;
+  border: 2px solid;
 }
 .card_element:hover {
-/*  background-color: cyan;*/
   color: blue;
-/*  font-weight: bold;*/
-/*  border: 2px solid;*/
 }
 .card_element_q {
   grid-row: 1;
@@ -205,11 +212,10 @@ Cardlist interface
 
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-left: 3em;
-/*  margin-right: 3em;*/
-/*  grid-column: 1;*/
+  white-space: nowrap;
 
-  align-self: center;
+  padding-top: 1em;
+  padding-left: 3em;
 }
 .card_element_a {
   grid-row: 2;
@@ -217,29 +223,27 @@ Cardlist interface
 
   overflow:hidden;
   text-overflow: ellipsis;
-  margin-left: 3em;
-/*  margin-left: 3em;
-  margin-right: 3em;*/
-/*  grid-column: 2;*/
+  white-space: nowrap;
 
-  align-self: center;
+  padding-top: 1em;
+  padding-left: 3em;
 }
 .card_element_delete_button {
   grid-row-start: 1;
   grid-row-end: 3;
-  grid-column: 1;
 
-  flex-shrink: 1;
-  grid-column: 3;
+  grid-column: 2;
+
 
   height: 4em;
   width: 4em;
 
   border: 0px;
   border-radius: 50%;
-  margin-right: 1em;
 
-  align-self: center;
+  margin-right: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 
@@ -382,5 +386,19 @@ Runset interface
   display: flex;
   flex-direction: row;
   height: 15vh;
+}
+
+
+/*
+Modal interface
+*/
+#modal_interface_screen_cover {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  background: #000000DD;
+}
+#modal_interface {
+  display: none;
 }
 
