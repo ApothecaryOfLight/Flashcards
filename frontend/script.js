@@ -222,6 +222,10 @@ function card_interface_set_card( inSetID ) {
 
 function card_interface_go_back( inSetID ) {
   console.log( "card_interface_go_back" );
+  const card_q_handle = document.getElementById("card_interface_q_text");
+  const card_a_handle = document.getElementById("card_interface_a_text");
+  card_q_handle.value = "";
+  card_a_handle.value = "";
   launch_cardlist_interface( inSetID );
 }
 
