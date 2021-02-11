@@ -6,10 +6,28 @@
 }
 
 body {
+  background: purple;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
   overflow-x: hidden;
   overflow-y: hidden;
-  margin: 0px;
+}
+
+#root {
+
+/*  margin: 1em;*/
+  /*border: 1em solid;*/
+/*  padding: 2em;*/
+
   background-color: #FFFFF0;
+
+/*  width: 100vw - 1em;
+  height: 100vh - 1em;*/
+/*  width: calc(100vw - 2em);
+  height: calc(100vh - 2em);*/
+  width: 100vw;
+  height: 100vh;
 }
 
 
@@ -21,14 +39,37 @@ body {
   color: white;
   background: #3399FF;
 
+
+/*
+background: rgb(0,88,126);
+background: -moz-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,129,191,1) 0%, rgba(0,66,115,1) 100%);
+background: -webkit-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,129,191,1) 0%, rgba(0,66,115,1) 100%);
+background: linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,129,191,1) 0%, rgba(0,66,115,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00587e",endColorstr="#004273",GradientType=1);
+*/
   font-weight: bold;
+
+/*-webkit-box-shadow: 0px 0px 11px -1px #000000; 
+box-shadow: 0px 0px 11px -1px #000000;*/
 }
 .button:hover {
 /*  background-color: #0099FF;*/
   background: #0066FF;
+/*background: rgb(46,0,126);
+background: -moz-linear-gradient(90deg, rgba(46,0,126,1) 0%, rgba(46,0,126,1) 0%, rgba(0,14,115,1) 100%);
+background: -webkit-linear-gradient(90deg, rgba(46,0,126,1) 0%, rgba(46,0,126,1) 0%, rgba(0,14,115,1) 100%);
+background: linear-gradient(90deg, rgba(46,0,126,1) 0%, rgba(46,0,126,1) 0%, rgba(0,14,115,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2e007e",endColorstr="#000e73",GradientType=1);*/
+
+/*background: rgb(0,88,126);
+background: -moz-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1) 0%, rgba(0,52,91,1) 100%);
+background: -webkit-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1) 0%, rgba(0,52,91,1) 100%);
+background: linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1) 0%, rgba(0,52,91,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00587e",endColorstr="#00345b",GradientType=1);
+*/
 }
 .button:active {
-/*  background-color: #3333CC;*/
+  background-color: #3333CC;
   background: #003399;
 }
 .wide_button {
@@ -124,11 +165,12 @@ Cardlist interface
   flex-direction: row;
 
   width: 80%;
-  height: 3em;
+  height: 4em;
 
   margin-left: 10%;
   margin-right: 10%;
   margin-bottom: 1em;
+  margin-top: 1em;
 
   justify-content: space-between;
 
@@ -146,6 +188,10 @@ Cardlist interface
   justify-content: space-between;
 
   width: 100%;
+
+  display: grid;
+  grid-template-rows: 2em 2em;
+  grid-template-columns: auto 2em;
 }
 .card_element:hover {
 /*  background-color: cyan;*/
@@ -154,29 +200,40 @@ Cardlist interface
 /*  border: 2px solid;*/
 }
 .card_element_q {
+  grid-row: 1;
+  grid-column: 1;
+
   overflow: hidden;
   text-overflow: ellipsis;
   margin-left: 3em;
-  margin-right: 3em;
-  grid-column: 1;
+/*  margin-right: 3em;*/
+/*  grid-column: 1;*/
 
   align-self: center;
 }
 .card_element_a {
+  grid-row: 2;
+  grid-column: 1;
+
   overflow:hidden;
   text-overflow: ellipsis;
+  margin-left: 3em;
 /*  margin-left: 3em;
   margin-right: 3em;*/
-  grid-column: 2;
+/*  grid-column: 2;*/
 
   align-self: center;
 }
 .card_element_delete_button {
+  grid-row-start: 1;
+  grid-row-end: 3;
+  grid-column: 1;
+
   flex-shrink: 1;
   grid-column: 3;
 
-  height: 2em;
-  width: 2em;
+  height: 4em;
+  width: 4em;
 
   border: 0px;
   border-radius: 50%;
