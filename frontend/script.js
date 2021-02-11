@@ -25,6 +25,7 @@ function launch_runset_interface( inSetID ) {
         console.dir( json.cards );
         card_set_obj.cards = json.cards;
         runset_render_qa( card_set_obj );
+        next_card( card_set_obj );
       }
     });
 }
