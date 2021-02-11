@@ -122,6 +122,13 @@ function launch_card_interface( inCardID, inSetID, isNew ) {
   }
 }
 
+function proc_txt_card_interface( inText ) {
+  console.log( "proccing" );
+  //1) Replace unicode apostrophe with apostrophe.
+  let outText = inText.replace( "&#39", "\'" );
+  return outText;
+}
+
 function get_card( inCardID ) {
   const get_card = new Request(
     'http://52.36.124.150:3000/get_card/' + inCardID
@@ -132,8 +139,8 @@ function get_card( inCardID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        question_text.value = json.card.question;
-        answer_text.value = json.card.answer;
+        question_text.value = proc_txt_card_interface( json.card.question );
+        answer_text.value = proc_txt_card_interface( json.card.answer );
       }
     });
 }
