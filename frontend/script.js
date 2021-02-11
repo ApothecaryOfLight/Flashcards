@@ -78,17 +78,22 @@ function runset_interface_flip_card( cards_obj ) {
   runset_render_qa( cards_obj );
 }
 
+function proc_txt_runset( inText ) {
+  let outText = inText.replaceAll( "\n", "<br>" );
+  return outText;
+}
+
 function runset_render_qa( card_set_obj ) {
   const qa_field = document.getElementById("runset_interface_qa_space");
 //  console.dir( card_set_obj.cards );
   if( card_set_obj.side == 0 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
-      card_set_obj.cards[card_set_obj.curr_card].question +
+      proc_txt_runset( card_set_obj.cards[card_set_obj.curr_card].question ) +
       "</span>";
     qa_field.innerHTML = dom;
   } else if( card_set_obj.side == 1 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
-      card_set_obj.cards[card_set_obj.curr_card].answer +
+      proc_txt_runset( card_set_obj.cards[card_set_obj.curr_card].answer ) +
       "</span>";
     qa_field.innerHTML = dom;
   }
@@ -125,7 +130,7 @@ function launch_card_interface( inCardID, inSetID, isNew ) {
 function proc_txt_card_interface( inText ) {
   console.log( "proccing" );
   //1) Replace unicode apostrophe with apostrophe.
-  let outText = inText.replace( "&#39", "\'" );
+  let outText = inText.replaceAll( "&#39", "\'" );
   return outText;
 }
 
