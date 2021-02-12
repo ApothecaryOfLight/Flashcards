@@ -88,8 +88,19 @@ function proc_txt_runset( inText ) {
   return outText;
 }
 
+function runset_render_index_card() {
+  const blue_lines_container = document.getElementById("index_card_blue_line_container");
+  let dom = "";
+  for( i=0; i<16; i++ ) {
+    dom += "<div class=\"index_card_blue_line\"></div>";
+  }
+  blue_lines_container.innerHTML = "";
+  blue_lines_container.innerHTML = dom;
+}
+
 function runset_render_qa( card_set_obj ) {
-  const qa_field = document.getElementById("runset_interface_qa_space");
+  runset_render_index_card();
+  const qa_field = document.getElementById("runset_interface_qa_text");
 //  console.dir( card_set_obj.cards );
   if( card_set_obj.side == 0 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
