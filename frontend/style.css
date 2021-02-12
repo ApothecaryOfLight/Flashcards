@@ -138,22 +138,40 @@ Card interface
   height: 100vh;
 }
 #card_interface_q_text {
-  height: 45%;
+  height: 46%;
+  margin: 2%;
   resize: none;
+  border-radius: 8px;
+  outline: none;
 }
 #card_interface_a_text {
-  height: 45%;
+  height: 46%;
+  margin: 2%;
   resize: none;
+  borer-radius: 8px;
+  outline: none;
 }
 #card_interface_buttons {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   height: 10%;
+  margin-bottom: 1em;
 }
 .card_interface_button {
   height: 3em;
   align-self: center;
+  background: #6699FF;
+  color: white;
+  border-radius: 16px;
+  border: 0px;
+  outline: none;
+}
+.card_interface_button:hover {
+  background: #0066FF;
+}
+.card_interface_button:active {
+  background: #003399;
 }
 
 
@@ -179,13 +197,9 @@ Cardlist interface
 
   width: 100vw;
 
-  /*margin-top: 1em;*/
-  margin-bottom: 1em;
-
   border-top: 1px solid;
   border-bottom: 1px solid;
 }
-
 #cardlist_interface_buttons {
   display: flex;
   flex-direction: center;
@@ -202,6 +216,22 @@ Cardlist interface
   height: 3em;
   width: 45%;
 }
+.cardlist_interface_button {
+  outline: none;
+  border-radius: 16px;
+  background-color: #6699FF;
+  border: 0px;
+  font-weight: bold;
+  color; white;
+}
+.cardlist_interface_button:hover {
+  background: #0066FF;
+}
+.cardlist_interface_button:active {
+  background: #003399;
+}
+
+
 
 .card_button {
   display: flex;
@@ -210,9 +240,6 @@ Cardlist interface
   grid-row-end: 2;
   grid-column: 1;
 }
-
-
-
 .card_element {
   display: grid;
   grid-template-rows: 2em 2em;
@@ -264,9 +291,7 @@ Cardlist interface
 .card_element_delete_button {
   grid-row-start: 1;
   grid-row-end: 3;
-
   grid-column: 2;
-
 
   height: 4em;
   width: 4em;
@@ -277,7 +302,22 @@ Cardlist interface
   margin-right: 1em;
   margin-top: 1em;
   margin-bottom: 1em;
+
+  outline: none;
+
+  font-weight: bold;
+
+  background-color: #6699FF;
 }
+.card_element_delete_button:hover {
+  color: #800000;
+  background: #0066FF;
+/*  border: 2px solid #800000;*/
+}
+.card_element_delete_button:active {
+  background: #003399;
+}
+
 
 
 /*

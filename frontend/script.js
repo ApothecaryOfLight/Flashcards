@@ -286,7 +286,7 @@ function cardlist_interface_populate_list( inSetID, inCards ) {
       "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
       ">" + card.answer + "</div>" +
 /*      "</span>" +*/
-      "<button class=\"button card_element_delete_button\" " +
+      "<button class=\"card_element_delete_button\" " +
       "onclick=\"prompt_delete_card(" + card.card_id + ", " + inSetID + ")\">X</button>" +
       "</div>";
   });
