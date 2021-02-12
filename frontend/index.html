@@ -7,15 +7,48 @@
 
 
 <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 
 <script src="script.js"></script>
+<script src="blueimp.min.js"></script>
 
 </head>
 <body>
 <div id="root">
-<!--div id="setlist_interface_menu">menu here</div-->
+
+
+
+<!--div id="expanded_menu">
+  <span class="material-icons md-32">
+    menu
+  </span>
+  <span class="material-icons md-32">
+    email
+  </span>
+</div-->
 
 <div id="setlist_interface">
+<!--Login-->
+<div id="menu">
+  <!--span class="material-icons md-32">
+    menu
+  </span-->
+  <div id="login_element" class="button">
+    <span id="login_text">Log In</span>
+    <span id="login_button" class="material-icons md-32">
+      login
+    </span>
+  </div>
+
+  <div id="logout_element" class="button">
+    <span id="logout_text">Log Out</span>
+    <span id="logout_button" class="material-icons md-32">
+      logout
+    </span>
+  </div>
+</div>
+
   <input id="setlist_interface_set_name" type="text" placeholder="Search"/>
   <button id="setlist_interface_create" class="button wide_button">Create</button>
   <div id="setlist_interface_set_list"></div>
@@ -49,18 +82,23 @@
 </div>
 
 <div id="runset_interface">
+  <div id="runset_interface_qa_space"></div>
   <div id="runset_interface_buttons">
-    <button id="runset_interface_flip_card" class="button wide_button">Flip</button>
+    <!--button id="runset_interface_flip_card" class="button wide_button">Flip</button>
     <button id="runset_interface_go_back" class="button wide_button"><-</button>
     <button id="runset_interface_missed" class="button wide_button">X</button>
-    <button id="runset_interface_correct" class="button wide_button">./</button>
+    <button id="runset_interface_correct" class="button wide_button">./</button-->
+    <span id="runset_interface_go_back" class="button material-icons md-32">arrow_circle_up</span>
+    <span id="runset_interface_missed" class="button material-icons md-32">close</span>
+    <span id="runset_interface_correct" class="button material-icons md-32">check</span>
+    <span id="runset_interface_flip_card" class="button material-icons md-32">rotate_90_degrees_ccw</span>
   </div>
-  <div id="runset_interface_qa_space"></div>
 </div>
 
 <div id="modal_interface_screen_cover">
   <div id="modal_interface">
     <div id="modal_interface_message"></div>
+    <div id="modal_interface_prompts"></div>
     <div id="modal_interface_button_container"></div>
   </div>
 </div>

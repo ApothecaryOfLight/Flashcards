@@ -1,7 +1,11 @@
 
 window.addEventListener( 'load', (loaded_event) => {
   launch_setlist_interface();
+  attach_login();
 });
+
+
+
 
 /*
 Runset Interface
@@ -24,8 +28,8 @@ function launch_runset_interface( inSetID ) {
       if( json.result == "success" ) {
         console.dir( json.cards );
         card_set_obj.cards = json.cards;
-        runset_render_qa( card_set_obj );
         next_card( card_set_obj );
+        runset_render_qa( card_set_obj );
       }
     });
 }
@@ -292,7 +296,17 @@ Setlist interface
 */
 function launch_setlist_interface() {
   set_interface( "setlist" );
+  set_logged_elements();
   getSetList();
+}
+
+function set_logged_elements() {
+  const create_set_button = document.getElementById("setlist_interface_create");
+  if( isLogged == false ) {
+    create_set_button.style.display = "none";
+  } else if( isLogged == true ) {
+    create_set_button.style.display = "inline-block";
+  }
 }
 
 function getSetList() {
@@ -312,16 +326,20 @@ function renderSetList( setList ) {
   const setlist_dom_obj = document.getElementById("setlist_interface_set_list");
   let dom_string = "";
   setList.forEach( set => {
-    dom_string += "<div class=\'setlist_item\'>" +
-      "<button class=\"button setlist_item_delete_button\" " +
-      "onclick=\"prompt_delete_set(" + set.set_id + ")\">X</button>" +
-      "<div class=\"button setlist_item_text_container\"" +
+    if( isLogged == true ) {
+      dom_string += "<div class=\'setlist_item\'>" +
+        "<button class=\"button setlist_item_delete_button\" " +
+        "onclick=\"prompt_delete_set(" + set.set_id + ")\">X</button>";
+    }
+    dom_string += "<div class=\"button setlist_item_text_container\"" +
       "onclick=\"playSet(" + set.set_id + ")\">" + 
       "<span class=\"setlist_item_text\">" +
-      set.name + "</span>" + "</div>" +
-      "<button class=\"button setlist_item_play_button\" " +
-      "onclick=\"getSet(" + set.set_id + ")\">Edit</button>" +
-      "</div>";
+      set.name + "</span>" + "</div>";
+    if( isLogged == true ) {
+      dom_string += "<button class=\"button setlist_item_play_button\" " +
+        "onclick=\"getSet(" + set.set_id + ")\">Edit</button>" +
+        "</div>";
+    }
   });
   setlist_dom_obj.innerHTML = dom_string;
 }
@@ -379,6 +397,17 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
 
   const modal_message = document.getElementById( "modal_interface_message" );
   modal_message.innerHTML = inMessage;
+
+  const modal_prompts = document.getElementById( "modal_interface_prompts" );
+  let prompt_dom = "";
+  if( isPrompt ) {
+    for( prompt_name in isPrompt ) {
+      prompt_dom += "<input type=\"text\" id=\"" + prompt_name + "\"" +
+        " placeholder=\"" + isPrompt[prompt_name] + "\"></input>";
+    }
+    console.log( prompt_dom );
+  }
+  modal_prompts.innerHTML = prompt_dom;
 
   let dom = "";
   for( button_name in inButtons ) {
@@ -452,6 +481,144 @@ function prompt_delete_set( inSetID ) {
   launch_modal( null, "Are you sure you want to delete this set?", options );
 }
 
+
+/*
+Logging in/out code
+*/
+let curr_interface = "";
+let isLogged = false;
+function login() {
+  close_modal();
+  const login = document.getElementById("login_element");
+  const logout = document.getElementById("logout_element");
+//  const logged_in_name = document.getElementById("logged_in_name");
+  login.style.display = "none";
+  logout.style.display = "flex";
+//  logged_in_name.innerHTML = "Log Out";
+  //)Relaunch interface.
+  isLogged = true;
+  if( curr_interface == "setlist" ) {
+    launch_setlist_interface();
+  }/* else if( curr_interface == "cardlist" ) {
+    launch_cardlist_interface();
+  }*/
+}
+function attempt_create_account() {
+  //1) Get username and password
+  const username_field = document.getElementById("username_field");
+  const password_field = document.getElementById("password_field");
+  const inUsername = md5(username_field.value);
+  const inPassword = md5(password_field.value);
+
+  //2) Send login data to server.
+  const attempt_create_account_req = new Request(
+    'http://52.36.124.150:3000/create_account',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        "username": inUsername,
+        "password": inPassword
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  fetch( attempt_create_account_req )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "approve" ) {
+        //2) If approved, login.
+        login();
+      } else {
+        //3) If refused, prompt failure message, fallback into login prompt.
+        prompt_failed_login( json.issue );
+      }
+    });
+
+  //)Relaunch interface
+}
+function logout() {
+  console.log( "Logging out." );
+  const login_element = document.getElementById("login_element");
+  const logout_element = document.getElementById("logout_element");
+  logout_element.style.display = "none";
+  login_element.style.display = "flex";
+  //)Relaunch interface.
+  isLogged = false;
+  if( curr_interface == "setlist" ) {
+    launch_setlist_interface();
+  } /*else if( curr_interface == "cardlist" ) {
+    launch_cardlist_interface();
+  }*/
+}
+function attempt_login() {
+  //1) Get username and password
+  const username_field = document.getElementById("username_field");
+  const password_field = document.getElementById("password_field");
+  const inUsername = md5(username_field.value);
+  const inPassword = md5(password_field.value);
+
+  //2) Send login data to server.
+  const attempt_login = new Request(
+    'http://52.36.124.150:3000/login',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        "username": inUsername,
+        "password": inPassword
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  fetch( attempt_login )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "approve" ) {
+        //3) If approved, login.
+        login();
+      } else {
+        prompt_failed_login( json.reason );
+      }
+    });
+
+  //3) If refused, prompt failure message, fallback into login prompt.
+}
+function prompt_failed_login( inFailureReason ) {
+  const options = {
+    "Okay" : prompt_login
+  };
+  launch_modal( null, inFailureReason, options );
+}
+function prompt_login() {
+console.log("prompt_login");
+  //1) Launch login prompt.
+  const prompts = {
+    "username_field" : "Enter Username Here",
+    "password_field" : "Enter Password Here"
+  };
+  const options = {
+    "Login" : attempt_login,
+    "Create Account" : attempt_create_account
+  }
+  launch_modal( prompts, "Log In", options );
+}
+function attach_login() {
+  const login_element = document.getElementById("login_element");
+  const logout_element = document.getElementById("logout_element");
+  //const logged_name = document.getElementById("logged_in_name");
+  logout_element.style.display = "none";
+  login_element.addEventListener( 'click', (click_event) => {
+    console.log( "Logging in." );
+    prompt_login();
+  });
+  logout_element.addEventListener( 'click', (click_evnet) => {
+    console.log( "Logging out." );
+    logout();
+  });
+}
 
 
 /*
@@ -532,6 +699,7 @@ function detach_functions( interface ) {
 }
 
 function set_interface( interface, value ) {
+  curr_interface = interface;
   interfaces.forEach( interface_base_name => {
     const interface_name = interface_base_name + "_interface";
     const interface_handle = document.getElementById( interface_name );

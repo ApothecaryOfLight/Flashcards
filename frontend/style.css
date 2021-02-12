@@ -6,7 +6,7 @@
 }
 
 body {
-  background: purple;
+/*  background: purple;*/
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -15,22 +15,60 @@ body {
 }
 
 #root {
-
-/*  margin: 1em;*/
-  /*border: 1em solid;*/
-/*  padding: 2em;*/
-
   background-color: #FFFFF0;
-
-/*  width: 100vw - 1em;
-  height: 100vh - 1em;*/
-/*  width: calc(100vw - 2em);
-  height: calc(100vh - 2em);*/
   width: 100vw;
   height: 100vh;
 }
 
+.material-icons.md-32 {
+  font-size: 36px;
+}
 
+/*
+Menu
+*/
+#menu {
+  position: absolute;
+  right: 0px;
+
+/*  height: 3em;
+  display: grid;
+  grid-template-columns: auto 6em;
+  -webkit-box-shadow: 0px 0px 11px -1px #000000; 
+box-shadow: 0px 0px 11px -1px #000000;*/
+}
+#expanded_menu {
+  display: none;
+  flex-direction: column;
+}
+#login_element {
+  grid-column: 2;
+  display: flex;
+  justify-conent: center;
+}
+#logout_element {
+  grid-column: 2;
+  display: flex;
+  justify-conent: center;
+}
+#login_text {
+  align-self: center;
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+#logout_text {
+  align-self: center;
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+/*#logout_button {
+  display: none;
+}*/
+
+
+/*
+Button styling
+*/
 .button {
   border: 0px;
   border-radius: 16px;
@@ -67,6 +105,7 @@ background: -webkit-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1)
 background: linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1) 0%, rgba(0,52,91,1) 100%);
 filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00587e",endColorstr="#00345b",GradientType=1);
 */
+  color: #FF6600;
 }
 .button:active {
   background-color: #3333CC;
@@ -381,9 +420,21 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#3f5efb",endCo
 /*
 Runset interface
 */
+/*@media screen and (orientation: portrait) {
+  #menu {
+    left: initial;
+    right: 0px;
+  }
+}
+@media screen and (orientation: landscape) {
+  #menu {
+    left: 0px;
+    right: initial;
+  }
+}*/
 #runset_interface {
   display: none;
-  flex-direction: column;
+  flex-direction: row;
   width: 100vw;
   height: 100vh;
 }
@@ -394,11 +445,13 @@ Runset interface
   align-items: center;
   font-size: 1.5em;
   text-align: center;
+  width: 92vw;
 }
 #runset_interface_buttons {
   display: flex;
-  flex-direction: row;
-  height: 15vh;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 8vh;
 }
 
 
@@ -433,6 +486,11 @@ Modal interface
   margin-top: 4em;
   font-weight: bold;
   text-align: center;
+}
+#modal_interface_prompts {
+  grid-row: 2;
+  grid-column-start: 1;
+  grid-column-end: 4;
 }
 #modal_interface_button_container {
   grid-row: 3;

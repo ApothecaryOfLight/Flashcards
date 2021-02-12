@@ -109,6 +109,47 @@ function launchRoutes() {
     res.send('yuuuup');
   });
 
+  app.post('/login', async function(req,res ) {
+    console.log( "Login attempt: " + req.body.username + "/" + req.body.password );
+    const login_query = "SELECT password_hash FROM users WHERE " +
+      "username_hash = \'" + req.body.username + "\';"
+    const [login_row,login_field] = await sqlPool.query( login_query );
+
+    console.dir( login_row );
+
+    const password_hash = String.fromCharCode.apply(null, login_row[0].password_hash);
+    console.log( "pwd" + password_hash );
+    if( password_hash == req.body.password ) {
+      res.send( JSON.stringify({
+        "result": "approve"
+      }));
+    } else {
+      res.send( JSON.stringify({
+        "result": "refused",
+        "reason": "Credentials failed to authenticate!"
+      }));
+    }
+  });
+
+  app.post('/create_account', async function(req,res) {
+    console.log( "Create account attempt: " +
+      req.body.username + "/" + req.body.password );
+
+    const create_acct_query = "INSERT INTO users " +
+    "( username_hash, password_hash )" +
+    " VALUES ( \'" + req.body.username + "\', \'" + req.body.password + "\');";
+
+    console.log( create_acct_query );
+    const [create_acct_row, create_acct_field] =
+      await sqlPool.query( create_acct_query );
+
+    console.dir( create_acct_row );
+    console.log( "success: " + create_acct_row.affected_rows );
+
+    res.send( JSON.stringify({
+      "result": "approve"
+    }));
+  });
 
   /*Generate a new card ID.*/
   app.post('/new_card', async function(req,res) {
