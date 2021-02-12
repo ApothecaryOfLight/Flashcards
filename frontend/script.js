@@ -416,6 +416,7 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
   if( isPrompt ) {
     for( prompt_name in isPrompt ) {
       prompt_dom += "<input type=\"text\" id=\"" + prompt_name + "\"" +
+        " class=\"prompt_input_field\" autocomplete=\"off\"" +
         " placeholder=\"" + isPrompt[prompt_name] + "\"></input>";
     }
     console.log( prompt_dom );
@@ -426,7 +427,7 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
   for( button_name in inButtons ) {
     console.log( typeof( inButtons[button_name] ) );
     modal_buttons_storage[button_name] = inButtons[button_name];
-    dom += "<button class=\"button modal_button\" " +
+    dom += "<button class=\"modal_button\" " +
       "onclick=\"modal_button(\'" + button_name + "\')\">" +
       button_name + "</button>"
   }
