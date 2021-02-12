@@ -1,8 +1,8 @@
-//import { init_log, log } from logging.js
+/*
+Flashcards NodeJS
+*/
 const logging = require('./logging.js');
-
 logging.init_log();
-
 
 /* Express */
 const express = require('express');
@@ -16,8 +16,10 @@ app.use(cors());
 const body_parser = require('body-parser');
 app.use( body_parser.json() );
 
+/*mySQL*/
 const mysql = require('mysql2');
 
+/*mySQL Code*/
 const sqlPool = mysql.createPoolPromise({
   host: 'localhost',
   user: 'Flashcards_User',
@@ -32,6 +34,8 @@ sqlPool.getConnection()
     launchRoutes();
   });
 
+
+/*Regex Processing*/
 const replacement = {
 "\/\/g" : "<ESCAPECHAR>",
 "\/'\/g" : "<APOSTROPHE>",
@@ -59,13 +63,11 @@ function process_input( inText ) {
   return processed_text;
 }
 
+
+/*Express Routes*/
 function launchRoutes() {
   app.get('/setlist', async function(req,res) {
     const [set_rows,field] = await sqlPool.query( "SELECT name, set_id FROM sets;" );
-    /*let set_array = [];
-    row.forEach( element => {
-      set_array.push( element.name );
-    });*/
     const setlist = JSON.stringify( set_rows );
     res.send( setlist );
   });
@@ -73,8 +75,6 @@ function launchRoutes() {
 
   /*Add a new set of cards*/
   app.post('/new_set', async function(req,res) {
-    console.log( "New set." );
-
     //1) Get new set ID
     let new_set_id_query = "SELECT Flashcards.generate_new_id( 0 ) as new_id;";
     const [new_id_row,new_id_field] = await sqlPool.query( new_set_id_query );
@@ -97,7 +97,6 @@ function launchRoutes() {
 
   /**/
   app.get('/set/:set_name', async function(req,res) {
-    console.log( req.params.set_name );
     res.send( 'placeholder' );
   });
 
@@ -110,15 +109,10 @@ function launchRoutes() {
   });
 
   app.post('/login', async function(req,res ) {
-    console.log( "Login attempt: " + req.body.username + "/" + req.body.password );
     const login_query = "SELECT password_hash FROM users WHERE " +
       "username_hash = \'" + req.body.username + "\';"
     const [login_row,login_field] = await sqlPool.query( login_query );
-
-    console.dir( login_row );
-
     const password_hash = String.fromCharCode.apply(null, login_row[0].password_hash);
-    console.log( "pwd" + password_hash );
     if( password_hash == req.body.password ) {
       res.send( JSON.stringify({
         "result": "approve"
@@ -132,20 +126,11 @@ function launchRoutes() {
   });
 
   app.post('/create_account', async function(req,res) {
-    console.log( "Create account attempt: " +
-      req.body.username + "/" + req.body.password );
-
     const create_acct_query = "INSERT INTO users " +
     "( username_hash, password_hash )" +
     " VALUES ( \'" + req.body.username + "\', \'" + req.body.password + "\');";
-
-    console.log( create_acct_query );
     const [create_acct_row, create_acct_field] =
       await sqlPool.query( create_acct_query );
-
-    console.dir( create_acct_row );
-    console.log( "success: " + create_acct_row.affected_rows );
-
     res.send( JSON.stringify({
       "result": "approve"
     }));
@@ -170,14 +155,11 @@ function launchRoutes() {
     const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
     const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
     const new_card_id = new_card_id_row[0].new_card_id;
-console.log( process_input( req.body.question ) );
-console.log( process_input( req.body.answer ) );
     const new_card_query = "INSERT INTO cards (card_id,question,answer,set_id) " +
       "VALUES ( " + new_card_id + ", " +
       "\'" + process_input(req.body.question) + "\', " +
       "\'" + process_input(req.body.answer) + "\', " +
       req.body.set_id + ");"
-    console.log( "NEWCARD_QUERY: " + new_card_query );
     const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
     //TODO: On success, on error handling.
     res.send( JSON.stringify({
@@ -191,7 +173,6 @@ console.log( process_input( req.body.answer ) );
       "answer = " + "\'" + req.body.answer + "\'" +
       "WHERE set_id = " + req.body.set_id +
       " AND card_id = " + req.body.card_id + ";";
-console.log( update_card_query );
     const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
     //TODO: On success, on error
     res.send( JSON.stringify({
@@ -212,7 +193,6 @@ console.log( update_card_query );
   });
 
   app.get('/get_cardlist/:set_id', async function(req,res) {
-    console.log( "Getting cardlist for set " + req.params.set_id );
     const get_cardlist_set_name_query = "SELECT name FROM sets WHERE set_id = " +
       req.params.set_id + ";";
     const [set_name_row,set_name_field] = await sqlPool.query( get_cardlist_set_name_query );
@@ -229,11 +209,9 @@ console.log( update_card_query );
   });
 
   app.get('/get_card/:card_id', async function(req,res) {
-    console.log( "Getting card " + req.params.card_id );
     const get_card_query = "SELECT question, answer FROM cards WHERE card_id = " +
       req.params.card_id + ";";
     const [card_row,card_field] = await sqlPool.query( get_card_query );
-    console.dir( card_row );
     const card_obj = {
       result: "success",
       card: card_row[0]
