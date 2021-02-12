@@ -15,9 +15,10 @@ body {
 }
 
 #root {
-  background-color: #FFFFF0;
+/*  background-color: #FFFFF0;*/
   width: 100vw;
   height: 100vh;
+  z-index: -2;
 }
 
 .material-icons.md-32 {
@@ -25,91 +26,97 @@ body {
 }
 
 /*
+Paper
+*/
+#paper_background {
+  position: fixed;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+.red_lines {
+  height: 100%;
+  margin-top: -1px;
+  margin-left: 5em;
+  width: .2em;
+  border: 1px solid red;
+}
+#blue_line_container {
+  position: absolute;
+  z-index: -1;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  margin-top: 7.5em;
+}
+.blue_line {
+  box-sizing: content-box;
+  height: 2em;
+  margin-top: -1px;
+  width: 100%;
+  border: 1px solid blue;
+}
+
+
+/*
 Menu
 */
 #menu {
   position: absolute;
-  right: 0px;
-
-/*  height: 3em;
-  display: grid;
-  grid-template-columns: auto 6em;
-  -webkit-box-shadow: 0px 0px 11px -1px #000000; 
-box-shadow: 0px 0px 11px -1px #000000;*/
-}
-#expanded_menu {
-  display: none;
-  flex-direction: column;
+  top: .5em;
+  right: .5em;
 }
 #login_element {
   grid-column: 2;
   display: flex;
   justify-conent: center;
 }
-#logout_element {
-  grid-column: 2;
-  display: flex;
-  justify-conent: center;
+#login_element:hover {
+  color: #6699FF;
+}
+#login_element:active {
+  color: #003399;
 }
 #login_text {
   align-self: center;
   font-weight: bold;
   margin-right: 0.5em;
 }
+#logout_element {
+  grid-column: 2;
+  display: flex;
+  justify-conent: center;
+}
+#logout_element:hover {
+  color: #6699FF;  
+}
+#logout_element:active {
+  color: #003399;  
+}
 #logout_text {
   align-self: center;
   font-weight: bold;
   margin-right: 0.5em;
 }
-/*#logout_button {
-  display: none;
-}*/
 
 
 /*
-Button styling
+Button
 */
 .button {
   border: 0px;
   border-radius: 16px;
   outline: none;
-  /*background-color: #0066FF;*/
-  color: white;
-  background: #3399FF;
-
-
-/*
-background: rgb(0,88,126);
-background: -moz-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,129,191,1) 0%, rgba(0,66,115,1) 100%);
-background: -webkit-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,129,191,1) 0%, rgba(0,66,115,1) 100%);
-background: linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,129,191,1) 0%, rgba(0,66,115,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00587e",endColorstr="#004273",GradientType=1);
-*/
   font-weight: bold;
-
-/*-webkit-box-shadow: 0px 0px 11px -1px #000000; 
-box-shadow: 0px 0px 11px -1px #000000;*/
 }
 .button:hover {
-/*  background-color: #0099FF;*/
-  background: #0066FF;
-/*background: rgb(46,0,126);
-background: -moz-linear-gradient(90deg, rgba(46,0,126,1) 0%, rgba(46,0,126,1) 0%, rgba(0,14,115,1) 100%);
-background: -webkit-linear-gradient(90deg, rgba(46,0,126,1) 0%, rgba(46,0,126,1) 0%, rgba(0,14,115,1) 100%);
-background: linear-gradient(90deg, rgba(46,0,126,1) 0%, rgba(46,0,126,1) 0%, rgba(0,14,115,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#2e007e",endColorstr="#000e73",GradientType=1);*/
-
-/*background: rgb(0,88,126);
-background: -moz-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1) 0%, rgba(0,52,91,1) 100%);
-background: -webkit-linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1) 0%, rgba(0,52,91,1) 100%);
-background: linear-gradient(90deg, rgba(0,88,126,1) 0%, rgba(0,90,133,1) 0%, rgba(0,52,91,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00587e",endColorstr="#00345b",GradientType=1);
-*/
-  color: #FF6600;
+  color: #6699FF;
+  text-decoration: underline;
 }
 .button:active {
-  background-color: #3333CC;
-  background: #003399;
+  color: #003399;
 }
 .wide_button {
   width: 100%;
@@ -195,29 +202,10 @@ Cardlist interface
   height: 3em;
   width: 45%;
 }
-/*#cardlist_interface_toggle_buttons {
-  display: flex;
-  flex-direction: row;
-}*/
 
 .card_button {
-/*  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;*/
-
   display: flex;
   flex-direction: column;
-
-/*  display: grid;
-  grid-template-columns: 50% 50%;*/
-/*  display: flex;
-  justify-content: space-between;
-
-  width: 100%;
-
-  display: grid;
-  grid-template-rows: 2em 2em;
-  grid-template-columns: auto 2em;*/
   grid-row-start: 1;
   grid-row-end: 2;
   grid-column: 1;
@@ -298,32 +286,61 @@ Setlist interface
 #setlist_interface {
   display: grid;
   grid-template-rows: 4em 3em auto;
-  grid-template-columns: 10% 80% 10%;
+  grid-template-columns: 5em auto 5em;
+}
+#setlist_interface_field_container {
+  grid-row: 1;
+  grid-column: 2;
+  width: 80%;
+
+  margin-top: 2em;
+  margin-left: 1em;
+
+  display: grid;
+  grid-template-columns: 80% 5em;
 }
 #setlist_interface_set_name {
-  width: 80%;
-  margin-left: 10%;
-  margin-right: 10%;
-
+  width: 100%;
   height: 2.5em;
 
-
   grid-row: 1;
-
-  grid-column: 2;
-  /*grid-column-end: 4;*/
+  grid-column-start: 1;
+  grid-column-end: 3;
 
   border-radius: 16px;
   border: 0px;
 
-/*-webkit-box-shadow: 0px 0px 15px 2px #000000; 
-box-shadow: 0px 0px 15px 2px #000000;*/
--webkit-box-shadow: 0px 0px 10px -1px #000000; 
-box-shadow: 0px 0px 10px -1px #000000;
-
-  margin-top: 2em;
+  -webkit-box-shadow: 0px 0px 10px -1px #000000; 
+  box-shadow: 0px 0px 10px -1px #000000;
 
   text-align: center;
+}
+#setlist_interface_set_name_create {
+  width: 5.3em;
+  height: 2.2em;
+
+  background: #3366FF;
+  color: white;
+/*  border: 1px black solid;*/
+  border-radius: 0px 16px 16px 0px;
+
+  grid-row: 1;
+  grid-column: 2;
+
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  justify-content: center;
+}
+#setlist_interface_set_name_create:hover {
+  background: #003399;
+}
+#setlist_interface_set_name_create:active {
+  background: #000099;
+}
+#setlist_interface_set_name_create_text {
+  align-self: center;
 }
 #setlist_interface_create {
   margin-top: 1em;
@@ -332,7 +349,7 @@ box-shadow: 0px 0px 10px -1px #000000;
   margin-bottom: 1em;
 
   width: 60%;
-  margin-left: 20%;
+  margin-left: 5em;
   margin-right: 20%;
 
   height: 2.5em;
@@ -354,43 +371,49 @@ box-shadow: 0px 0px 10px -1px #000000;
 
   align-self: center;
 
-  min-height: 3em;
+  height: 3em;
 
   padding: 0.5em;
   margin: 0.5em;
+  margin-top: calc(0.5em - 14px);
 
   border-radius: 16px;
-
-  font-weight: bold;
-  color: white;
 }
 .setlist_item:hover {
 /*  background-color: #0066FF;*/
 }
 .setlist_item_text_container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 
+  padding-left: 1em;
 
   grid-column: 2;
 
-  width: 80%;
+  width: auto;
   min-height: 3em;
 
-  margin-left: 10%;
-  margin-right: 10%;
+/*  margin-left: 10%;
+  margin-right: 10%;*/
+
+
 }
 .setlist_item_text {
   align-self: center;
-  text-align: center;
-
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+/*  direction: rtl;*/
 
 }
-.setlist_item_play_button {
-  grid-column: 3;
+.setlist_item_edit_button {
+  grid-column: 1;
+  margin-top: 1em;
 }
 .setlist_item_delete_button {
-  grid-column: 1;
+  grid-column: 3;
+  margin-top: 1em;
 }
 
 /*

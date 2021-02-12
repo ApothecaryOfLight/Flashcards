@@ -296,16 +296,28 @@ Setlist interface
 */
 function launch_setlist_interface() {
   set_interface( "setlist" );
+//  draw_paper();
   set_logged_elements();
   getSetList();
 }
 
+function draw_paper( inLength ) {
+  const blue_lines_container = document.getElementById("blue_line_container");
+  let dom = "";
+  for( i=0; i<inLength*2; i++ ) {
+    dom += "<div class=\"blue_line\"></div>";
+  }
+  blue_lines_container.innerHTML = "";
+  blue_lines_container.innerHTML = dom;
+}
+
 function set_logged_elements() {
-  const create_set_button = document.getElementById("setlist_interface_create");
+  const create_set_button =
+    document.getElementById("setlist_interface_set_name_create");
   if( isLogged == false ) {
     create_set_button.style.display = "none";
   } else if( isLogged == true ) {
-    create_set_button.style.display = "inline-block";
+    create_set_button.style.display = "flex";
   }
 }
 
@@ -325,19 +337,20 @@ function getSetList() {
 function renderSetList( setList ) {
   const setlist_dom_obj = document.getElementById("setlist_interface_set_list");
   let dom_string = "";
+  draw_paper( setList.length );
   setList.forEach( set => {
     dom_string += "<div class=\'setlist_item\'>";
     if( isLogged == true ) {
-      dom_string += "<button class=\"button setlist_item_delete_button\" " +
-        "onclick=\"prompt_delete_set(" + set.set_id + ")\">X</button>";
+      dom_string += "<div class=\"button setlist_item_edit_button\" " +
+        "onclick=\"getSet(" + set.set_id + ")\">Edit</div>";
     }
     dom_string += "<div class=\"button setlist_item_text_container\"" +
       "onclick=\"playSet(" + set.set_id + ")\">" + 
       "<span class=\"setlist_item_text\">" +
       set.name + "</span>" + "</div>";
     if( isLogged == true ) {
-      dom_string += "<button class=\"button setlist_item_play_button\" " +
-        "onclick=\"getSet(" + set.set_id + ")\">Edit</button>";
+      dom_string += "<div class=\"button setlist_item_delete_button\" " +
+        "onclick=\"prompt_delete_set(" + set.set_id + ")\">Delete</div>";
     }
     dom_string +=  "</div>";
   });
@@ -353,7 +366,7 @@ function getSet( inSetID ) {
   launch_cardlist_interface( inSetID );
 }
 
-function setlist_interface_create() {
+function setlist_interface_set_create() {
   const setname_input = document.getElementById( 'setlist_interface_set_name' );
   const new_set_name = setname_input.value;
   if( new_set_name != "" ) {
@@ -630,7 +643,7 @@ const interfaces = [
 
 const functions = {
   "setlist" : {
-    "create": setlist_interface_create
+    "set_name_create": setlist_interface_set_create
   },
   "cardlist" : {
     "new": cardlist_interface_new_button,
@@ -650,7 +663,7 @@ const functions = {
 
 const bound_functions = {
   "setlist" : {
-    "create": []
+    "set_name_create": []
   },
   "cardlist" : {
     "new": [],
@@ -700,14 +713,17 @@ function detach_functions( interface ) {
 
 function set_interface( interface, value ) {
   curr_interface = interface;
+  const body = document.body;
   interfaces.forEach( interface_base_name => {
     const interface_name = interface_base_name + "_interface";
     const interface_handle = document.getElementById( interface_name );
     if( interface == interface_base_name ) {
       if( interface_base_name == "setlist" ) {
-        interface_handle.style.display = "grid"; 
+        interface_handle.style.display = "grid";
+        body.style['overflow-y'] = "auto";
       } else {
         interface_handle.style.display = "flex";
+        body.style['overflow-y'] = "hidden";
       }
       attach_functions( interface, value );
     } else {
