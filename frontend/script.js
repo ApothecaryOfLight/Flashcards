@@ -326,9 +326,9 @@ function renderSetList( setList ) {
   const setlist_dom_obj = document.getElementById("setlist_interface_set_list");
   let dom_string = "";
   setList.forEach( set => {
+    dom_string += "<div class=\'setlist_item\'>";
     if( isLogged == true ) {
-      dom_string += "<div class=\'setlist_item\'>" +
-        "<button class=\"button setlist_item_delete_button\" " +
+      dom_string += "<button class=\"button setlist_item_delete_button\" " +
         "onclick=\"prompt_delete_set(" + set.set_id + ")\">X</button>";
     }
     dom_string += "<div class=\"button setlist_item_text_container\"" +
@@ -337,9 +337,9 @@ function renderSetList( setList ) {
       set.name + "</span>" + "</div>";
     if( isLogged == true ) {
       dom_string += "<button class=\"button setlist_item_play_button\" " +
-        "onclick=\"getSet(" + set.set_id + ")\">Edit</button>" +
-        "</div>";
+        "onclick=\"getSet(" + set.set_id + ")\">Edit</button>";
     }
+    dom_string +=  "</div>";
   });
   setlist_dom_obj.innerHTML = dom_string;
 }
