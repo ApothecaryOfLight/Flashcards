@@ -459,10 +459,10 @@ Modal interface
 */
 #modal_interface_screen_cover {
   display: none;
+  position: fixed;
   width: 100vw;
   height: 100vh;
   background: #000000DD;
-  position: absolute;
   z-index: 1;
   left: 0px;
   top: 0px;

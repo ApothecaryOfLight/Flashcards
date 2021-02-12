@@ -613,6 +613,7 @@ console.log("prompt_login");
     "password_field" : "Enter Password Here"
   };
   const options = {
+    "Cancel": close_modal,
     "Login" : attempt_login,
     "Create Account" : attempt_create_account
   }
