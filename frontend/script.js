@@ -91,7 +91,7 @@ function proc_txt_runset( inText ) {
 function runset_render_index_card() {
   const blue_lines_container = document.getElementById("index_card_blue_line_container");
   let dom = "";
-  for( i=0; i<16; i++ ) {
+  for( i=0; i<26; i++ ) {
     dom += "<div class=\"index_card_blue_line\"></div>";
   }
   blue_lines_container.innerHTML = "";
@@ -315,7 +315,7 @@ function launch_setlist_interface() {
 function draw_paper( inLength ) {
   const blue_lines_container = document.getElementById("blue_line_container");
   let dom = "";
-  for( i=0; i<inLength*2; i++ ) {
+  for( i=0; i<inLength*3; i++ ) {
     dom += "<div class=\"blue_line\"></div>";
   }
   blue_lines_container.innerHTML = "";
