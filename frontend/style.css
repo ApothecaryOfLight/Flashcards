@@ -594,65 +594,86 @@ Modal interface
 }
 
 #modal_interface {
-  display: grid;
+/*  display: grid;
   grid-template-rows: 40% 35% 35%;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto auto auto;*/
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 
-  width: 50%;
-  height: 50%;
+  width: 40%;
+  height: 30%;
   align-self: center;
   background: white;
   border-radius: 16px;
   border: 3px solid black;
 
   background: white;
+
+  min-height: 220px;
+  min-width: 350px;
 }
-@media (min-width: 300px ) {
+@media (min-width: 300px) {
   #modal_interface {
-    display: grid;
+/*    display: grid;
     grid-template-rows: 20% 40% 40%;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto auto;*/
 
     width: 90%;
-    height: 60%;
-    align-self: center;
+/*    height: 60%;*/
+/*    align-self: center;
     background: white;
     border-radius: 16px;
     border: 3px solid black;
 
-    background: white;
+    background: white;*/
   }
 }
-@media (min-width:600px) {
+@media (min-width: 500px) {
   #modal_interface {
-    display: grid;
+    width: 40%;
+  }
+}
+@media (min-height:500px) {
+  #modal_interface {
+     height: 30%;
+  }
+}
+@media (min-width:800px) {
+  #modal_interface {
+/*    display: grid;
     grid-template-rows: 40% 35% 35%;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto auto;*/
 
-    width: 50%;
-    height: 50%;
-    align-self: center;
+/*    width: 40%;
+    height: 40%;*/
+/*    align-self: center;
     background: white;
     border-radius: 16px;
     border: 3px solid black;
 
-    background: white;
+    background: white;*/
   }
 }
 #modal_interface_message {
   grid-row: 1;
   grid-column: 2;
-  margin-top: 1.5em;
+/*  margin-top: 0.5em;*/
   font-weight: bold;
   text-align: center;
 
   font-size: 2em;
 }
-@media (min-width: 300px) {
+/*@media (min-height: 300px) {
   #modal_interface_message {
     margin-top: 0em;
   }
 }
+@media (min-height: 600px) {
+  #modal_interface_message {
+    margin-top: 2em;
+  }
+}*/
 #modal_interface_prompts {
   grid-row: 2;
   grid-column-start: 1;
@@ -682,7 +703,13 @@ Modal interface
   justify-content: space-around;
 
 
-  margin-bottom: 1em;
+/*  margin-bottom: 1em;*/
+}
+@media (min-height:300px) {
+/*  margin-bottom: .2em;*/
+}
+@media (min-height:600px) {
+/*  margin-bottom: 1em;*/
 }
 .modal_button {
   border: 0px;
