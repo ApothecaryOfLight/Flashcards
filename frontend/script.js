@@ -30,6 +30,11 @@ function launch_runset_interface( inSetID ) {
         card_set_obj.cards = json.cards;
         next_card( card_set_obj );
         runset_render_qa( card_set_obj );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
 }
@@ -162,6 +167,11 @@ function get_card( inCardID ) {
       if( json.result == "success" ) {
         question_text.value = proc_txt_card_interface( json.card.question );
         answer_text.value = proc_txt_card_interface( json.card.answer );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
 }
@@ -195,6 +205,11 @@ function card_interface_update_card( inSetID, inCardID ) {
         card_q_handle.value = "";
         card_a_handle.value = "";
         launch_cardlist_interface( inSetID );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
 }
@@ -232,6 +247,11 @@ function card_interface_set_card( inSetID ) {
         card_q_handle.value = "";
         card_a_handle.value = "";
         launch_cardlist_interface( inSetID, true );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
 }
@@ -264,6 +284,11 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
         if( go_to_end ) {
           cardlist_interface_scroll_to_bottom();
         }
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
 }
@@ -413,6 +438,11 @@ function create_set( set_name ) {
     .then( json => {
       if( json.result == "success" ) {
         launch_cardlist_interface( json.set_id );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
 }
@@ -478,6 +508,11 @@ function delete_card( inCardID, inSetID ) {
     .then( json => {
       if( json.result == "success" ) {
         launch_cardlist_interface( inSetID );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
   close_modal();
@@ -495,6 +530,11 @@ function delete_set( inSetID ) {
     .then( json => {
       if( json.result == "success" ) {
         launch_setlist_interface();
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       }
     });
   close_modal();
@@ -575,6 +615,11 @@ function attempt_create_account() {
       if( json.result == "approve" ) {
         //2) If approved, login.
         login( json.username_hash );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       } else {
         //3) If refused, prompt failure message, fallback into login prompt.
         prompt_failed_login( json.issue );
@@ -626,6 +671,11 @@ function attempt_login() {
 console.dir( json );
         //3) If approved, login.
         login( json.username_hash );
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
       } else {
         prompt_failed_login( json.reason );
       }
