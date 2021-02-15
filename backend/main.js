@@ -67,7 +67,8 @@ function process_input( inText ) {
 /*Express Routes*/
 function launchRoutes() {
   app.get('/setlist', async function(req,res) {
-    const [set_rows,field] = await sqlPool.query( "SELECT name, set_id FROM sets;" );
+    const setlist_query = "SELECT name, set_id, set_creator FROM sets;"
+    const [set_rows,field] = await sqlPool.query( setlist_query );
     const setlist = JSON.stringify( set_rows );
     res.send( setlist );
   });
@@ -81,8 +82,12 @@ function launchRoutes() {
     const new_set_id = new_id_row[0].new_id;
 
     //2) Insert new set name.
-    let insert_query = "INSERT INTO sets (name,set_id) VALUES " +
-      "( \'" + process_input(req.body.set_name) + "\', " + new_set_id + " );";
+    let insert_query = "INSERT INTO sets (name,set_id,set_creator) VALUES " +
+      "( \'" + process_input(req.body.set_name) + "\', " +
+      new_set_id + ", " +
+      "\'" + req.body.username_hash + "\'" +
+      " );";
+console.log( insert_query );
     const [new_set_row,new_set_field] = await sqlPool.query( insert_query );
 
     //3) Notify client of success.
@@ -115,12 +120,13 @@ function launchRoutes() {
     const password_hash = String.fromCharCode.apply(null, login_row[0].password_hash);
     if( password_hash == req.body.password ) {
       res.send( JSON.stringify({
-        "result": "approve"
+        "result": "approve",
+        "username_hash": req.body.username
       }));
     } else {
       res.send( JSON.stringify({
         "result": "refused",
-        "reason": "Credentials failed to authenticate!"
+        "reason": "Credentials failed to authenticate!",
       }));
     }
   });
@@ -132,7 +138,8 @@ function launchRoutes() {
     const [create_acct_row, create_acct_field] =
       await sqlPool.query( create_acct_query );
     res.send( JSON.stringify({
-      "result": "approve"
+      "result": "approve",
+      "username_hash": req.body.username
     }));
   });
 

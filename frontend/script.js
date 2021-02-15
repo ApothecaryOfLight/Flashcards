@@ -325,9 +325,9 @@ function draw_paper( inLength ) {
 function set_logged_elements() {
   const create_set_button =
     document.getElementById("setlist_interface_set_name_create");
-  if( isLogged == false ) {
+  if( logged_obj.isLogged == false ) {
     create_set_button.style.display = "none";
-  } else if( isLogged == true ) {
+  } else if( logged_obj.isLogged == true ) {
     create_set_button.style.display = "flex";
   }
 }
@@ -350,18 +350,27 @@ function renderSetList( setList ) {
   let dom_string = "";
   draw_paper( setList.length );
   setList.forEach( set => {
+console.dir( set );
+const set_username_hash = String.fromCharCode.apply(null, set.set_creator.data );
     dom_string += "<div class=\'setlist_item\'>";
-    if( isLogged == true ) {
-      dom_string += "<div class=\"button setlist_item_edit_button\" " +
-        "onclick=\"getSet(" + set.set_id + ")\">Edit</div>";
+console.log( "SET: " + set_username_hash ) ;
+console.log( "LOGGED: " + logged_obj.username_hash );
+    if( set_username_hash == logged_obj.username_hash ) {
+      if( logged_obj.isLogged == true ) {
+        dom_string += "<div class=\"button setlist_item_edit_button\" " +
+          "onclick=\"getSet(" + set.set_id + ")\">Edit</div>";
+      }
     }
     dom_string += "<div class=\"button setlist_item_text_container\"" +
       "onclick=\"playSet(" + set.set_id + ")\">" + 
       "<span class=\"setlist_item_text\">" +
       set.name + "</span>" + "</div>";
-    if( isLogged == true ) {
-      dom_string += "<div class=\"button setlist_item_delete_button\" " +
-        "onclick=\"prompt_delete_set(" + set.set_id + ")\">Delete</div>";
+    //}
+    if( set_username_hash == logged_obj.username_hash ) {
+      if( logged_obj.isLogged == true ) {
+        dom_string += "<div class=\"button setlist_item_delete_button\" " +
+          "onclick=\"prompt_delete_set(" + set.set_id + ")\">Delete</div>";
+      }
     }
     dom_string +=  "</div>";
   });
@@ -390,7 +399,10 @@ function create_set( set_name ) {
     'http://52.36.124.150:3000/new_set',
     {
       method: 'POST',
-      body: JSON.stringify({ "set_name":set_name }),
+      body: JSON.stringify({
+        "set_name":set_name,
+        "username_hash": logged_obj.username_hash
+      }),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -506,22 +518,30 @@ function prompt_delete_set( inSetID ) {
   launch_modal( null, "Are you sure you want to delete this set?", options );
 }
 
+const logged_obj = {
+  isLogged: false,
+  username_hash: ""
+}
 
 /*
 Logging in/out code
 */
 let curr_interface = "";
 let isLogged = false;
-function login() {
+function login( inUsernameHash ) {
+console.log( "SETTING: " + inUsernameHash );
+  logged_obj.isLogged = true;
+  logged_obj.username_hash = inUsernameHash;
+
   close_modal();
-  const login = document.getElementById("login_element");
-  const logout = document.getElementById("logout_element");
+  const login_element = document.getElementById("login_element");
+  const logout_element = document.getElementById("logout_element");
 //  const logged_in_name = document.getElementById("logged_in_name");
-  login.style.display = "none";
-  logout.style.display = "flex";
+  login_element.style.display = "none";
+  logout_element.style.display = "flex";
 //  logged_in_name.innerHTML = "Log Out";
   //)Relaunch interface.
-  isLogged = true;
+//  isLogged = true;
   if( curr_interface == "setlist" ) {
     launch_setlist_interface();
   }/* else if( curr_interface == "cardlist" ) {
@@ -554,7 +574,7 @@ function attempt_create_account() {
     .then( json => {
       if( json.result == "approve" ) {
         //2) If approved, login.
-        login();
+        login( json.username_hash );
       } else {
         //3) If refused, prompt failure message, fallback into login prompt.
         prompt_failed_login( json.issue );
@@ -570,7 +590,8 @@ function logout() {
   logout_element.style.display = "none";
   login_element.style.display = "flex";
   //)Relaunch interface.
-  isLogged = false;
+  logged_obj.isLogged = false;
+//  isLogged = false;
   if( curr_interface == "setlist" ) {
     launch_setlist_interface();
   } /*else if( curr_interface == "cardlist" ) {
@@ -602,8 +623,9 @@ function attempt_login() {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "approve" ) {
+console.dir( json );
         //3) If approved, login.
-        login();
+        login( json.username_hash );
       } else {
         prompt_failed_login( json.reason );
       }
