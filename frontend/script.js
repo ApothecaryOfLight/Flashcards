@@ -91,7 +91,7 @@ function proc_txt_runset( inText ) {
 function runset_render_index_card() {
   const blue_lines_container = document.getElementById("index_card_blue_line_container");
   let dom = "";
-  for( i=0; i<26; i++ ) {
+  for( i=0; i<36; i++ ) {
     dom += "<div class=\"index_card_blue_line\"></div>";
   }
   blue_lines_container.innerHTML = "";
