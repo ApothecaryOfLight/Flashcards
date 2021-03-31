@@ -20,7 +20,7 @@ function launch_runset_interface( inSetID ) {
   console.log( "Go!" );
 
   const get_cardlist = new Request(
-    'http://52.36.124.150:3000/get_cardlist/' + inSetID
+    'https://triviacards.net:3000/get_cardlist/' + inSetID
   );
   fetch( get_cardlist )
     .then( json => json.json() )
@@ -157,7 +157,7 @@ function proc_txt_card_interface( inText ) {
 
 function get_card( inCardID ) {
   const get_card = new Request(
-    'http://52.36.124.150:3000/get_card/' + inCardID
+    'https://triviacards.net:3000/get_card/' + inCardID
   );
   const question_text = document.getElementById("card_interface_q_text");
   const answer_text = document.getElementById("card_interface_a_text");
@@ -184,7 +184,7 @@ function card_interface_update_card( inSetID, inCardID ) {
   const answer_text = card_a_handle.value;
 
   const update_card = new Request(
-    'http://52.36.124.150:3000/update_card',
+    'https://triviacards.net:3000/update_card',
     {
       method: 'POST',
       body: JSON.stringify({
@@ -227,7 +227,7 @@ function card_interface_set_card( inSetID ) {
   };
 
   const new_card = new Request(
-    'http://52.36.124.150:3000/add_card',
+    'https://triviacards.net:3000/add_card',
     {
       method: 'POST',
       body: JSON.stringify({
@@ -273,7 +273,7 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
   const set_name_element = document.getElementById("cardlist_interface_set_name");
 
   const get_cardlist = new Request(
-    'http://52.36.124.150:3000/get_cardlist/' + inSetID
+    'https://triviacards.net:3000/get_cardlist/' + inSetID
   );
   fetch( get_cardlist )
     .then( json => json.json() )
@@ -360,7 +360,7 @@ function set_logged_elements() {
 function getSetList() {
   //console.log( "getSetList()" );
   const test = new Request(
-    'http://52.36.124.150:3000/setlist',
+    'https://triviacards.net:3000/setlist',
     { method: 'GET' }
   );
   fetch( test )
@@ -421,7 +421,7 @@ function setlist_interface_set_create() {
 
 function create_set( set_name ) {
   const new_set = new Request(
-    'http://52.36.124.150:3000/new_set',
+    'https://triviacards.net:3000/new_set',
     {
       method: 'POST',
       body: JSON.stringify({
@@ -498,7 +498,7 @@ function close_modal() {
 function delete_card( inCardID, inSetID ) {
   console.log( inCardID + "/" + inSetID );
   const delete_card = new Request(
-    'http://52.36.124.150:3000/delete_card/' + inCardID,
+    'https://triviacards.net:3000/delete_card/' + inCardID,
     {
       method: 'POST'
     }
@@ -520,7 +520,7 @@ function delete_card( inCardID, inSetID ) {
 
 function delete_set( inSetID ) {
   const delete_set_req = new Request(
-    'http://52.36.124.150:3000/delete_set/' + inSetID,
+    'https://triviacards.net:3000/delete_set/' + inSetID,
     {
       method: 'POST'
     }
@@ -597,7 +597,7 @@ function attempt_create_account() {
 
   //2) Send login data to server.
   const attempt_create_account_req = new Request(
-    'http://52.36.124.150:3000/create_account',
+    'https://triviacards.net:3000/create_account',
     {
       method: 'POST',
       body: JSON.stringify({
@@ -652,7 +652,7 @@ function attempt_login() {
 
   //2) Send login data to server.
   const attempt_login = new Request(
-    'http://52.36.124.150:3000/login',
+    'https://triviacards.net:3000/login',
     {
       method: 'POST',
       body: JSON.stringify({

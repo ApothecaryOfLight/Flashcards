@@ -28,6 +28,13 @@ const sqlPool = mysql.createPoolPromise({
   connectionLimit: 45
 });
 
+/*HTTPS*/
+var fs = require('fs');
+var https = require('https');
+var privateKey = fs.readFileSync('/home/ubuntu/Flashcards/privkey.pem');
+var certificate = fs.readFileSync('/home/ubuntu/Flashcards/fullchain.pem');
+var credentials = {key: privateKey, cert: certificate};
+
 try {
   sqlPool.getConnection()
     .then( conn => {
@@ -330,5 +337,7 @@ function launchRoutes() {
     }
   });
 
-  app.listen(3000);
+  var server = https.createServer( credentials, app );
+  server.listen( 3000 );
+//  app.listen(3000);
 }

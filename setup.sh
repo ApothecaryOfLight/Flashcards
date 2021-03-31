@@ -21,3 +21,10 @@ sudo ufw allow ssh
 sudo ufw enable
 cd /etc/nginx/sites-enabled && sudo sed -i "s/root \/var\/www\/html;/root \/home\/ubuntu\/Flashcards\/frontend;/g" default
 sudo systemctl restart nginx
+
+
+#==HTTPS==
+sudo apt-get install certbot
+sudo apt-get install python3-certbot-nginx
+sudo certbot --nginx
+sudo ufw allow https
