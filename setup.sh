@@ -24,7 +24,14 @@ sudo systemctl restart nginx
 
 
 #==HTTPS==
-sudo apt-get install certbot
-sudo apt-get install python3-certbot-nginx
-sudo certbot --nginx
-sudo ufw allow https
+echo -n "Set up HTTPS? (y/n)"
+read prompt
+if [ "$prompt" != "${prompt#[Yy]}" ] ;then
+  echo "Setting up HTTPS."
+  sudo apt-get install certbot
+  sudo apt-get install python3-certbot-nginx
+  sudo certbot --nginx
+  sudo ufw allow https
+else
+  echo "Not setting up HTTPS."
+fi
