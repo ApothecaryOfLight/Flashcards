@@ -6,7 +6,6 @@
 }
 
 body {
-/*  background: purple;*/
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -15,7 +14,6 @@ body {
 }
 
 #root {
-/*  background-color: #FFFFF0;*/
   width: 100vw;
   height: 100vh;
   z-index: -2;
@@ -244,16 +242,11 @@ Cardlist interface
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: auto 4em;
-
   width: 80%;
-/*  height: 5em;*/
-
   margin-left: 10%;
   margin-right: 10%;
   margin-bottom: 1em;
   margin-top: 1em;
-
-
   border-radius: 16px;
   border: 2px solid;
 }
@@ -263,57 +256,34 @@ Cardlist interface
 .card_element_q {
   grid-row: 1;
   grid-column: 1;
-
-/*  overflow: hidden;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;*/
-
   padding-top: 1em;
   padding-left: 3em;
-
-/*  height: 1.5em;*/
 }
 .card_element_a {
   grid-row: 2;
   grid-column: 1;
-
-/*  overflow:hidden;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;*/
-
   padding-top: 1em;
   padding-left: 3em;
   margin-bottom: 1em;
-
-/*  height: 1.5em;*/
 }
 .card_element_delete_button {
   grid-row-start: 1;
   grid-row-end: 3;
   grid-column: 2;
-
   height: 4em;
   width: 4em;
-
   border: 0px;
   border-radius: 50%;
-
   margin-right: 1em;
   margin-top: 1em;
   margin-bottom: 1em;
-
   outline: none;
-
   font-weight: bold;
-
   background-color: #6699FF;
 }
 .card_element_delete_button:hover {
   color: #800000;
   background: #0066FF;
-/*  border: 2px solid #800000;*/
 }
 .card_element_delete_button:active {
   background: #003399;
@@ -333,48 +303,33 @@ Setlist interface
   grid-row: 2;
   grid-column: 2;
   width: 80%;
-
-/*  margin-top: 2em;*/
   margin-left: 1em;
-
   display: grid;
   grid-template-columns: 80% 5em;
 }
 #setlist_interface_set_name {
   width: 100%;
-/*  max-width: 60vw;*/
   height: 2.5em;
-
   grid-row: 1;
   grid-column-start: 1;
   grid-column-end: 3;
-
   border-radius: 16px;
   border: 0px;
-
   -webkit-box-shadow: 0px 0px 10px -1px #000000; 
   box-shadow: 0px 0px 10px -1px #000000;
-
   padding-left: 1em;
-
   outline: none;
-/*  text-align: center;*/
 }
 #setlist_interface_set_name_create {
   width: 6em;
   height: 2.2em;
-
   background: #3366FF;
   color: white;
-/*  border: 1px black solid;*/
   border-radius: 0px 16px 16px 0px;
-
   grid-row: 1;
   grid-column: 2;
-
   position: relative;
   z-index: 1;
-
   display: flex;
   justify-content: center;
 }
@@ -409,21 +364,16 @@ Setlist interface
   margin-left: 10%;
   margin-right: 10%;
   margin-bottom: 1em;
-
   width: 60%;
   margin-left: 5em;
   margin-right: 20%;
-
   height: 2.5em;
-
   grid-row: 2;
   grid-column: 2;
 }
 #setlist_interface_set_list {
   width: 100%;
-
   grid-row: 3;
-
   grid-column-start: 1;
   grid-column-end: 4;
 }
@@ -431,54 +381,31 @@ Setlist interface
   display: grid;
   grid-template-columns: 6.2em auto 4em;
   grid-template-rows: 2em 2em 2em;
-
-
   align-self: center;
-
   height: 6em;
-
-/*  padding: 0.5em;
-  margin: 0.5em;*/
-/*  margin-top: calc(0.5em - 14px);*/
-
   border-radius: 16px;
 }
 .setlist_item:hover {
-/*  background-color: #0066FF;*/
 }
 .setlist_item_text_container {
   display: flex;
   justify-content: flex-start;
-
   overflow: hidden;
   padding-left: 1em;
-
   grid-column: 2;
-
   width: auto;
   min-height: 6em;
-
-/*  margin-left: 10%;
-  margin-right: 10%;*/
-
-
 }
 .setlist_item_text {
-/*  align-self: center;*/
   text-align: left;
   text-overflow: ellipsis;
   overflow: hidden;
-/*  white-space: nowrap;*/
   line-height: 1em;
   font-size: 2em;
-
-/*  direction: rtl;*/
-
 }
 .setlist_item_edit_button {
   grid-column: 1;
   grid-row: 1;
-/*  margin-top: 1em;*/
   font-size: 2em;
   line-height: 1em;
   font-weight: normal;
@@ -489,7 +416,6 @@ Setlist interface
   font-size: 2em;
   line-height: 1em;
   font-weight: normal;
-/*  margin-top: 1em;*/
 }
 
 /*
@@ -503,44 +429,20 @@ Runset interface
 }
 #runset_interface_qa_space {
   display: flex;
-/*  justify-content: center;
-  align-items: center;*/
   font-size: 1.5em;
-/*  text-align: center;*/
-
   width: 75%;
   height: 80%;
-
   margin: 5%;
-
   -webkit-box-shadow: 7px 7px 11px -1px #000000; 
   box-shadow: 7px 7px 11px -1px #000000;
-
-/*  overflow-x: hidden;*/
 }
 #index_card_background {
-/*  position: absolute;*/
   top: 0px;
   left: 0px;
-
   width: 100%;
-/*  margin-left: 10%;
-  margin-right: 10%;*/
-/*  margin: 5%;*/
   height: 100%;
-
   overflow-y: hidden;
 }
-/*@media (min-width:300px) {
-  #index_card_background {
-    height: 90%;
-  }
-}
-@media (min-width:600px) {
-  #index_card_background {
-    height: 80%;
-  }
-}*/
 #index_card_red_line {
   margin-top: 2em;
   border-top: 1px solid red;
@@ -596,39 +498,22 @@ Modal interface
 }
 
 #modal_interface {
-/*  display: grid;
-  grid-template-rows: 40% 35% 35%;
-  grid-template-columns: auto auto auto;*/
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-
   width: 40%;
   height: 30%;
   align-self: center;
   background: white;
   border-radius: 16px;
   border: 3px solid black;
-
   background: white;
-
   min-height: 220px;
   min-width: 350px;
 }
 @media (min-width: 300px) {
   #modal_interface {
-/*    display: grid;
-    grid-template-rows: 20% 40% 40%;
-    grid-template-columns: auto auto auto;*/
-
     width: 90%;
-/*    height: 60%;*/
-/*    align-self: center;
-    background: white;
-    border-radius: 16px;
-    border: 3px solid black;
-
-    background: white;*/
   }
 }
 @media (min-width: 500px) {
@@ -643,39 +528,15 @@ Modal interface
 }
 @media (min-width:800px) {
   #modal_interface {
-/*    display: grid;
-    grid-template-rows: 40% 35% 35%;
-    grid-template-columns: auto auto auto;*/
-
-/*    width: 40%;
-    height: 40%;*/
-/*    align-self: center;
-    background: white;
-    border-radius: 16px;
-    border: 3px solid black;
-
-    background: white;*/
   }
 }
 #modal_interface_message {
   grid-row: 1;
   grid-column: 2;
-/*  margin-top: 0.5em;*/
   font-weight: bold;
   text-align: center;
-
   font-size: 2em;
 }
-/*@media (min-height: 300px) {
-  #modal_interface_message {
-    margin-top: 0em;
-  }
-}
-@media (min-height: 600px) {
-  #modal_interface_message {
-    margin-top: 2em;
-  }
-}*/
 #modal_interface_prompts {
   grid-row: 2;
   grid-column-start: 1;
@@ -703,15 +564,10 @@ Modal interface
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-
-
-/*  margin-bottom: 1em;*/
 }
 @media (min-height:300px) {
-/*  margin-bottom: .2em;*/
 }
 @media (min-height:600px) {
-/*  margin-bottom: 1em;*/
 }
 .modal_button {
   border: 0px;
