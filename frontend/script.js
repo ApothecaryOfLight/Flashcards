@@ -15,7 +15,6 @@ function launch_runset_interface( inSetID ) {
     prev_cards: []
   };
   set_interface( "runset", card_set_obj );
-  console.log( "Go!" );
 
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
@@ -66,18 +65,12 @@ function runset_interface_go_back( cards_obj ) {
   launch_setlist_interface();
 }
 function runset_interface_missed( cards_obj ) {
-  console.log( "Missed!" );
-  console.log( cards_obj.cards.length );
   next_card( cards_obj );
 }
 function runset_interface_correct( cards_obj ) {
-  console.log( "Correct!" );
-  console.log( cards_obj.cards.length );
   next_card( cards_obj );
 }
 function runset_interface_flip_card( cards_obj ) {
-  console.log( "Flipping!" );
-  console.dir( cards_obj.cards );
   if( cards_obj.side == 0 ) {
     cards_obj.side = 1;
   } else {
@@ -131,7 +124,6 @@ function launch_card_interface( inCardID, inSetID, isNew ) {
   set_interface( "card", inSetID );
 
   if( isNew == false ) {
-    console.log( "Old card." );
     get_card( inCardID );
     const set_card = document.getElementById("card_interface_set_card");
     const func_ref = card_interface_update_card.bind( this, inSetID, inCardID );
@@ -146,12 +138,10 @@ function launch_card_interface( inCardID, inSetID, isNew ) {
     set_card.addEventListener( 'click', func_ref );
     bound_functions["card"]["set_card"].push( func_ref );
   } else {
-    console.log( "New card." );
   }
 }
 
 function proc_txt_card_interface( inText ) {
-  console.log( "proccing" );
   //1) Replace unicode apostrophe with apostrophe.
   let outText = inText.replaceAll( "&#39", "\'" );
   return outText;
@@ -179,7 +169,6 @@ function get_card( inCardID ) {
 }
 
 function card_interface_update_card( inSetID, inCardID ) {
-  console.log( "card_interface_update_card" );
   const card_q_handle = document.getElementById("card_interface_q_text");
   const card_a_handle = document.getElementById("card_interface_a_text");
   const question_text = card_q_handle.value;
@@ -217,7 +206,6 @@ function card_interface_update_card( inSetID, inCardID ) {
 }
 
 function card_interface_set_card( inSetID ) {
-  console.log( "card_interface_set_card" );
   const card_q_handle = document.getElementById("card_interface_q_text");
   const card_a_handle = document.getElementById("card_interface_a_text");
   const question_text = card_q_handle.value;
@@ -259,7 +247,6 @@ function card_interface_set_card( inSetID ) {
 }
 
 function card_interface_go_back( inSetID ) {
-  console.log( "card_interface_go_back" );
   const card_q_handle = document.getElementById("card_interface_q_text");
   const card_a_handle = document.getElementById("card_interface_a_text");
   card_q_handle.value = "";
@@ -324,7 +311,6 @@ function cardlist_interface_new_button( inSetID ) {
   launch_card_interface( null, inSetID, true );
 }
 function cardlist_interface_go_back() {
-  //console.log( "cardlist_interface_go_back" );
   launch_setlist_interface();
 }
 
@@ -334,7 +320,6 @@ Setlist interface
 */
 function launch_setlist_interface() {
   set_interface( "setlist" );
-//  draw_paper();
   set_logged_elements();
   getSetList();
 }
@@ -360,7 +345,6 @@ function set_logged_elements() {
 }
 
 function getSetList() {
-  //console.log( "getSetList()" );
   const test = new Request(
     ip + 'setlist',
     { method: 'GET' }
@@ -402,7 +386,6 @@ function renderSetList( setList ) {
 }
 
 function playSet( inSetID ) {
-  console.log( "playSet " + inSetID );
   launch_runset_interface( inSetID );
 }
 
@@ -452,7 +435,6 @@ Modal interface
 */
 let modal_buttons_storage = {};
 function modal_button( button_name ) {
-  console.log( button_name );
   modal_buttons_storage[button_name]();
 }
 
@@ -471,31 +453,26 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
         " class=\"prompt_input_field\" autocomplete=\"off\"" +
         " placeholder=\"" + isPrompt[prompt_name] + "\"></input>";
     }
-    console.log( prompt_dom );
   }
   modal_prompts.innerHTML = prompt_dom;
 
   let dom = "";
   for( button_name in inButtons ) {
-    console.log( typeof( inButtons[button_name] ) );
     modal_buttons_storage[button_name] = inButtons[button_name];
     dom += "<button class=\"modal_button\" " +
       "onclick=\"modal_button(\'" + button_name + "\')\">" +
       button_name + "</button>"
   }
-  console.log( dom );
   const modal_buttons = document.getElementById( "modal_interface_button_container" );
   modal_buttons.innerHTML = dom;
 }
 
 function close_modal() {
-  console.log( "close_modal" );
   const modal_handle = document.getElementById("modal_interface_screen_cover");
   modal_handle.style.display = "none";
 }
 
 function delete_card( inCardID, inSetID ) {
-  console.log( inCardID + "/" + inSetID );
   const delete_card = new Request(
     ip + 'delete_card/' + inCardID,
     {
@@ -568,24 +545,18 @@ Logging in/out code
 let curr_interface = "";
 let isLogged = false;
 function login( inUsernameHash ) {
-console.log( "SETTING: " + inUsernameHash );
   logged_obj.isLogged = true;
   logged_obj.username_hash = inUsernameHash;
 
   close_modal();
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
-//  const logged_in_name = document.getElementById("logged_in_name");
   login_element.style.display = "none";
   logout_element.style.display = "flex";
-//  logged_in_name.innerHTML = "Log Out";
   //)Relaunch interface.
-//  isLogged = true;
   if( curr_interface == "setlist" ) {
     launch_setlist_interface();
-  }/* else if( curr_interface == "cardlist" ) {
-    launch_cardlist_interface();
-  }*/
+  }
 }
 function attempt_create_account() {
   //1) Get username and password
@@ -628,7 +599,6 @@ function attempt_create_account() {
   //)Relaunch interface
 }
 function logout() {
-  console.log( "Logging out." );
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
   logout_element.style.display = "none";
@@ -667,7 +637,6 @@ function attempt_login() {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "approve" ) {
-console.dir( json );
         //3) If approved, login.
         login( json.username_hash );
       } else if( json.result == "error" ) {
@@ -689,7 +658,6 @@ function prompt_failed_login( inFailureReason ) {
   launch_modal( null, inFailureReason, options );
 }
 function prompt_login() {
-console.log("prompt_login");
   //1) Launch login prompt.
   const prompts = {
     "username_field" : "Enter Username Here",
@@ -708,11 +676,9 @@ function attach_login() {
   //const logged_name = document.getElementById("logged_in_name");
   logout_element.style.display = "none";
   login_element.addEventListener( 'click', (click_event) => {
-    console.log( "Logging in." );
     prompt_login();
   });
   logout_element.addEventListener( 'click', (click_evnet) => {
-    console.log( "Logging out." );
     logout();
   });
 }
