@@ -377,11 +377,8 @@ function renderSetList( setList ) {
   let dom_string = "";
   draw_paper( setList.length );
   setList.forEach( set => {
-console.dir( set );
-const set_username_hash = String.fromCharCode.apply(null, set.set_creator.data );
+    const set_username_hash = String.fromCharCode.apply(null, set.set_creator.data );
     dom_string += "<div class=\'setlist_item\'>";
-console.log( "SET: " + set_username_hash ) ;
-console.log( "LOGGED: " + logged_obj.username_hash );
     if( set_username_hash == logged_obj.username_hash ) {
       if( logged_obj.isLogged == true ) {
         dom_string += "<div class=\"button setlist_item_edit_button\" " +
