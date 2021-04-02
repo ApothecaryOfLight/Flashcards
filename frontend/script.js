@@ -105,6 +105,10 @@ function runset_render_qa( card_set_obj ) {
   runset_render_index_card();
   const qa_field = document.getElementById("runset_interface_qa_text");
 //  console.dir( card_set_obj.cards );
+  if( !card_set_obj.cards[card_set_obj.curr_card] ) {
+    qa_field.innerHTML = "";
+    return;
+  }
   if( card_set_obj.side == 0 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
       proc_txt_runset( card_set_obj.cards[card_set_obj.curr_card].question ) +
