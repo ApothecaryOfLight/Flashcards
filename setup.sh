@@ -38,4 +38,6 @@ fi
 
 
 #==Screen==
+sudo ufw allow 3000
 screen -d -m -S backend bash -c 'cd backend && npm i && ./run.sh'
+
