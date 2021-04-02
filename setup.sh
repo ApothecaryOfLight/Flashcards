@@ -35,3 +35,7 @@ if [ "$prompt" != "${prompt#[Yy]}" ] ;then
 else
   echo "Not setting up HTTPS."
 fi
+
+
+#==Screen==
+screen -d -m -S backend bash -c 'cd backend && npm i && ./run.sh'
