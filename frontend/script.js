@@ -97,7 +97,6 @@ function runset_render_index_card() {
 function runset_render_qa( card_set_obj ) {
   runset_render_index_card();
   const qa_field = document.getElementById("runset_interface_qa_text");
-//  console.dir( card_set_obj.cards );
   if( !card_set_obj.cards[card_set_obj.curr_card] ) {
     qa_field.innerHTML = "";
     return;
@@ -605,7 +604,6 @@ function logout() {
   login_element.style.display = "flex";
   //)Relaunch interface.
   logged_obj.isLogged = false;
-//  isLogged = false;
   if( curr_interface == "setlist" ) {
     launch_setlist_interface();
   } /*else if( curr_interface == "cardlist" ) {
