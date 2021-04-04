@@ -24,6 +24,31 @@ body {
 }
 
 /*
+Tabs Menu
+*/
+#menu_bar {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  position: absolute;
+  margin-left: 7rem;
+}
+.tab {
+/*  clip-path: polygon( 20% 0%, 80% 0%, 100% 100%, 0% 100% );*/
+  border-radius: 100% 100% 15px 15px;
+  height: 2rem;
+  width: 6rem;
+  background: #D1BFFD;
+  border: 2px solid #8080FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 1rem;
+}
+
+
+/*
 Paper
 */
 #paper_background {
@@ -47,7 +72,7 @@ Paper
   top: 0px;
   width: 100%;
   height: 100%;
-  margin-top: 8em;
+  margin-top: 10em;
 }
 .blue_line {
   box-sizing: content-box;
@@ -97,6 +122,70 @@ Menu
   align-self: center;
   font-weight: bold;
   margin-right: 0.5em;
+}
+
+
+#add_search_tag_button {
+  grid-row: 2;
+  grid-column: 2;
+  width: fit-content;
+  margin-left: 1rem;
+}
+#switch_list_type {
+  grid-row: 2;
+  grid-column: 3;
+}
+.better_buttons {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: bold;
+  font-family: 'Indie Flower', cursive;
+  border-radius: 15px;
+}
+.better_buttons:hover {
+  background: blue;
+}
+#search_tag_container {
+  font-size: 2rem;
+  grid-row: 3;
+  grid-column: 2;
+  padding-top: 1rem;
+  padding-left: .5rem;
+  font-family: 'Indie Flower', cursive;
+
+  display: flex;
+  flex-direction: row;
+}
+#search_buttons_container {
+  grid-row: 2;
+  grid-column: 2;
+}
+#create_temp_set_button {
+  grid-row: 2;
+  grid-column: 2;
+  width: fit-content;
+}
+.search_tag_unit {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: row;
+}
+.search_tag_delete {
+  display: flex;
+  font-size: 1rem;
+  border-radius: 50%;
+  border: 1px solid black;
+  height: 1rem;
+  width: 1rem;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin-left: .25rem;
+}
+.search_tag_delete:hover {
+  background: blue;
 }
 
 
@@ -296,14 +385,16 @@ Setlist interface
 */
 #setlist_interface {
   display: grid;
-  grid-template-rows: 4em 4em auto;
-  grid-template-columns: 6.2em calc(100% - 6.2em);
+  grid-template-rows: 4rem 3rem 3rem auto;
+/*  grid-template-columns: 6.2em calc(100% - 6.2em);*/
+  grid-template-columns: 6.2rem auto 6rem 6rem;
 }
 #setlist_interface_field_container {
-  grid-row: 2;
+  grid-row: 1;
   grid-column: 2;
   width: 80%;
-  margin-left: 1em;
+  margin-left: 1rem;
+  margin-top: 1rem;
   display: grid;
   grid-template-columns: 80% 5em;
 }
@@ -373,7 +464,7 @@ Setlist interface
 }
 #setlist_interface_set_list {
   width: 100%;
-  grid-row: 3;
+  grid-row: 4;
   grid-column-start: 1;
   grid-column-end: 4;
 }

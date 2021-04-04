@@ -9,17 +9,20 @@
 <link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
 
 <script src="script.js"></script>
 <script src="blueimp.min.js"></script>
 
 </head>
 <body>
+<!--div id="menu_bar">
+  <div id="sets_button" class="tab">Sets</div>
+  <div id="cards_button" class="tab">Cards</div>
+</div-->
+
 <div id="root">
-
-
-
-
 <div id="setlist_interface">
   <div id="paper_background">
     <div class="red_lines"></div>
@@ -52,6 +55,22 @@
       </div>
     </div>
   </div>
+
+  <div id="search_buttons_container">
+    <button id="setlist_interface_add_search_tag_button" class="better_buttons">Add Search Term</button>
+    <button id="create_temp_set_button" class="better_buttons">Create Temporary Set</button>
+  </div>
+  <button id="switch_list_type" class="better_buttons">List Cards</button>
+
+  <div id="search_tag_container">search terms
+    <div class="search_tag_unit">unit A
+      <div class="search_tag_delete">X</div>
+    </div>
+    <div class="search_tag_unit">unit B
+      <div class="search_tag_delete">X</div>
+    </div>
+  </div>
+
   <!--button id="setlist_interface_create" class="button wide_button">Create</button-->
   <div id="setlist_interface_set_list"></div>
 </div>

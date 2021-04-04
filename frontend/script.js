@@ -323,6 +323,63 @@ function launch_setlist_interface() {
   getSetList();
 }
 
+const search_terms = [];
+
+function add_search_term() {
+  //1) Get search term
+  const search_bar = document.getElementById("setlist_interface_set_name");
+  const search_bar_text = search_bar.value;
+  console.log( search_bar_text );
+  //2) Ensure that search term doesn't already exist.
+  for( index in search_terms ) {
+    if( search_terms[index] == search_bar_text ) {
+      return;
+    }
+  }
+
+  //3) Add search term to search_terms
+  search_terms.push( search_bar_text );
+
+  //4) Render updated search terms.
+  render_search_terms();
+
+  //5) Blank out search term.
+  search_bar.value = "";
+}
+
+function delete_search_term( inTerm ) {
+  console.log( inTerm );
+  for( index in search_terms ) {
+    if( search_terms[index] == inTerm ) {
+      search_terms.splice( index, 1 );
+    }
+  }
+  render_search_terms();
+}
+
+function render_search_terms() {
+  let dom = "";
+  for( index in search_terms ) {
+    console.log( search_terms[index] );
+    dom += "<div class=\"search_tag_unit\">" +
+      search_terms[index] +
+      "<div class=\"search_tag_delete\"" +
+      " onclick=delete_search_term(\'" + search_terms[index] + "\');" +
+      ">X</div>" +
+      "</div>";
+  }
+  const search_term_container = document.getElementById("search_tag_container");
+  search_term_container.innerHTML = dom;
+}
+
+function create_temporary_set() {
+
+}
+
+function switch_list_type() {
+
+}
+
 function draw_paper( inLength ) {
   const blue_lines_container = document.getElementById("blue_line_container");
   let dom = "";
@@ -691,7 +748,8 @@ const interfaces = [
 
 const functions = {
   "setlist" : {
-    "set_name_create": setlist_interface_set_create
+    "set_name_create": setlist_interface_set_create,
+    "add_search_tag_button": add_search_term
   },
   "cardlist" : {
     "new": cardlist_interface_new_button,
@@ -711,7 +769,8 @@ const functions = {
 
 const bound_functions = {
   "setlist" : {
-    "set_name_create": []
+    "set_name_create": [],
+    "add_search_tag_button": []
   },
   "cardlist" : {
     "new": [],
