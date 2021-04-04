@@ -328,15 +328,15 @@ const search_terms = [];
 function add_search_term() {
   //1) Get search term
   const search_bar = document.getElementById("setlist_interface_set_name");
-  const search_bar_text = search_bar.value;
-  console.log( search_bar_text );
+  let search_bar_text = search_bar.value;
+  if( search_bar_text == "" ) { return; }
+  search_bar_text = search_bar_text.replace( /\s/g, "&nbsp;" );
   //2) Ensure that search term doesn't already exist.
   for( index in search_terms ) {
     if( search_terms[index] == search_bar_text ) {
       return;
     }
   }
-
   //3) Add search term to search_terms
   search_terms.push( search_bar_text );
 
@@ -348,7 +348,7 @@ function add_search_term() {
 }
 
 function delete_search_term( inTerm ) {
-  console.log( inTerm );
+  inTerm = inTerm.replace( /\s/g, "&nbsp;" );
   for( index in search_terms ) {
     if( search_terms[index] == inTerm ) {
       search_terms.splice( index, 1 );
@@ -368,6 +368,7 @@ function render_search_terms() {
       ">X</div>" +
       "</div>";
   }
+  console.log( dom );
   const search_term_container = document.getElementById("search_tag_container");
   search_term_container.innerHTML = dom;
 }
