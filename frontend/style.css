@@ -279,13 +279,15 @@ Cardlist interface
 #cardlist_interface_card_list {
   flex-grow: 1;
 
-  overflow-y: scroll;
+/*  overflow-y: scroll;*/
   overflow-x: hidden;
 
   width: 100vw;
 
-  border-top: 1px solid;
   border-bottom: 1px solid;
+}
+#cardlist_interface_lower_container {
+  overflow-y: scroll;
 }
 #cardlist_interface_buttons {
   display: flex;
@@ -318,7 +320,8 @@ Cardlist interface
   background: #003399;
 }
 #cardlist_interface_tags_container {
-
+  border-top: 1px solid;
+  padding-top: 2rem;
 }
 #cardlist_interface_tags_field {
   width: 70%;
@@ -331,13 +334,17 @@ Cardlist interface
 #cardlist_interface_tags_list {
   display: flex;
   flex-direction: row;
-  height: 4rem;
+  flex-wrap: wrap;
 }
 .cardlist_interface_tag_container {
   margin-left: 1rem;
   margin-right: 1rem;
   display: flex;
   flex-direction: row;
+  font-family: 'Indie Flower', cursive;
+  font-size: 2rem;
+  align-items: center;
+
 }
 .cardlist_interface_tag_delete_button {
   display: flex;
