@@ -259,7 +259,8 @@ Cardlist interface
 function launch_cardlist_interface( inSetID, go_to_end ) {
   set_interface( "cardlist", inSetID );
   const set_name_element = document.getElementById("cardlist_interface_set_name");
-
+  cardlist_tags.splice(0);
+//TODO: Populate cardlist_tags
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
   );
@@ -312,6 +313,54 @@ function cardlist_interface_new_button( inSetID ) {
 function cardlist_interface_go_back() {
   launch_setlist_interface();
 }
+const cardlist_tags = [];
+function cardlist_interface_add_tag_button() {
+  //1) Get tag
+  const tag_field = document.getElementById("cardlist_interface_tags_field");
+  let tag_text = tag_field.value;
+  if( tag_text == "" ) { return; }
+  tag_text = tag_text.replace( /\s/g, "&nbsp;" );
+
+  //2) Ensure that search term doesn't already exist.
+  for( index in cardlist_tags ) {
+    if( cardlist_tags[index] == tag_text ) {
+      return;
+    }
+  }
+
+  //3) Add search term to search_terms
+  cardlist_tags.push( tag_text );
+
+  //4) Render updated search terms.
+  cardlist_interface_render_tags();
+
+  //5) Blank out search term.
+  tag_field.value = "";
+}
+function cardlist_interface_render_tags() {
+  let dom = "";
+  for( index in cardlist_tags ) {
+    console.log( cardlist_tags[index] );
+    dom += "<div class=\"cardlist_interface_tag_container\">" +
+      cardlist_tags[index] +
+      "<div class=\"cardlist_interface_tag_delete_button\"" +
+      " onclick=delete_cardlist_tag(\'" + cardlist_tags[index] + "\');" +
+      ">X</div>" +
+      "</div>";
+  }
+  console.log( dom );
+  const tag_container = document.getElementById("cardlist_interface_tags_list");
+  tag_container.innerHTML = dom;
+}
+function delete_cardlist_tag( inTag ) {
+  inTag = inTag.replace( /\s/g, "&nbsp;" );
+  for( index in cardlist_tags ) {
+    if( cardlist_tags[index] == inTag ) {
+      cardlist_tags.splice( index, 1 );
+    }
+  }
+  cardlist_interface_render_tags();
+}
 
 
 /*
@@ -331,12 +380,14 @@ function add_search_term() {
   let search_bar_text = search_bar.value;
   if( search_bar_text == "" ) { return; }
   search_bar_text = search_bar_text.replace( /\s/g, "&nbsp;" );
+
   //2) Ensure that search term doesn't already exist.
   for( index in search_terms ) {
     if( search_terms[index] == search_bar_text ) {
       return;
     }
   }
+
   //3) Add search term to search_terms
   search_terms.push( search_bar_text );
 
@@ -754,7 +805,8 @@ const functions = {
   },
   "cardlist" : {
     "new": cardlist_interface_new_button,
-    "go_back": cardlist_interface_go_back
+    "go_back": cardlist_interface_go_back,
+    "add_tag_button": cardlist_interface_add_tag_button
   },
   "card": {
     "set_card": card_interface_set_card,
@@ -775,7 +827,8 @@ const bound_functions = {
   },
   "cardlist" : {
     "new": [],
-    "go_back": []
+    "go_back": [],
+    "add_tag_button": []
   },
   "card": {
     "set_card": [],

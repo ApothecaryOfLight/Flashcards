@@ -317,6 +317,40 @@ Cardlist interface
 .cardlist_interface_button:active {
   background: #003399;
 }
+#cardlist_interface_tags_container {
+
+}
+#cardlist_interface_tags_field {
+  width: 70%;
+  margin-left: 10%;
+}
+#cardlist_interface_add_tags_button {
+  margin-right: 10%;
+  width: 10%;
+}
+#cardlist_interface_tags_list {
+  display: flex;
+  flex-direction: row;
+  height: 4rem;
+}
+.cardlist_interface_tag_container {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: row;
+}
+.cardlist_interface_tag_delete_button {
+  display: flex;
+  font-size: 1rem;
+  border-radius: 50%;
+  border: 1px solid black;
+  height: 1rem;
+  width: 1rem;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin-left: .25rem;
+}
 
 
 
