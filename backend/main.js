@@ -80,6 +80,19 @@ function process_input( inText ) {
   return processed_text;
 }
 
+function update_tags( card_id, question, answer, tags ) {
+  const words_string = process_input( question + " " + answer );
+  const words = words_string.split( " " );
+  const all_tags = words.concat( tags );
+  for( index in all_tags ) {
+//    console.log( all_tags[index].replace(/&#39s/g,"") );
+//    all_tags[index] = all_tags[index].replace(/[^\w][bd]\./g,"X");
+//    all_tags[index] = all_tags[index].replace(/&#39s|[^a-zA-Z0-9]/g,"Q");
+//    console.log( all_tags[index].replace(/[^\w][bd]\.|&#39s|[^a-zA-Z0-9]/g,"") );
+//    console.log( all_tags[index] );
+    console.log( all_tags[index].replace( /&#39s|[^a-zA-Z0-9]/g, "" ) );
+  }
+}
 
 /*Express Routes*/
 function launchRoutes() {
@@ -144,6 +157,16 @@ function launchRoutes() {
     console.log( "reqqy" );
     res.send('yuuuup');
   });
+
+  /*Get sets by topic.*/
+
+  /*Set topics of set.*/
+
+  /*Get list of cards by topics.*/
+
+  /*Set topics of card.*/
+
+  /*Get list of cards irrespective of topics.*/
 
   /*Login*/
   app.post('/login', async function(req,res ) {
@@ -218,12 +241,16 @@ function launchRoutes() {
       const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
       const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
       const new_card_id = new_card_id_row[0].new_card_id;
+
       const new_card_query = "INSERT INTO cards (card_id,question,answer,set_id) " +
         "VALUES ( " + new_card_id + ", " +
         "\'" + process_input(req.body.question) + "\', " +
         "\'" + process_input(req.body.answer) + "\', " +
         req.body.set_id + ");"
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
+
+      update_tags( new_card_id, req.body.question, req.body.answer, req.body.tags );
+
       //TODO: On success, on error handling.
       res.send( JSON.stringify({
         "result": "success"
@@ -237,14 +264,18 @@ function launchRoutes() {
     }
   });
 
+  /*Update card*/
   app.post( '/update_card', async function(req,res) {
     try {
       const update_card_query = "UPDATE cards SET " +
-        "question = " + "\'" + req.body.question + "\', " +
-        "answer = " + "\'" + req.body.answer + "\'" +
+        "question = " + "\'" + process_input(req.body.question) + "\', " +
+        "answer = " + "\'" + process_input(req.body.answer) + "\'" +
         "WHERE set_id = " + req.body.set_id +
         " AND card_id = " + req.body.card_id + ";";
       const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
+
+      update_tags( req.body.card_id, req.body.question, req.body.answer, req.body.tags );
+
       //TODO: On success, on error
       res.send( JSON.stringify({
         "result": "success"
