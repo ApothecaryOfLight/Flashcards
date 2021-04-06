@@ -328,6 +328,7 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
   set_data.set_id = inSetID; //TODO: Attach this to interface
   const set_name_element = document.getElementById("cardlist_interface_set_name");
   cardlist_tags.splice(0);
+  cardlist_interface_render_tags();
 //TODO: Populate cardlist_tags
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
