@@ -90,7 +90,15 @@ function update_tags( card_id, question, answer, tags ) {
 //    all_tags[index] = all_tags[index].replace(/&#39s|[^a-zA-Z0-9]/g,"Q");
 //    console.log( all_tags[index].replace(/[^\w][bd]\.|&#39s|[^a-zA-Z0-9]/g,"") );
 //    console.log( all_tags[index] );
-    console.log( all_tags[index].replace( /&#39s|[^a-zA-Z0-9]/g, "" ) );
+    console.log( all_tags[index].replace(
+      /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, ""
+    ) );
+//    const tag = all_tags[index].replace( /&#39s|[^a-zA-Z0-9]/g, "" );
+/*    const insert_query = "INSERT INTO tags (name,set_id,card_id) VALUES ( " +
+      tag + ", " +
+      null + ", " +
+      card_id + ");";
+    const [out_row,out_fields] = await sqlPool.query( insert_query );*/
   }
 }
 
