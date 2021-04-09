@@ -80,25 +80,71 @@ function process_input( inText ) {
   return processed_text;
 }
 
-function update_tags( card_id, question, answer, tags ) {
-  const words_string = process_input( question + " " + answer );
+function process_tag( inTag, replaceWith ) {
+  return inTag.replace(
+    /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, " "
+  );
+}
+
+async function update_tags( card_id, question, answer, tags ) {
+  //1) Combine question and answer tag fields into one string, regex clean it.
+  const words_string = process_tag( question + " " + answer, " " );
+  for( index in tags ) {
+    tags[index] = process_tag( tags[index], "" );
+  }
+
+  //2) Split that string into an array of values to index as tags.
   const words = words_string.split( " " );
+
+  //3) Add the tag array of topics into the array of word values.
   const all_tags = words.concat( tags );
-  for( index in all_tags ) {
-//    console.log( all_tags[index].replace(/&#39s/g,"") );
-//    all_tags[index] = all_tags[index].replace(/[^\w][bd]\./g,"X");
-//    all_tags[index] = all_tags[index].replace(/&#39s|[^a-zA-Z0-9]/g,"Q");
-//    console.log( all_tags[index].replace(/[^\w][bd]\.|&#39s|[^a-zA-Z0-9]/g,"") );
-//    console.log( all_tags[index] );
-    console.log( all_tags[index].replace(
+  //4) Make sure each value is unique.
+  const input_tags = all_tags.filter( (value,index,self) => {
+    return self.indexOf(value) === index;
+  });
+
+  //5) Find any words already indexed for this card.
+  const tag_query = "SELECT name FROM tags WHERE card_id = " + card_id + ";";
+  const [existing_tags,out_fields] = await sqlPool.query( tag_query );
+//TODO: Sorting these arrays first would often speed comparison.
+  const duplicate_tags = [];
+  const new_tags = [];
+  for( index in input_tags ) {
+    if( !existing_tags.includes( input_tags[index] ) ) {
+      new_tags.push( input_tags[index] );
+    }
+  }
+  //6) Find any words that are indexed for this card that have been removed.
+  const delete_tags = [];
+  for( index in existing_tags ) {
+    if( !input_tags.includes( existing_tags[index].name ) ) {
+      delete_tags.push( existing_tags[index].name );
+      console.log( "Deleting " + existing_tags[index].name );
+    }
+  }
+  //8) Add any words that need to be indexed for this card.
+  let insert_query = "INSERT INTO tags (name,set_id,card_id) VALUES ";
+  for( index in input_tags ) {
+    insert_query += "(\"" + input_tags[index].replace(
       /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, ""
-    ) );
-//    const tag = all_tags[index].replace( /&#39s|[^a-zA-Z0-9]/g, "" );
-/*    const insert_query = "INSERT INTO tags (name,set_id,card_id) VALUES ( " +
-      tag + ", " +
-      null + ", " +
-      card_id + ");";
-    const [out_row,out_fields] = await sqlPool.query( insert_query );*/
+    );
+    insert_query += "\", NULL, " + card_id + "), ";
+  }
+  insert_query = insert_query.slice( 0, insert_query.length-2 );
+  insert_query += ";";
+  console.log( insert_query );
+  const [insert_rows,insert_fields] = await sqlPool.query( insert_query );
+
+  //7) Remove any words that need to be removed.
+  if( delete_tags.length != 0 ) {
+    let delete_query = "DELETE FROM tags WHERE card_id = " + card_id + " AND (";
+    for( index in delete_tags ) {
+      delete_query += " name = \"" + delete_tags[index] + "\" OR";
+    }
+    delete_query = delete_query.slice( 0, delete_query.length-2 );
+    delete_query += ");";
+    console.log( "delete_query: " + delete_query );
+    const [delete_rows,delete_fields] = await sqlPool.query( delete_query );
   }
 }
 
@@ -362,16 +408,26 @@ function launchRoutes() {
     }
   });
 
-  //DEPRECATED TODO: Remove
   app.get('/get_card/:card_id', async function(req,res) {
     try {
+//TODO) Place these in an async function so that both can be run simultaneously.
+      //1) Get card itself
       const get_card_query = "SELECT question, answer FROM cards WHERE card_id = " +
         req.params.card_id + ";";
       const [card_row,card_field] = await sqlPool.query( get_card_query );
+
+      //2) Get all tags.
+      const get_card_tags_query = "SELECT name FROM tags WHERE card_id = " +
+        req.params.card_id + ";";
+      const [tags_row,tags_field] = await sqlPool.query( get_card_tags_query );
+//console.dir( tags_row );
+      //3) Combine results.
       const card_obj = {
         result: "success",
-        card: card_row[0]
+        card: card_row[0],
+        tags: tags_row
       }
+
       res.send( JSON.stringify( card_obj ) );
     } catch( error ) {
       console.log( error );

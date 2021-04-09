@@ -123,6 +123,7 @@ function launch_card_interface( inCardID, inSetID, isNew ) {
 console.log( "launch_card_interface" );
   set_interface( "card", {set_id:inSetID, card_id:inCardID} );
   card_tags.splice(0);
+//TODO: Get card's tags
   card_interface_render_tags();
   if( isNew == false ) {
     get_card( inCardID );
@@ -161,6 +162,9 @@ function get_card( inCardID ) {
       if( json.result == "success" ) {
         question_text.value = proc_txt_card_interface( json.card.question );
         answer_text.value = proc_txt_card_interface( json.card.answer );
+console.dir( json.tags );
+//card_tags.concat( json.tags );
+//card_interface_render_tags();
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
