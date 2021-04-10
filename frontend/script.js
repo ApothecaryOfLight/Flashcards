@@ -334,7 +334,7 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
   set_data.set_id = inSetID; //TODO: Attach this to interface
   const set_name_element = document.getElementById("cardlist_interface_set_name");
   cardlist_tags.splice(0);
-  cardlist_interface_render_tags();
+  cardlist_interface_render_tags( inSetID );
 //TODO: Populate cardlist_tags
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
@@ -349,7 +349,7 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
         for( index in json.topics ) {
           cardlist_tags.push( json.topics[index].name );
         }
-        cardlist_interface_render_tags();
+        cardlist_interface_render_tags( inSetID );
 
         if( go_to_end ) {
           cardlist_interface_scroll_to_bottom();
@@ -413,7 +413,7 @@ function cardlist_interface_add_tag_button( inSetID ) {
   cardlist_tags.push( tag_text );
 
   //4) Render updated search terms.
-  cardlist_interface_render_tags();
+  cardlist_interface_render_tags( inSetID );
   cardlist_interface_update_tags( inSetID );
 
   //5) Blank out search term.
@@ -449,28 +449,30 @@ function cardlist_interface_update_tags( inSetID ) {
     });
 
 }
-function cardlist_interface_render_tags() {
+function cardlist_interface_render_tags( inSetID ) {
   let dom = "";
   for( index in cardlist_tags ) {
     dom += "<div class=\"cardlist_interface_tag_container\">" +
       cardlist_tags[index] +
       "<div class=\"cardlist_interface_tag_delete_button\"" +
-      " onclick=delete_cardlist_tag(\'" + cardlist_tags[index] + "\');" +
+      " onclick=\"delete_cardlist_tag(\'" +
+      cardlist_tags[index] + "\', " + inSetID + ");\"" +
       ">X</div>" +
       "</div>";
   }
+console.log( dom );
   const tag_container = document.getElementById("cardlist_interface_tags_list");
   tag_container.innerHTML = dom;
 }
-function delete_cardlist_tag( inTag ) {
+function delete_cardlist_tag( inTag, inSetID ) {
   inTag = inTag.replace( /\s/g, "&nbsp;" );
   for( index in cardlist_tags ) {
     if( cardlist_tags[index] == inTag ) {
       cardlist_tags.splice( index, 1 );
     }
   }
-  cardlist_interface_render_tags();
-  cardlist_interface_update_tags();
+  cardlist_interface_render_tags( inSetID );
+  cardlist_interface_update_tags( inSetID );
 }
 
 
