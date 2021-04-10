@@ -100,40 +100,55 @@ async function update_tags( card_id, question, answer, tags ) {
   const all_tags = words.concat( tags );
   //4) Make sure each value is unique.
   const input_tags = all_tags.filter( (value,index,self) => {
-    return self.indexOf(value) === index;
+    if( value != "" && value.length > 1 ) {
+      return self.indexOf(value) === index;
+    }
   });
+  //  input_tags = input_tags.filter( (value) => ( value != "" && value.length > 1 ) );
+
 
   //5) Find any words already indexed for this card.
   const tag_query = "SELECT name FROM tags WHERE card_id = " + card_id + ";";
-  const [existing_tags,out_fields] = await sqlPool.query( tag_query );
+  const [out_tags,out_fields] = await sqlPool.query( tag_query );
 //TODO: Sorting these arrays first would often speed comparison.
+
+  const existing_tags = [];
+  for( index in out_tags ) {
+    existing_tags.push( out_tags[index].name );
+  }
+
   const duplicate_tags = [];
   const new_tags = [];
   for( index in input_tags ) {
+    console.log( "add? " + input_tags[index] );
     if( !existing_tags.includes( input_tags[index] ) ) {
       new_tags.push( input_tags[index] );
     }
   }
+
   //6) Find any words that are indexed for this card that have been removed.
   const delete_tags = [];
   for( index in existing_tags ) {
-    if( !input_tags.includes( existing_tags[index].name ) ) {
-      delete_tags.push( existing_tags[index].name );
-      console.log( "Deleting " + existing_tags[index].name );
+    console.log( "remove? " + existing_tags[index] );
+    if( !input_tags.includes( existing_tags[index] ) ) {
+      delete_tags.push( existing_tags[index] );
     }
   }
+
   //8) Add any words that need to be indexed for this card.
-  let insert_query = "INSERT INTO tags (name,set_id,card_id) VALUES ";
-  for( index in input_tags ) {
-    insert_query += "(\"" + input_tags[index].replace(
-      /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, ""
-    );
-    insert_query += "\", NULL, " + card_id + "), ";
+  if( new_tags.length > 0 ) {
+    let insert_query = "INSERT INTO tags (name,set_id,card_id) VALUES ";
+    for( index in new_tags ) {
+      insert_query += "(\"" + new_tags[index].replace(
+        /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, ""
+      );
+      insert_query += "\", NULL, " + card_id + "), ";
+    }
+    insert_query = insert_query.slice( 0, insert_query.length-2 );
+    insert_query += ";";
+    //console.log( insert_query );
+    const [insert_rows,insert_fields] = await sqlPool.query( insert_query );
   }
-  insert_query = insert_query.slice( 0, insert_query.length-2 );
-  insert_query += ";";
-  console.log( insert_query );
-  const [insert_rows,insert_fields] = await sqlPool.query( insert_query );
 
   //7) Remove any words that need to be removed.
   if( delete_tags.length != 0 ) {
@@ -143,7 +158,7 @@ async function update_tags( card_id, question, answer, tags ) {
     }
     delete_query = delete_query.slice( 0, delete_query.length-2 );
     delete_query += ");";
-    console.log( "delete_query: " + delete_query );
+    //console.log( "delete_query: " + delete_query );
     const [delete_rows,delete_fields] = await sqlPool.query( delete_query );
   }
 }
