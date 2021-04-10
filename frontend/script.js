@@ -162,9 +162,11 @@ function get_card( inCardID ) {
       if( json.result == "success" ) {
         question_text.value = proc_txt_card_interface( json.card.question );
         answer_text.value = proc_txt_card_interface( json.card.answer );
-console.dir( json.tags );
-//card_tags.concat( json.tags );
-//card_interface_render_tags();
+
+        for( index in json.tags ) {
+          card_tags.push( json.tags[index].name );
+        }
+        card_interface_render_tags();
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal

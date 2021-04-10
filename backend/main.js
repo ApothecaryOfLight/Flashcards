@@ -86,6 +86,128 @@ function process_tag( inTag, replaceWith ) {
   );
 }
 
+async function index_search_data( id, topics, text, isCard ) {
+  //1) Set variables for either card or set processing.
+  let table;
+  let where_predicate;
+  let insert_fields;
+  //1a) If isCard.
+  if( isCard ) {
+    table = "card_search_";
+    where_predicate = "WHERE card_id = " + id;
+    insert_fields = "(name,card_id) VALUES ";
+  }
+
+  //1b) If isCard is false.
+  if( !isCard ) {
+    table = "card_search_";
+    where_predicate = "WHERE set_id = " + id;
+    insert_fields = "(name,set_id) VALUES ";
+  }
+
+  //2) Set variables for either topics or text processing.
+  let in_terms = [];
+
+  //2a) If topics
+  if( topics ) {
+    for( index in topics ) {
+      in_terms.push(  process_tag( topics[index], "" ) );
+    }
+    table += "topics ";
+  }
+
+  //2b) If text
+  if( text ) {
+    in_terms = process_tag(text).split(" ");
+    table += "text ";
+  }
+
+  //3) Make sure each value is unique, not empty, and longer than 1 character.
+  const unique_topics = in_terms.filter( (value,index,self) => {
+    if( value != "" && value.length > 1 ) {
+      return self.indexOf(value) === index;
+    }
+  });
+
+  //4) Find any topics already indexed for this card/set.
+  const topic_query =
+    "SELECT name FROM " + table + where_predicate + ";"
+//    "FROM card_search_topics " +
+//    "WHERE card_id = " + id + ";";
+  console.log( "\ntopic_query: " + topic_query );
+  const [existing_topics_rows,existing_topics_fields] =
+    await sqlPool.query( topic_query );
+//TODO: Sorting these arrays first would often speed comparison.
+
+  //5) Process the SQL result into a simple array.
+//TODO: There should be a way to return this as an array directly.
+  const existing_topics = [];
+  for( index in existing_topics_rows ) {
+    existing_topics.push( existing_topics_rows[index].name );
+  }
+
+  //6) Compare input topics and exsiting topics to find new topics.
+  const new_tags = [];
+  for( index in unique_topics ) {
+    if( !existing_topics.includes( unique_topics[index] ) ) {
+      new_tags.push( unique_topics[index] );
+    }
+  }
+
+  //7) Compare input topics and existing topics to find deleted topics.
+  const delete_tags = [];
+  for( index in existing_topics ) {
+    if( !unique_topics.includes( existing_topics[index] ) ) {
+      delete_tags.push( existing_topics[index] );
+    }
+  }
+
+  //7) If there are new tags, compose insert query to add them.
+  if( new_tags.length > 0 ) {
+    let insert_query = "INSERT INTO " +
+      table +
+      insert_fields;
+//      "card_search_topics " +
+//      "(name,set_id,card_id) VALUES ";
+    for( index in new_tags ) {
+      insert_query += "(\"" + new_tags[index].replace(
+        /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, ""
+      );
+      insert_query += "\", " + id + "), ";
+    }
+    insert_query = insert_query.slice( 0, insert_query.length-2 );
+    insert_query += ";";
+    console.log( "\ninsert query: " + insert_query );
+    const [insert_rows,fields] = await sqlPool.query( insert_query );
+  }
+
+  //8) If there are deleted tags, compose delete query to remove them.
+  if( delete_tags.length > 0 ) {
+    let delete_query = "DELETE FROM " +
+      table +
+      where_predicate +
+//      "FROM card_search_topics " +
+//      "WHERE card_id = " + id +
+      " AND (";
+    for( index in delete_tags ) {
+      delete_query += " name = \"" + delete_tags[index] + "\" OR";
+    }
+    delete_query = delete_query.slice( 0, delete_query.length-2 );
+    delete_query += ");";
+    console.log( "\ndelete_query: " + delete_query );
+    const [delete_rows,delete_fields] = await sqlPool.query( delete_query );
+  }
+}
+function set_card_search_text( card_id, card_text ) {
+  
+}
+function set_cardset_search_topics( set_id, topics ) {
+  
+}
+function set_cardset_search_text( set_id, set_text ) {
+  
+}
+
 async function update_tags( card_id, question, answer, tags ) {
   //1) Combine question and answer tag fields into one string, regex clean it.
   const words_string = process_tag( question + " " + answer, " " );
@@ -181,6 +303,7 @@ function launchRoutes() {
   });
 
 
+//set_cardset_search_topics and set_cardset_search_text
   /*Add a new set of cards*/
   app.post('/new_set', async function(req,res) {
     try {
@@ -304,6 +427,7 @@ function launchRoutes() {
     }
   });
 
+//TODO: set_card_search_text and set_card_search_topics
   /*Add a new card*/
   app.post('/add_card', async function(req,res) {
     try {
@@ -318,7 +442,19 @@ function launchRoutes() {
         req.body.set_id + ");"
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
 
-      update_tags( new_card_id, req.body.question, req.body.answer, req.body.tags );
+      index_search_data(
+        new_card_id,
+        null,
+        req.body.question + " " + req.body.answer,
+        true
+      );
+      index_search_data(
+        new_card_id,
+        req.body.tags,
+        null,
+        true
+      );
+      //update_tags( new_card_id, req.body.question, req.body.answer, req.body.tags );
 
       //TODO: On success, on error handling.
       res.send( JSON.stringify({
@@ -333,6 +469,7 @@ function launchRoutes() {
     }
   });
 
+//TODO: set_card_search_text and set_card_search_topics
   /*Update card*/
   app.post( '/update_card', async function(req,res) {
     try {
@@ -343,7 +480,19 @@ function launchRoutes() {
         " AND card_id = " + req.body.card_id + ";";
       const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
 
-      update_tags( req.body.card_id, req.body.question, req.body.answer, req.body.tags );
+      index_search_data(
+        req.body.card_id,
+        null,
+        req.body.question + " " + req.body.answer,
+        true
+      );
+      index_search_data(
+        req.body.card_id,
+        req.body.tags,
+        null,
+        true
+      );
+      //update_tags( req.body.card_id, req.body.question, req.body.answer, req.body.tags );
 
       //TODO: On success, on error
       res.send( JSON.stringify({
@@ -431,18 +580,27 @@ function launchRoutes() {
         req.params.card_id + ";";
       const [card_row,card_field] = await sqlPool.query( get_card_query );
 
-      //2) Get all tags.
-      const get_card_tags_query = "SELECT name FROM tags WHERE card_id = " +
+      //2) Get search text. DEPRECATED. Not used in card_interface.
+/*      const get_card_tags_query = "SELECT name FROM tags WHERE card_id = " +
         req.params.card_id + ";";
       const [tags_row,tags_field] = await sqlPool.query( get_card_tags_query );
-//console.dir( tags_row );
+*/
+
+      //2) Get search topics.
+      const card_search_topics_query =
+        "SELECT name FROM card_search_topics WHERE card_id = " +
+        req.params.card_id + ";";
+      const [topics_row,topics_field] =
+        await sqlPool.query( card_search_topics_query );
+
       //3) Combine results.
       const card_obj = {
         result: "success",
         card: card_row[0],
-        tags: tags_row
+        tags: topics_row
       }
 
+      //4) Send data
       res.send( JSON.stringify( card_obj ) );
     } catch( error ) {
       console.log( error );
