@@ -100,7 +100,7 @@ async function index_search_data( id, topics, text, isCard ) {
 
   //1b) If isCard is false.
   if( !isCard ) {
-    table = "card_search_";
+    table = "cardset_search_";
     where_predicate = "WHERE set_id = " + id;
     insert_fields = "(name,set_id) VALUES ";
   }
@@ -132,8 +132,6 @@ async function index_search_data( id, topics, text, isCard ) {
   //4) Find any topics already indexed for this card/set.
   const topic_query =
     "SELECT name FROM " + table + where_predicate + ";"
-//    "FROM card_search_topics " +
-//    "WHERE card_id = " + id + ";";
   console.log( "\ntopic_query: " + topic_query );
   const [existing_topics_rows,existing_topics_fields] =
     await sqlPool.query( topic_query );
@@ -162,13 +160,11 @@ async function index_search_data( id, topics, text, isCard ) {
     }
   }
 
-  //7) If there are new tags, compose insert query to add them.
+  //8) If there are new tags, compose insert query to add them.
   if( new_tags.length > 0 ) {
     let insert_query = "INSERT INTO " +
       table +
       insert_fields;
-//      "card_search_topics " +
-//      "(name,set_id,card_id) VALUES ";
     for( index in new_tags ) {
       insert_query += "(\"" + new_tags[index].replace(
         /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, ""
@@ -181,13 +177,11 @@ async function index_search_data( id, topics, text, isCard ) {
     const [insert_rows,fields] = await sqlPool.query( insert_query );
   }
 
-  //8) If there are deleted tags, compose delete query to remove them.
+  //9) If there are deleted tags, compose delete query to remove them.
   if( delete_tags.length > 0 ) {
     let delete_query = "DELETE FROM " +
       table +
       where_predicate +
-//      "FROM card_search_topics " +
-//      "WHERE card_id = " + id +
       " AND (";
     for( index in delete_tags ) {
       delete_query += " name = \"" + delete_tags[index] + "\" OR";
@@ -197,15 +191,6 @@ async function index_search_data( id, topics, text, isCard ) {
     console.log( "\ndelete_query: " + delete_query );
     const [delete_rows,delete_fields] = await sqlPool.query( delete_query );
   }
-}
-function set_card_search_text( card_id, card_text ) {
-  
-}
-function set_cardset_search_topics( set_id, topics ) {
-  
-}
-function set_cardset_search_text( set_id, set_text ) {
-  
 }
 
 async function update_tags( card_id, question, answer, tags ) {
@@ -469,7 +454,24 @@ function launchRoutes() {
     }
   });
 
-//TODO: set_card_search_text and set_card_search_topics
+  app.post( '/update_set', async function(req,res) {
+    try {
+      index_search_data(
+        req.body.set_id,
+        req.body.tags,
+        null,
+        false
+      );
+    } catch( error ) {
+      console.log( error );
+      res.send( JSON.stringify({
+        "result": "error",
+        "error_message": "Unspecified error attempting to update card."
+      }));
+    }
+  });
+
+
   /*Update card*/
   app.post( '/update_card', async function(req,res) {
     try {
@@ -552,14 +554,25 @@ function launchRoutes() {
     try {
       const get_cardlist_set_name_query = "SELECT name FROM sets WHERE set_id = " +
         req.params.set_id + ";";
-      const [set_name_row,set_name_field] = await sqlPool.query( get_cardlist_set_name_query );
+      const [set_name_row,set_name_field] =
+        await sqlPool.query( get_cardlist_set_name_query );
+
+
       const get_cardlist_cards = "SELECT card_id, answer, question FROM cards " +
         "WHERE set_id = "  + req.params.set_id + ";";
-      const [cardlist_row,cardlist_field] = await sqlPool.query( get_cardlist_cards );
+      const [cardlist_row,cardlist_field] =
+        await sqlPool.query( get_cardlist_cards );
+
+      const get_cardlist_topics = "SELECT name FROM cardset_search_topics " +
+        "WHERE set_id = " + req.params.set_id + ";";
+      const [topics_rows,topics_fields] =
+        await sqlPool.query( get_cardlist_topics );
+
       const cardlist_obj = {
         result: "success",
         set_name: set_name_row[0],
-        cards: cardlist_row
+        cards: cardlist_row,
+        topics: topics_rows
       };
 
       res.send( JSON.stringify( cardlist_obj ) );

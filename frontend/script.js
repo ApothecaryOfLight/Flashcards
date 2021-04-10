@@ -345,6 +345,12 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
       if( json.result == "success" ) {
         set_name_element.innerHTML = json.set_name.name;
         cardlist_interface_populate_list( inSetID, json.cards );
+
+        for( index in json.topics ) {
+          cardlist_tags.push( json.topics[index].name );
+        }
+        cardlist_interface_render_tags();
+
         if( go_to_end ) {
           cardlist_interface_scroll_to_bottom();
         }
@@ -414,17 +420,34 @@ function cardlist_interface_add_tag_button( inSetID ) {
   tag_field.value = "";
 }
 function cardlist_interface_update_tags( inSetID ) {
-/*  const message = cardlist_tags.reduce(
-    (sofar,next) => {
-      return sofar + "&&&" + next;
-    }
-  );*/
-  const message = JSON.stringify({
-    "event": "update_tags",
+//TODO: Allow for set to be renamed
+  const body_content = JSON.stringify({
     "set_id": inSetID,
-    "data": cardlist_tags
+    "tags": cardlist_tags
   });
-  console.log( "sending: " + message );
+
+  const update_set = new Request(
+    ip + 'update_set',
+    {
+      method: 'POST',
+      body: body_content,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  fetch( update_set )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "success" ) {
+      } else if( json.result == "error" ) {
+        const options = {
+          "Close" : close_modal
+        }
+        launch_modal( null, json.error_message, options );
+      }
+    });
+
 }
 function cardlist_interface_render_tags() {
   let dom = "";
