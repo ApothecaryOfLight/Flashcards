@@ -23,7 +23,7 @@
 </div-->
 
 <div id="root">
-<div id="setlist_interface">
+<div id="search_interface">
   <div id="paper_background">
     <div class="red_lines"></div>
   </div>
@@ -46,74 +46,67 @@
     </div>
   </div>
 
-  <div id="setlist_interface_field_container">
-    <input id="setlist_interface_set_name"
+  <div id="search_interface_field_container">
+    <input id="search_interface_set_name"
       type="text" autocomplete="off" placeholder="Search"/>
-    <div id="setlist_interface_set_name_create">
-      <div id="setlist_interface_set_name_create_text">
+    <div id="search_interface_set_name_create">
+      <div id="search_interface_set_name_create_text">
         Create
       </div>
     </div>
   </div>
 
   <div id="search_buttons_container">
-    <button id="setlist_interface_add_search_tag_button" class="better_buttons">Add Search Term</button>
+    <button id="search_interface_add_search_tag_button" class="better_buttons">Add Search Term</button>
     <button id="create_temp_set_button" class="better_buttons">Create Temporary Set</button>
   </div>
-  <button id="switch_list_type" class="better_buttons">List Cards</button>
+  <button id="search_interface_switch_list_type" class="better_buttons">List Cards</button>
 
-  <div id="search_tag_container">
-    <!--search terms
-    <div class="search_tag_unit">unit A
-      <div class="search_tag_delete">X</div>
-    </div>
-    <div class="search_tag_unit">unit B
-      <div class="search_tag_delete">X</div>
-    </div>-->
-  </div>
+  <div id="search_tag_container"></div>
 
-  <!--button id="setlist_interface_create" class="button wide_button">Create</button-->
-  <div id="setlist_interface_set_list"></div>
+  <div id="search_interface_set_list"></div>
 </div>
 
-<div id="cardlist_interface">
-  <div id="cardlist_interface_set_name"></div>
-  <div id="cardlist_interface_buttons">
-    <button id="cardlist_interface_new" class="cardlist_interface_button half_button">
+<div id="set_editor_interface">
+  <div id="set_editor_interface_set_name"></div>
+  <div id="set_editor_interface_buttons">
+    <button id="set_editor_interface_new"
+      class="set_editor_interface_button half_button">
       New Card
     </button>
-    <button id="cardlist_interface_go_back" class="cardlist_interface_button half_button">
+    <button id="set_editor_interface_go_back"
+      class="set_editor_interface_button half_button">
       Go Back
     </button>
    </div>
-  <div id="cardlist_interface_lower_container">
-    <div id="cardlist_interface_tags_container">
-      <input type="text"  id="cardlist_interface_tags_field"/>
-      <button id="cardlist_interface_add_tag_button">Add Topic</button>
+  <div id="set_editor_interface_lower_container">
+    <div id="set_editor_interface_tags_container">
+      <input type="text"  id="set_editor_interface_tags_field"/>
+      <button id="set_editor_interface_add_tag_button">Add Topic</button>
     </div>
-    <div id="cardlist_interface_tags_list"></div>
-    <div id="cardlist_interface_card_list"></div>
+    <div id="set_editor_interface_tags_list"></div>
+    <div id="set_editor_interface_card_list"></div>
   </div>
 </div>
 
-<div id="card_interface">
-  <div id="card_interface_set_name"></div>
+<div id="card_editor_interface">
+  <div id="card_editor_interface_set_name"></div>
 
-  <div id="card_interface_tags_container">
-    <input type="text"  id="card_interface_tags_field"/>
-    <button id="card_interface_add_tag_button">Add Topic</button>
+  <div id="card_editor_interface_tags_container">
+    <input type="text"  id="card_editor_interface_tags_field"/>
+    <button id="card_editor_interface_add_tag_button">Add Topic</button>
   </div>
-  <div id="card_interface_tags_list"></div>
+  <div id="card_editor_interface_tags_list"></div>
 
-  <textarea id="card_interface_q_text" placeholder="Question here."></textarea>
-  <textarea id="card_interface_a_text" placeholder="Answer here."></textarea>
-  <div id="card_interface_buttons">
-    <button id="card_interface_go_back"
-      class="quarter_button card_interface_button">Go Back</button>
-    <button id="card_interface_set_card"
-      class="quarter_button card_interface_button">Set Card</button>
-    <!--button id="card_interface_remove"
-      class="button quarter_button card_interface_button">X</button-->
+  <textarea id="card_editor_interface_q_text" placeholder="Question here.">
+  </textarea>
+  <textarea id="card_editor_interface_a_text" placeholder="Answer here.">
+  </textarea>
+  <div id="card_editor_interface_buttons">
+    <button id="card_editor_interface_go_back"
+      class="quarter_button card_editor_interface_button">Go Back</button>
+    <button id="card_editor_interface_set_card"
+      class="quarter_button card_editor_interface_button">Set Card</button>
   </div>
 </div>
 
@@ -126,14 +119,14 @@
     <div id="runset_interface_qa_text"></div>
   </div>
   <div id="runset_interface_buttons">
-    <!--button id="runset_interface_flip_card" class="button wide_button">Flip</button>
-    <button id="runset_interface_go_back" class="button wide_button"><-</button>
-    <button id="runset_interface_missed" class="button wide_button">X</button>
-    <button id="runset_interface_correct" class="button wide_button">./</button-->
-    <span id="runset_interface_go_back" class="button material-icons md-32">arrow_circle_up</span>
-    <span id="runset_interface_missed" class="button material-icons md-32">close</span>
-    <span id="runset_interface_correct" class="button material-icons md-32">check</span>
-    <span id="runset_interface_flip_card" class="button material-icons md-32">rotate_90_degrees_ccw</span>
+    <span id="runset_interface_go_back"
+     class="button material-icons md-32">arrow_circle_up</span>
+    <span id="runset_interface_missed"
+      class="button material-icons md-32">close</span>
+    <span id="runset_interface_correct"
+      class="button material-icons md-32">check</span>
+    <span id="runset_interface_flip_card"
+      class="button material-icons md-32">rotate_90_degrees_ccw</span>
   </div>
 </div>
 

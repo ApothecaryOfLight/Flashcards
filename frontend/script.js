@@ -1,7 +1,7 @@
 const ip = 'http://52.11.132.13:3000/';
 
 window.addEventListener( 'load', (loaded_event) => {
-  launch_setlist_interface();
+  launch_search_interface();
   attach_login();
 });
 
@@ -62,7 +62,7 @@ function next_card( cards_obj ) {
   runset_render_qa( cards_obj );
 }
 function runset_interface_go_back( cards_obj ) {
-  launch_setlist_interface();
+  launch_search_interface();
 }
 function runset_interface_missed( cards_obj ) {
   next_card( cards_obj );
@@ -117,34 +117,34 @@ function runset_render_qa( card_set_obj ) {
 
 
 /*
-Card interface
+Card editor interface
 */
-function launch_card_interface( inCardID, inSetID, isNew ) {
-console.log( "launch_card_interface" );
-  set_interface( "card", {set_id:inSetID, card_id:inCardID} );
+function launch_card_editor_interface( inCardID, inSetID, isNew ) {
+console.log( "launch_card_editor_interface" );
+  set_interface( "card_editor", {set_id:inSetID, card_id:inCardID} );
   card_tags.splice(0);
 //TODO: Get card's tags
-  card_interface_render_tags();
+  card_editor_interface_render_tags();
   if( isNew == false ) {
     get_card( inCardID );
     //TODO: Handle this through the attach/detach functions
-    const set_card = document.getElementById("card_interface_set_card");
-    const func_ref = card_interface_update_card.bind( this, inSetID, inCardID );
+    const set_card = document.getElementById("card_editor_interface_set_card");
+    const func_ref = card_editor_interface_update_card.bind( this, inSetID, inCardID );
 
-    if( bound_functions["card"]["set_card"] ) {
-      bound_functions["card"]["set_card"].forEach( (func)=> {
+    if( bound_functions["card_editor"]["set_card"] ) {
+      bound_functions["card_editor"]["set_card"].forEach( (func)=> {
         set_card.removeEventListener( 'click', func );
       });
     }
-    bound_functions["card"]["set_card"] = [];
+    bound_functions["card_editor"]["set_card"] = [];
 
     set_card.addEventListener( 'click', func_ref );
-    bound_functions["card"]["set_card"].push( func_ref );
+    bound_functions["card_editor"]["set_card"].push( func_ref );
   } else {
   }
 }
 
-function proc_txt_card_interface( inText ) {
+function proc_txt_card_editor_interface( inText ) {
   //1) Replace unicode apostrophe with apostrophe.
   let outText = inText.replaceAll( "&#39", "\'" );
   return outText;
@@ -154,19 +154,19 @@ function get_card( inCardID ) {
   const get_card = new Request(
     ip + 'get_card/' + inCardID
   );
-  const question_text = document.getElementById("card_interface_q_text");
-  const answer_text = document.getElementById("card_interface_a_text");
+  const question_text = document.getElementById("card_editor_interface_q_text");
+  const answer_text = document.getElementById("card_editor_interface_a_text");
   fetch( get_card )
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        question_text.value = proc_txt_card_interface( json.card.question );
-        answer_text.value = proc_txt_card_interface( json.card.answer );
+        question_text.value = proc_txt_card_editor_interface( json.card.question );
+        answer_text.value = proc_txt_card_editor_interface( json.card.answer );
 
         for( index in json.tags ) {
           card_tags.push( json.tags[index].name );
         }
-        card_interface_render_tags();
+        card_editor_interface_render_tags();
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -176,9 +176,9 @@ function get_card( inCardID ) {
     });
 }
 
-function card_interface_update_card( inSetID, inCardID ) {
-  const card_q_handle = document.getElementById("card_interface_q_text");
-  const card_a_handle = document.getElementById("card_interface_a_text");
+function card_editor_interface_update_card( inSetID, inCardID ) {
+  const card_q_handle = document.getElementById("card_editor_interface_q_text");
+  const card_a_handle = document.getElementById("card_editor_interface_a_text");
   const question_text = card_q_handle.value;
   const answer_text = card_a_handle.value;
 
@@ -206,7 +206,7 @@ function card_interface_update_card( inSetID, inCardID ) {
       if( json.result == "success" ) {
         card_q_handle.value = "";
         card_a_handle.value = "";
-        launch_cardlist_interface( inSetID );
+        launch_set_editor_interface( inSetID );
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -216,9 +216,9 @@ function card_interface_update_card( inSetID, inCardID ) {
     });
 }
 
-function card_interface_set_card( inCardData ) {
-  const card_q_handle = document.getElementById("card_interface_q_text");
-  const card_a_handle = document.getElementById("card_interface_a_text");
+function card_editor_interface_set_card( inCardData ) {
+  const card_q_handle = document.getElementById("card_editor_interface_q_text");
+  const card_a_handle = document.getElementById("card_editor_interface_a_text");
   const question_text = card_q_handle.value;
   const answer_text = card_a_handle.value;
   const body_content = JSON.stringify({
@@ -244,7 +244,7 @@ function card_interface_set_card( inCardData ) {
       if( json.result == "success" ) {
         card_q_handle.value = "";
         card_a_handle.value = "";
-        launch_cardlist_interface( inCardData.set_id, true );
+        launch_set_editor_interface( inCardData.set_id, true );
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -254,17 +254,17 @@ function card_interface_set_card( inCardData ) {
     });
 }
 
-function card_interface_go_back( inCardData ) {
-  const card_q_handle = document.getElementById("card_interface_q_text");
-  const card_a_handle = document.getElementById("card_interface_a_text");
+function card_editor_interface_go_back( inCardData ) {
+  const card_q_handle = document.getElementById("card_editor_interface_q_text");
+  const card_a_handle = document.getElementById("card_editor_interface_a_text");
   card_q_handle.value = "";
   card_a_handle.value = "";
-  launch_cardlist_interface( inCardData.set_id );
+  launch_set_editor_interface( inCardData.set_id );
 }
 const card_tags = [];
-function card_interface_add_tag_button( inCardData ) {
+function card_editor_interface_add_tag_button( inCardData ) {
   //1) Get tag
-  const tag_field = document.getElementById("card_interface_tags_field");
+  const tag_field = document.getElementById("card_editor_interface_tags_field");
   let tag_text = tag_field.value;
   if( tag_text == "" ) { return; }
   tag_text = tag_text.replace( /\s/g, "&nbsp;" );
@@ -280,12 +280,12 @@ function card_interface_add_tag_button( inCardData ) {
   card_tags.push( tag_text );
 
   //4) Render updated search terms.
-  card_interface_render_tags();
+  card_editor_interface_render_tags();
 
   //5) Blank out search term.
   tag_field.value = "";
 }
-function card_interface_update_tags( inCardData ) {
+function card_editor_interface_update_tags( inCardData ) {
 /*  const message = card_tags.reduce(
     (sofar,next) => {
       return sofar + "&&&" + next;
@@ -299,17 +299,17 @@ function card_interface_update_tags( inCardData ) {
   });
   console.log( "sending: " + message );
 }
-function card_interface_render_tags() {
+function card_editor_interface_render_tags() {
   let dom = "";
   for( index in card_tags ) {
-    dom += "<div class=\"card_interface_tag_container\">" +
+    dom += "<div class=\"card_editor_interface_tag_container\">" +
       card_tags[index] +
-      "<div class=\"card_interface_tag_delete_button\"" +
+      "<div class=\"card_editor_interface_tag_delete_button\"" +
       " onclick=delete_card_tag(\'" + card_tags[index] + "\');" +
       ">X</div>" +
       "</div>";
   }
-  const tag_container = document.getElementById("card_interface_tags_list");
+  const tag_container = document.getElementById("card_editor_interface_tags_list");
   tag_container.innerHTML = dom;
 }
 function delete_card_tag( inTag ) {
@@ -319,23 +319,23 @@ function delete_card_tag( inTag ) {
       card_tags.splice( index, 1 );
     }
   }
-  card_interface_render_tags();
+  card_editor_interface_render_tags();
 }
 
 
 
 
 /*
-Cardlist interface
+set_editor interface
 */
 const set_data = {};
-function launch_cardlist_interface( inSetID, go_to_end ) {
-  set_interface( "cardlist", inSetID );
+function launch_set_editor_interface( inSetID, go_to_end ) {
+  set_interface( "set_editor", inSetID );
   set_data.set_id = inSetID; //TODO: Attach this to interface
-  const set_name_element = document.getElementById("cardlist_interface_set_name");
-  cardlist_tags.splice(0);
-  cardlist_interface_render_tags( inSetID );
-//TODO: Populate cardlist_tags
+  const set_name_element = document.getElementById("set_editor_interface_set_name");
+  set_editor_tags.splice(0);
+  set_editor_interface_render_tags( inSetID );
+//TODO: Populate set_editor_tags
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
   );
@@ -344,15 +344,15 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
     .then( json => {
       if( json.result == "success" ) {
         set_name_element.innerHTML = json.set_name.name;
-        cardlist_interface_populate_list( inSetID, json.cards );
+        set_editor_interface_populate_list( inSetID, json.cards );
 
         for( index in json.topics ) {
-          cardlist_tags.push( json.topics[index].name );
+          set_editor_tags.push( json.topics[index].name );
         }
-        cardlist_interface_render_tags( inSetID );
+        set_editor_interface_render_tags( inSetID );
 
         if( go_to_end ) {
-          cardlist_interface_scroll_to_bottom();
+          set_editor_interface_scroll_to_bottom();
         }
       } else if( json.result == "error" ) {
         const options = {
@@ -362,68 +362,68 @@ function launch_cardlist_interface( inSetID, go_to_end ) {
       }
     });
 }
-function cardlist_interface_scroll_to_bottom() {
-  const cardlist_scr = document.getElementById("cardlist_interface_card_list");
-  cardlist_scr.scrollTo( 0, cardlist_scr.scrollHeight );
+function set_editor_interface_scroll_to_bottom() {
+  const set_editor_scr = document.getElementById("set_editor_interface_card_list");
+  set_editor_scr.scrollTo( 0, set_editor_scr.scrollHeight );
 }
-function cardlist_interface_populate_list( inSetID, inCards ) {
-  const cardlist_interface_card_list = document.getElementById("cardlist_interface_card_list" );
+function set_editor_interface_populate_list( inSetID, inCards ) {
+  const set_editor_interface_card_list = document.getElementById("set_editor_interface_card_list" );
   let dom = "";
   inCards.forEach( card => {
     dom +=
       "<div class=\"card_element\"> " +
 /*      "<span class=\"card_button\" " +
-      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\">" +*/
+      "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\">" +*/
       "<div class=\"card_element_q\" " +
-      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
+      "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
       ">" + card.question + "</div>" +
       "<div class=\"card_element_a\" " +
-      "onclick=\"launch_card_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
+      "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
       ">" + card.answer + "</div>" +
 /*      "</span>" +*/
       "<button class=\"card_element_delete_button\" " +
       "onclick=\"prompt_delete_card(" + card.card_id + ", " + inSetID + ")\">X</button>" +
       "</div>";
   });
-  cardlist_interface_card_list.innerHTML = dom;
+  set_editor_interface_card_list.innerHTML = dom;
 }
 
-function cardlist_interface_new_button( inSetID ) {
-  launch_card_interface( null, inSetID, true );
+function set_editor_interface_new_button( inSetID ) {
+  launch_card_editor_interface( null, inSetID, true );
 }
-function cardlist_interface_go_back() {
-  launch_setlist_interface();
+function set_editor_interface_go_back() {
+  launch_search_interface();
 }
-const cardlist_tags = [];
-function cardlist_interface_add_tag_button( inSetID ) {
+const set_editor_tags = [];
+function set_editor_interface_add_tag_button( inSetID ) {
   //1) Get tag
-  const tag_field = document.getElementById("cardlist_interface_tags_field");
+  const tag_field = document.getElementById("set_editor_interface_tags_field");
   let tag_text = tag_field.value;
   if( tag_text == "" ) { return; }
   tag_text = tag_text.replace( /\s/g, "&nbsp;" );
 
   //2) Ensure that search term doesn't already exist.
-  for( index in cardlist_tags ) {
-    if( cardlist_tags[index] == tag_text ) {
+  for( index in set_editor_tags ) {
+    if( set_editor_tags[index] == tag_text ) {
       return;
     }
   }
 
   //3) Add search term to search_terms
-  cardlist_tags.push( tag_text );
+  set_editor_tags.push( tag_text );
 
   //4) Render updated search terms.
-  cardlist_interface_render_tags( inSetID );
-  cardlist_interface_update_tags( inSetID );
+  set_editor_interface_render_tags( inSetID );
+  set_editor_interface_update_tags( inSetID );
 
   //5) Blank out search term.
   tag_field.value = "";
 }
-function cardlist_interface_update_tags( inSetID ) {
+function set_editor_interface_update_tags( inSetID ) {
 //TODO: Allow for set to be renamed
   const body_content = JSON.stringify({
     "set_id": inSetID,
-    "tags": cardlist_tags
+    "tags": set_editor_tags
   });
 
   const update_set = new Request(
@@ -449,38 +449,37 @@ function cardlist_interface_update_tags( inSetID ) {
     });
 
 }
-function cardlist_interface_render_tags( inSetID ) {
+function set_editor_interface_render_tags( inSetID ) {
   let dom = "";
-  for( index in cardlist_tags ) {
-    dom += "<div class=\"cardlist_interface_tag_container\">" +
-      cardlist_tags[index] +
-      "<div class=\"cardlist_interface_tag_delete_button\"" +
-      " onclick=\"delete_cardlist_tag(\'" +
-      cardlist_tags[index] + "\', " + inSetID + ");\"" +
+  for( index in set_editor_tags ) {
+    dom += "<div class=\"set_editor_interface_tag_container\">" +
+      set_editor_tags[index] +
+      "<div class=\"set_editor_interface_tag_delete_button\"" +
+      " onclick=\"delete_set_editor_tag(\'" +
+      set_editor_tags[index] + "\', " + inSetID + ");\"" +
       ">X</div>" +
       "</div>";
   }
-console.log( dom );
-  const tag_container = document.getElementById("cardlist_interface_tags_list");
+  const tag_container = document.getElementById("set_editor_interface_tags_list");
   tag_container.innerHTML = dom;
 }
-function delete_cardlist_tag( inTag, inSetID ) {
+function delete_set_editor_tag( inTag, inSetID ) {
   inTag = inTag.replace( /\s/g, "&nbsp;" );
-  for( index in cardlist_tags ) {
-    if( cardlist_tags[index] == inTag ) {
-      cardlist_tags.splice( index, 1 );
+  for( index in set_editor_tags ) {
+    if( set_editor_tags[index] == inTag ) {
+      set_editor_tags.splice( index, 1 );
     }
   }
-  cardlist_interface_render_tags( inSetID );
-  cardlist_interface_update_tags( inSetID );
+  set_editor_interface_render_tags( inSetID );
+  set_editor_interface_update_tags( inSetID );
 }
 
 
 /*
-Setlist interface
+Search interface
 */
-function launch_setlist_interface() {
-  set_interface( "setlist" );
+function launch_search_interface() {
+  set_interface( "search" );
   set_logged_elements();
   getSetList();
 }
@@ -489,7 +488,7 @@ const search_terms = [];
 
 function add_search_term() {
   //1) Get search term
-  const search_bar = document.getElementById("setlist_interface_set_name");
+  const search_bar = document.getElementById("search_interface_set_name");
   let search_bar_text = search_bar.value;
   if( search_bar_text == "" ) { return; }
   search_bar_text = search_bar_text.replace( /\s/g, "&nbsp;" );
@@ -509,6 +508,105 @@ function add_search_term() {
 
   //5) Blank out search term.
   search_bar.value = "";
+
+  //6) Send updated search term list
+  run_search_search();
+}
+
+let list_type = "set";
+function switch_list_type() {
+  const button = document.getElementById("search_interface_switch_list_type");
+console.log( "huh?" );
+console.log( {list_type} );
+  if( list_type == "card" ) {
+    console.log( "Changing to set list." );
+    button.textContent = "List Cards";
+    list_type = "set";
+  } else if( list_type == "set" ) {
+    console.log( "Changing to card list." );
+    button.textContent = "List Sets";
+    list_type = "card";
+  }
+  run_search_search();
+}
+
+function run_search_search() {
+  //1) If there are no serach terms, use default search or set_editor
+//TODO: Write default set_editor
+  if( search_terms.length == 0 ) {
+    getSetList();
+    return;
+  }
+
+  //2) Compose the message.
+  const search_request_object = JSON.stringify({
+    topics: search_terms,
+    search_type: list_type
+  });
+
+  //3) Send search
+  console.dir( search_request_object );
+  const search_request = new Request(
+    ip + 'searchlist',
+    {
+      method: 'POST',
+      body: search_request_object,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  //4) On result, render the sets/cards
+  fetch( search_request )
+    .then( json => json.json() )
+    .then( json => {
+    if( json.result == "success" ) {
+      if( json.search_type == "card" ) {
+        render_set_editor( json );
+      } else if( json.search_type == "set" ) {
+        renderSetList( json.data );
+      }
+    } else if( json.result == "error" ) {
+      const options = {
+        "Close" : close_modal
+      }
+      launch_modal( null, json.error_message, options );
+    }
+  });
+}
+
+function render_set_editor( inSearch_set_editor ) {
+  console.log( "render_set_editor" );
+  const cards = inSearch_set_editor.data;
+  const search_dom_obj = document.getElementById("search_interface_set_list");
+  let dom_string = "";
+  draw_paper( cards.length );
+  let dom = "";
+  cards.forEach( card => {
+    const creator_username =
+      String.fromCharCode.apply( null, card.set_creator.data );
+    dom += "<div class=\"search_item\">";
+    if( creator_username == logged_obj.username_hash ) {
+      if( logged_obj.isLogged == true ) {
+        dom += "<div class=\"button search_item_edit_button\" " +
+          "onclick=\"getCard(" +
+          card.card_id + ", " + card.set_id +
+          ")\">Edit</div>";
+      }
+    }
+    dom += "<div class=\"search_item_text_container\">";
+    dom += "<span class=\"search_item_text\">";
+    dom += "Q) " + card.question;
+    dom += "A) " + card.answer;
+    dom += "</span></div>";
+    dom += "</div>";
+  });
+  search_dom_obj.innerHTML = dom;
+}
+
+function getCard( inCardID, inSetID ) {
+  launch_card_editor_interface( inCardID, inSetID, false );
 }
 
 function delete_search_term( inTerm ) {
@@ -541,10 +639,6 @@ function create_temporary_set() {
 
 }
 
-function switch_list_type() {
-
-}
-
 function draw_paper( inLength ) {
   const blue_lines_container = document.getElementById("blue_line_container");
   let dom = "";
@@ -557,7 +651,7 @@ function draw_paper( inLength ) {
 
 function set_logged_elements() {
   const create_set_button =
-    document.getElementById("setlist_interface_set_name_create");
+    document.getElementById("search_interface_set_name_create");
   if( logged_obj.isLogged == false ) {
     create_set_button.style.display = "none";
   } else if( logged_obj.isLogged == true ) {
@@ -578,32 +672,32 @@ function getSetList() {
 }
 
 function renderSetList( setList ) {
-  const setlist_dom_obj = document.getElementById("setlist_interface_set_list");
+  const search_dom_obj = document.getElementById("search_interface_set_list");
   let dom_string = "";
   draw_paper( setList.length );
   setList.forEach( set => {
     const set_username_hash = String.fromCharCode.apply(null, set.set_creator.data );
-    dom_string += "<div class=\'setlist_item\'>";
+    dom_string += "<div class=\'search_item\'>";
     if( set_username_hash == logged_obj.username_hash ) {
       if( logged_obj.isLogged == true ) {
-        dom_string += "<div class=\"button setlist_item_edit_button\" " +
+        dom_string += "<div class=\"button search_item_edit_button\" " +
           "onclick=\"getSet(" + set.set_id + ")\">Edit</div>";
       }
     }
-    dom_string += "<div class=\"button setlist_item_text_container\"" +
+    dom_string += "<div class=\"button search_item_text_container\"" +
       "onclick=\"playSet(" + set.set_id + ")\">" + 
-      "<span class=\"setlist_item_text\">" +
+      "<span class=\"search_item_text\">" +
       set.name + "</span>" + "</div>";
     //}
     if( set_username_hash == logged_obj.username_hash ) {
       if( logged_obj.isLogged == true ) {
-        dom_string += "<div class=\"button setlist_item_delete_button\" " +
+        dom_string += "<div class=\"button search_item_delete_button\" " +
           "onclick=\"prompt_delete_set(" + set.set_id + ")\">Delete</div>";
       }
     }
     dom_string +=  "</div>";
   });
-  setlist_dom_obj.innerHTML = dom_string;
+  search_dom_obj.innerHTML = dom_string;
 }
 
 function playSet( inSetID ) {
@@ -611,11 +705,11 @@ function playSet( inSetID ) {
 }
 
 function getSet( inSetID ) {
-  launch_cardlist_interface( inSetID );
+  launch_set_editor_interface( inSetID );
 }
 
-function setlist_interface_set_create() {
-  const setname_input = document.getElementById( 'setlist_interface_set_name' );
+function search_interface_set_create() {
+  const setname_input = document.getElementById( 'search_interface_set_name' );
   const new_set_name = setname_input.value;
   if( new_set_name != "" ) {
     create_set( new_set_name );
@@ -640,7 +734,7 @@ function create_set( set_name ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        launch_cardlist_interface( json.set_id );
+        launch_set_editor_interface( json.set_id );
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -704,7 +798,7 @@ function delete_card( inCardID, inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        launch_cardlist_interface( inSetID );
+        launch_set_editor_interface( inSetID );
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -726,7 +820,7 @@ function delete_set( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        launch_setlist_interface();
+        launch_search_interface();
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -775,8 +869,8 @@ function login( inUsernameHash ) {
   login_element.style.display = "none";
   logout_element.style.display = "flex";
   //)Relaunch interface.
-  if( curr_interface == "setlist" ) {
-    launch_setlist_interface();
+  if( curr_interface == "search" ) {
+    launch_search_interface();
   }
 }
 function attempt_create_account() {
@@ -826,10 +920,10 @@ function logout() {
   login_element.style.display = "flex";
   //)Relaunch interface.
   logged_obj.isLogged = false;
-  if( curr_interface == "setlist" ) {
-    launch_setlist_interface();
-  } /*else if( curr_interface == "cardlist" ) {
-    launch_cardlist_interface();
+  if( curr_interface == "search" ) {
+    launch_search_interface();
+  } /*else if( curr_interface == "set_editor" ) {
+    launch_set_editor_interface();
   }*/
 }
 function attempt_login() {
@@ -908,23 +1002,24 @@ function attach_login() {
 Interface switching code.
 */
 const interfaces = [
-  "setlist", "cardlist", "card", "runset"
+  "search", "set_editor", "card_editor", "runset"
 ];
 
 const functions = {
-  "setlist" : {
-    "set_name_create": setlist_interface_set_create,
-    "add_search_tag_button": add_search_term
+  "search" : {
+    "set_name_create": search_interface_set_create,
+    "add_search_tag_button": add_search_term,
+    "switch_list_type": switch_list_type
   },
-  "cardlist" : {
-    "new": cardlist_interface_new_button,
-    "go_back": cardlist_interface_go_back,
-    "add_tag_button": cardlist_interface_add_tag_button
+  "set_editor" : {
+    "new": set_editor_interface_new_button,
+    "go_back": set_editor_interface_go_back,
+    "add_tag_button": set_editor_interface_add_tag_button
   },
-  "card": {
-    "set_card": card_interface_set_card,
-    "go_back": card_interface_go_back,
-    "add_tag_button": card_interface_add_tag_button
+  "card_editor": {
+    "set_card": card_editor_interface_set_card,
+    "go_back": card_editor_interface_go_back,
+    "add_tag_button": card_editor_interface_add_tag_button
   },
   "runset": {
     "go_back": runset_interface_go_back,
@@ -935,16 +1030,17 @@ const functions = {
 };
 
 const bound_functions = {
-  "setlist" : {
+  "search" : {
     "set_name_create": [],
-    "add_search_tag_button": []
+    "add_search_tag_button": [],
+    "switch_list_type": []
   },
-  "cardlist" : {
+  "set_editor" : {
     "new": [],
     "go_back": [],
     "add_tag_button": []
   },
-  "card": {
+  "card_editor": {
     "set_card": [],
     "go_back": [],
     "add_tag_button": []
@@ -994,7 +1090,7 @@ function set_interface( interface, value ) {
     const interface_name = interface_base_name + "_interface";
     const interface_handle = document.getElementById( interface_name );
     if( interface == interface_base_name ) {
-      if( interface_base_name == "setlist" ) {
+      if( interface_base_name == "search" ) {
         interface_handle.style.display = "grid";
         body.style['overflow-y'] = "auto";
       } else {

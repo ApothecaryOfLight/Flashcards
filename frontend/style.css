@@ -131,7 +131,7 @@ Menu
   width: fit-content;
   margin-left: 1rem;
 }
-#switch_list_type {
+#search_interface_switch_list_type {
   grid-row: 2;
   grid-column: 3;
 }
@@ -216,36 +216,36 @@ Button
 }
 
 /*
-Card interface
+Card editor interface
 */
-#card_interface {
+#card_editor_interface {
   display: none;
   flex-direction: column;
   width: 100vw;
   height: 100vh;
 }
-#card_interface_q_text {
+#card_editor_interface_q_text {
   height: 46%;
   margin: 2%;
   resize: none;
   border-radius: 8px;
   outline: none;
 }
-#card_interface_a_text {
+#card_editor_interface_a_text {
   height: 46%;
   margin: 2%;
   resize: none;
   borer-radius: 8px;
   outline: none;
 }
-#card_interface_buttons {
+#card_editor_interface_buttons {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   height: 10%;
   margin-bottom: 1em;
 }
-.card_interface_button {
+.card_editor_interface_button {
   height: 3em;
   align-self: center;
   background: #6699FF;
@@ -254,30 +254,30 @@ Card interface
   border: 0px;
   outline: none;
 }
-.card_interface_button:hover {
+.card_editor_interface_button:hover {
   background: #0066FF;
 }
-.card_interface_button:active {
+.card_editor_interface_button:active {
   background: #003399;
 }
-#card_interface_tags_container {
+#card_editor_interface_tags_container {
   border-top: 1px solid;
   padding-top: 2rem;
 }
-#card_interface_tags_field {
+#card_editor_interface_tags_field {
   width: 70%;
   margin-left: 10%;
 }
-#card_interface_add_tags_button {
+#card_editor_interface_add_tags_button {
   margin-right: 10%;
   width: 10%;
 }
-#card_interface_tags_list {
+#card_editor_interface_tags_list {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
-.card_interface_tag_container {
+.card_editor_interface_tag_container {
   margin-left: 1rem;
   margin-right: 1rem;
   display: flex;
@@ -287,7 +287,7 @@ Card interface
   align-items: center;
 
 }
-.card_interface_tag_delete_button {
+.card_editor_interface_tag_delete_button {
   display: flex;
   font-size: 1rem;
   border-radius: 50%;
@@ -302,20 +302,20 @@ Card interface
 
 
 /*
-Cardlist interface
+set_editor interface
 */
-#cardlist_interface {
+#set_editor_interface {
   display: none;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
 }
-#cardlist_interface_set_name {
+#set_editor_interface_set_name {
   text-align: center;
   font-weight: bold;
   font-size: 2em;
 }
-#cardlist_interface_card_list {
+#set_editor_interface_card_list {
   flex-grow: 1;
 
 /*  overflow-y: scroll;*/
@@ -325,26 +325,26 @@ Cardlist interface
 
   border-bottom: 1px solid;
 }
-#cardlist_interface_lower_container {
+#set_editor_interface_lower_container {
   overflow-y: scroll;
 }
-#cardlist_interface_buttons {
+#set_editor_interface_buttons {
   display: flex;
   flex-direction: center;
   justify-content: space-around;
   padding-bottom: 1em;
 }
-#cardlist_interface_new {
+#set_editor_interface_new {
   align-self: center;
   height: 3em;
   width: 45%;
 }
-#cardlist_interface_go_back {
+#set_editor_interface_go_back {
   align-self: center;
   height: 3em;
   width: 45%;
 }
-.cardlist_interface_button {
+.set_editor_interface_button {
   outline: none;
   border-radius: 16px;
   background-color: #6699FF;
@@ -352,30 +352,30 @@ Cardlist interface
   font-weight: bold;
   color; white;
 }
-.cardlist_interface_button:hover {
+.set_editor_interface_button:hover {
   background: #0066FF;
 }
-.cardlist_interface_button:active {
+.set_editor_interface_button:active {
   background: #003399;
 }
-#cardlist_interface_tags_container {
+#set_editor_interface_tags_container {
   border-top: 1px solid;
   padding-top: 2rem;
 }
-#cardlist_interface_tags_field {
+#set_editor_interface_tags_field {
   width: 70%;
   margin-left: 10%;
 }
-#cardlist_interface_add_tags_button {
+#set_editor_interface_add_tags_button {
   margin-right: 10%;
   width: 10%;
 }
-#cardlist_interface_tags_list {
+#set_editor_interface_tags_list {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
-.cardlist_interface_tag_container {
+.set_editor_interface_tag_container {
   margin-left: 1rem;
   margin-right: 1rem;
   display: flex;
@@ -385,7 +385,7 @@ Cardlist interface
   align-items: center;
 
 }
-.cardlist_interface_tag_delete_button {
+.set_editor_interface_tag_delete_button {
   display: flex;
   font-size: 1rem;
   border-radius: 50%;
@@ -463,15 +463,15 @@ Card
 
 
 /*
-Setlist interface
+search interface
 */
-#setlist_interface {
+#search_interface {
   display: grid;
   grid-template-rows: 4rem 3rem 3rem auto;
 /*  grid-template-columns: 6.2em calc(100% - 6.2em);*/
   grid-template-columns: 6.2rem auto 6rem 6rem;
 }
-#setlist_interface_field_container {
+#search_interface_field_container {
   grid-row: 1;
   grid-column: 2;
   width: 80%;
@@ -480,7 +480,7 @@ Setlist interface
   display: grid;
   grid-template-columns: 80% 5em;
 }
-#setlist_interface_set_name {
+#search_interface_set_name {
   width: 100%;
   height: 2.5em;
   grid-row: 1;
@@ -493,7 +493,7 @@ Setlist interface
   padding-left: 1em;
   outline: none;
 }
-#setlist_interface_set_name_create {
+#search_interface_set_name_create {
   width: 6em;
   height: 2.2em;
   background: #3366FF;
@@ -507,32 +507,32 @@ Setlist interface
   justify-content: center;
 }
 @media (min-width:300px) {
-  #setlist_interface_set_name_create {
+  #search_interface_set_name_create {
     width: 4em;
   }
-  #setlist_interface_set_name {
+  #search_interface_set_name {
     max-width: 60vw;
   }
 }
 @media (min-width:600px) {
-  #setlist_interface_set_name_create {
+  #search_interface_set_name_create {
     width: 6em;
   }
-  #setlist_interface_set_name {
+  #search_interface_set_name {
     max-width: 100vw;
   }
 }
 
-#setlist_interface_set_name_create:hover {
+#search_interface_set_name_create:hover {
   background: #003399;
 }
-#setlist_interface_set_name_create:active {
+#search_interface_set_name_create:active {
   background: #000099;
 }
-#setlist_interface_set_name_create_text {
+#search_interface_set_name_create_text {
   align-self: center;
 }
-#setlist_interface_create {
+#search_interface_create {
   margin-top: 1em;
   margin-left: 10%;
   margin-right: 10%;
@@ -544,13 +544,13 @@ Setlist interface
   grid-row: 2;
   grid-column: 2;
 }
-#setlist_interface_set_list {
+#search_interface_set_list {
   width: 100%;
   grid-row: 4;
   grid-column-start: 1;
   grid-column-end: 4;
 }
-.setlist_item {
+.search_item {
   display: grid;
   grid-template-columns: 6.2em auto 4em;
   grid-template-rows: 2em 2em 2em;
@@ -558,9 +558,9 @@ Setlist interface
   height: 6em;
   border-radius: 16px;
 }
-.setlist_item:hover {
+.search_item:hover {
 }
-.setlist_item_text_container {
+.search_item_text_container {
   display: flex;
   justify-content: flex-start;
   overflow: hidden;
@@ -569,21 +569,21 @@ Setlist interface
   width: auto;
   min-height: 6em;
 }
-.setlist_item_text {
+.search_item_text {
   text-align: left;
   text-overflow: ellipsis;
   overflow: hidden;
   line-height: 1em;
   font-size: 2em;
 }
-.setlist_item_edit_button {
+.search_item_edit_button {
   grid-column: 1;
   grid-row: 1;
   font-size: 2em;
   line-height: 1em;
   font-weight: normal;
 }
-.setlist_item_delete_button {
+.search_item_delete_button {
   grid-column: 1;
   grid-row: 2;
   font-size: 2em;

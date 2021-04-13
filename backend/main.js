@@ -547,6 +547,81 @@ function launchRoutes() {
     }
   });
 
+  app.post( '/searchlist', async function(req,res) {
+    try {
+      //1) Determine whether serach is for sets or for cards.
+      let card_search_query = "";
+      if( req.body.search_type == "card" ) {
+        card_search_query =
+          "(SELECT cards.card_id, cards.answer, cards.question, " +
+          "sets.set_creator, cards.set_id " +
+          "FROM cards " +
+          "INNER JOIN card_search_text " +
+          "ON cards.card_id = card_search_text.card_id " +
+          "INNER JOIN sets " +
+          "ON cards.set_id = sets.set_id) " +
+          "UNION " +
+
+          "(SELECT cards.card_id, cards.answer, cards.question, " +
+          "sets.set_creator, cards.set_id " +
+          "FROM cards " +
+          "INNER JOIN card_search_topics " +
+          "ON cards.card_id = card_search_topics.card_id " +
+          "INNER JOIN sets " +
+          "ON cards.set_id = sets.set_id) " +
+          "UNION " +
+
+          "(SELECT cards.card_id, cards.answer, cards.question, " +
+          "sets.set_creator, cards.set_id " +
+          "FROM cards " +
+          "INNER JOIN cardset_search_text " +
+          "ON cards.card_id = cardset_search_text.card_id " +
+          "INNER JOIN sets " +
+          "ON cards.set_id = sets.set_id) " +
+          "UNION " +
+
+          "(SELECT cards.card_id, cards.answer, cards.question, " +
+          "sets.set_creator, cards.set_id " +
+          "FROM cards " +
+          "INNER JOIN cardset_search_topics " +
+          "ON cards.card_id = cardset_search_topics.card_id " +
+          "INNER JOIN sets " +
+          "ON cards.set_id = sets.set_id " +
+          ")";
+      } else if( req.body.search_type == "set" ) {
+        card_search_query =
+          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
+          "INNER JOIN card_search_text " +
+          "ON sets.set_id = card_search_text.set_id) UNION " +
+
+          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
+          "INNER JOIN card_search_topics " +
+          "ON sets.set_id = card_search_topics.set_id) UNION " +
+
+          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
+          "INNER JOIN cardset_search_text " +
+          "ON sets.set_id = cardset_search_text.set_id) UNION " +
+
+          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
+          "INNER JOIN cardset_search_topics " +
+          "ON sets.set_id = cardset_search_topics.set_id)";
+      }
+console.log( "\n\n" + card_search_query );
+      const [out_row,out_field] = await sqlPool.query( card_search_query );
+      res.send( JSON.stringify({
+        "result": "success",
+        "data": out_row,
+        "search_type": req.body.search_type
+      }));
+    } catch(error) {
+      console.log( error );
+      res.send( JSON.stringify({
+        "result": "error",
+        "error_message": "Unspecified error attempting search."
+      }));
+    }
+  });
+
   if( process.argv[2] == "https" ) {
     var server = https.createServer( credentials, app );
     server.listen( 3000 );
