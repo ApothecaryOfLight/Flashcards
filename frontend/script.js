@@ -23,7 +23,6 @@ function launch_runset_interface( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        console.dir( json.cards );
         card_set_obj.cards = json.cards;
         next_card( card_set_obj );
         runset_render_qa( card_set_obj );
@@ -120,7 +119,6 @@ function runset_render_qa( card_set_obj ) {
 Card editor interface
 */
 function launch_card_editor_interface( inCardID, inSetID, isNew ) {
-console.log( "launch_card_editor_interface" );
   set_interface( "card_editor", {set_id:inSetID, card_id:inCardID} );
   card_tags.splice(0);
 //TODO: Get card's tags
@@ -292,7 +290,6 @@ function card_editor_interface_update_tags( inCardData ) {
     "card_id": inCardData.card_id,
     "data": card_tags
   });
-  console.log( "sending: " + message );
 }
 function card_editor_interface_render_tags() {
   let dom = "";
@@ -508,14 +505,10 @@ function add_search_term() {
 let list_type = "set";
 function switch_list_type() {
   const button = document.getElementById("search_interface_switch_list_type");
-console.log( "huh?" );
-console.log( {list_type} );
   if( list_type == "card" ) {
-    console.log( "Changing to set list." );
     button.textContent = "List Cards";
     list_type = "set";
   } else if( list_type == "set" ) {
-    console.log( "Changing to card list." );
     button.textContent = "List Sets";
     list_type = "card";
   }
@@ -537,7 +530,6 @@ function run_search_search() {
   });
 
   //3) Send search
-  console.dir( search_request_object );
   const search_request = new Request(
     ip + 'searchlist',
     {
@@ -569,7 +561,6 @@ function run_search_search() {
 }
 
 function render_set_editor( inSearch_set_editor ) {
-  console.log( "render_set_editor" );
   const cards = inSearch_set_editor.data;
   const search_dom_obj = document.getElementById("search_interface_set_list");
   let dom_string = "";
@@ -614,7 +605,6 @@ function delete_search_term( inTerm ) {
 function render_search_terms() {
   let dom = "";
   for( index in search_terms ) {
-    console.log( search_terms[index] );
     dom += "<div class=\"search_tag_unit\">" +
       search_terms[index] +
       "<div class=\"search_tag_delete\"" +
@@ -622,7 +612,6 @@ function render_search_terms() {
       ">X</div>" +
       "</div>";
   }
-  console.log( dom );
   const search_term_container = document.getElementById("search_tag_container");
   search_term_container.innerHTML = dom;
 }
