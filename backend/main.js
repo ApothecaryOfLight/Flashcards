@@ -229,7 +229,6 @@ function launchRoutes() {
       const [new_set_row,new_set_field] = await sqlPool.query( insert_query );
 
       //3) Notify client of success.
-      //TODO: On success, on error handling.
       res.send( JSON.stringify({
         "result": "success",
         "set_name": req.body.set_name,
@@ -243,30 +242,6 @@ function launchRoutes() {
       }));
     }
   });
-
-
-  /**/
-  app.get('/set/:set_name', async function(req,res) {
-    res.send( 'placeholder' );
-  });
-
-
-  /**/
-  app.post('/request', function(req,res) {
-    console.dir( req );
-    console.log( "reqqy" );
-    res.send('yuuuup');
-  });
-
-  /*Get sets by topic.*/
-
-  /*Set topics of set.*/
-
-  /*Get list of cards by topics.*/
-
-  /*Set topics of card.*/
-
-  /*Get list of cards irrespective of topics.*/
 
   /*Login*/
   app.post('/login', async function(req,res ) {
@@ -362,9 +337,7 @@ function launchRoutes() {
         null,
         true
       );
-      //update_tags( new_card_id, req.body.question, req.body.answer, req.body.tags );
 
-      //TODO: On success, on error handling.
       res.send( JSON.stringify({
         "result": "success"
       }));
@@ -417,9 +390,7 @@ function launchRoutes() {
         null,
         true
       );
-      //update_tags( req.body.card_id, req.body.question, req.body.answer, req.body.tags );
 
-      //TODO: On success, on error
       res.send( JSON.stringify({
         "result": "success"
       }));
@@ -480,7 +451,6 @@ function launchRoutes() {
       const [set_name_row,set_name_field] =
         await sqlPool.query( get_cardlist_set_name_query );
 
-
       const get_cardlist_cards = "SELECT card_id, answer, question FROM cards " +
         "WHERE set_id = "  + req.params.set_id + ";";
       const [cardlist_row,cardlist_field] =
@@ -515,12 +485,6 @@ function launchRoutes() {
       const get_card_query = "SELECT question, answer FROM cards WHERE card_id = " +
         req.params.card_id + ";";
       const [card_row,card_field] = await sqlPool.query( get_card_query );
-
-      //2) Get search text. DEPRECATED. Not used in card_interface.
-/*      const get_card_tags_query = "SELECT name FROM tags WHERE card_id = " +
-        req.params.card_id + ";";
-      const [tags_row,tags_field] = await sqlPool.query( get_card_tags_query );
-*/
 
       //2) Get search topics.
       const card_search_topics_query =
@@ -606,7 +570,6 @@ function launchRoutes() {
           "INNER JOIN cardset_search_topics " +
           "ON sets.set_id = cardset_search_topics.set_id)";
       }
-console.log( "\n\n" + card_search_query );
       const [out_row,out_field] = await sqlPool.query( card_search_query );
       res.send( JSON.stringify({
         "result": "success",

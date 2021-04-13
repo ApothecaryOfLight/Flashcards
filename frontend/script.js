@@ -148,13 +148,14 @@ function runset_render_qa( card_set_obj ) {
 /*
 ==3.0== Card editor interface
 */
-function launch_card_editor_interface( inCardID, inSetID, isNew ) {
+function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
   //1) Set the current interface and variables.
   set_interface(
     "card_editor",
     {
       set_id:inSetID,
-      card_id:inCardID
+      card_id:inCardID,
+      previous_interface: inPrevInt
     }
   );
 
@@ -307,7 +308,11 @@ function card_editor_interface_go_back( inCardData ) {
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
   card_q_handle.value = "";
   card_a_handle.value = "";
-  launch_set_editor_interface( inCardData.set_id );
+  if( inCardData.previous_interface == "set_editor" ) {
+    launch_set_editor_interface( inCardData.set_id );
+  } else if( inCardData.previous_interface == "search" ) {
+    launch_search_interface();
+  }
 }
 function card_editor_interface_add_tag_button( inCardData ) {
   //1) Get tag
@@ -413,20 +418,32 @@ function set_editor_interface_populate_list( inSetID, inCards ) {
     dom +=
       "<div class=\"card_element\"> " +
       "<div class=\"card_element_q\" " +
-      "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
+      "onclick=\"launch_card_editor_interface(" +
+      card.card_id + ", " +
+      inSetID + ", " +
+      "false ," +
+      "\'set_editor\', " +
+      ")\"" +
       ">" + card.question + "</div>" +
       "<div class=\"card_element_a\" " +
-      "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
+      "onclick=\"launch_card_editor_interface(" +
+      card.card_id + ", " +
+      inSetID + ", " +
+      "false, " +
+      "\'set_editor\', " +
+      ")\"" +
       ">" + card.answer + "</div>" +
       "<button class=\"card_element_delete_button\" " +
-      "onclick=\"prompt_delete_card(" + card.card_id + ", " + inSetID + ")\">X</button>" +
+      "onclick=\"prompt_delete_card(" +
+      card.card_id + ", " +
+      inSetID + ")\">X</button>" +
       "</div>";
   });
   set_editor_interface_card_list.innerHTML = dom;
 }
 
 function set_editor_interface_new_button( inSetID ) {
-  launch_card_editor_interface( null, inSetID, true );
+  launch_card_editor_interface( null, inSetID, true, "set_editor" );
 }
 function set_editor_interface_go_back() {
   launch_search_interface();
@@ -545,7 +562,7 @@ function add_search_term() {
   search_bar.value = "";
 
   //6) Send updated search term list
-  run_search_search();
+  search_interface_run_search();
 }
 
 
@@ -559,10 +576,10 @@ function switch_list_type() {
     button.textContent = "List Sets";
     list_type = "card";
   }
-  run_search_search();
+  search_interface_run_search();
 }
 
-function run_search_search() {
+function search_interface_run_search() {
   //1) If there are no serach terms, use default search or set_editor
 //TODO: Write default set_editor
   if( search_terms.length == 0 ) {
@@ -636,7 +653,7 @@ function render_set_editor( inSearch_set_editor ) {
 }
 
 function getCard( inCardID, inSetID ) {
-  launch_card_editor_interface( inCardID, inSetID, false );
+  launch_card_editor_interface( inCardID, inSetID, false, "search" );
 }
 
 function delete_search_term( inTerm ) {
