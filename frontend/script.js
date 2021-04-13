@@ -1,12 +1,42 @@
+/*
+INDEX
+==1.0== Globals
+==2.0== Runset Interface
+==3.0== Card Editor Interface
+==4.0== Set Editor Interface
+==5.0== Search Interface
+==6.0== Modal Interface
+==7.0== Login/Logout Code
+==8.0== Interface Switching Code
+*/
+
+/*
+==1.0== Globals
+*/
+//TODO: Get rid of all globals.
 const ip = 'http://52.11.132.13:3000/';
+const card_tags = [];
+const set_data = {};
+const set_editor_tags = [];
+let list_type = "set";
+const search_terms = [];
+let modal_buttons_storage = {};
+let curr_interface = "";
+let isLogged = false;
+const logged_obj = {
+  isLogged: false,
+  username_hash: ""
+}
 
 window.addEventListener( 'load', (loaded_event) => {
   launch_search_interface();
   attach_login();
 });
 
+
+
 /*
-Runset Interface
+==2.0== Runset Interface
 */
 function launch_runset_interface( inSetID ) {
   let card_set_obj = {
@@ -116,12 +146,11 @@ function runset_render_qa( card_set_obj ) {
 
 
 /*
-Card editor interface
+==3.0== Card editor interface
 */
 function launch_card_editor_interface( inCardID, inSetID, isNew ) {
   set_interface( "card_editor", {set_id:inSetID, card_id:inCardID} );
   card_tags.splice(0);
-//TODO: Get card's tags
   card_editor_interface_render_tags();
   if( isNew == false ) {
     get_card( inCardID );
@@ -259,7 +288,6 @@ function card_editor_interface_go_back( inCardData ) {
   card_a_handle.value = "";
   launch_set_editor_interface( inCardData.set_id );
 }
-const card_tags = [];
 function card_editor_interface_add_tag_button( inCardData ) {
   //1) Get tag
   const tag_field = document.getElementById("card_editor_interface_tags_field");
@@ -318,9 +346,8 @@ function delete_card_tag( inTag ) {
 
 
 /*
-set_editor interface
+==4.0== Set Editor Interface
 */
-const set_data = {};
 function launch_set_editor_interface( inSetID, go_to_end ) {
   set_interface( "set_editor", inSetID );
   set_data.set_id = inSetID; //TODO: Attach this to interface
@@ -383,7 +410,6 @@ function set_editor_interface_new_button( inSetID ) {
 function set_editor_interface_go_back() {
   launch_search_interface();
 }
-const set_editor_tags = [];
 function set_editor_interface_add_tag_button( inSetID ) {
   //1) Get tag
   const tag_field = document.getElementById("set_editor_interface_tags_field");
@@ -464,16 +490,15 @@ function delete_set_editor_tag( inTag, inSetID ) {
 }
 
 
+
 /*
-Search interface
+==5.0== Search interface
 */
 function launch_search_interface() {
   set_interface( "search" );
   set_logged_elements();
   getSetList();
 }
-
-const search_terms = [];
 
 function add_search_term() {
   //1) Get search term
@@ -502,7 +527,8 @@ function add_search_term() {
   run_search_search();
 }
 
-let list_type = "set";
+
+
 function switch_list_type() {
   const button = document.getElementById("search_interface_switch_list_type");
   if( list_type == "card" ) {
@@ -726,10 +752,10 @@ function create_set( set_name ) {
 }
 
 
+
 /*
-Modal interface
+==6.0== Modal Interface
 */
-let modal_buttons_storage = {};
 function modal_button( button_name ) {
   modal_buttons_storage[button_name]();
 }
@@ -830,16 +856,11 @@ function prompt_delete_set( inSetID ) {
   launch_modal( null, "Are you sure you want to delete this set?", options );
 }
 
-const logged_obj = {
-  isLogged: false,
-  username_hash: ""
-}
+
 
 /*
-Logging in/out code
+==7.0== Logging in/out code
 */
-let curr_interface = "";
-let isLogged = false;
 function login( inUsernameHash ) {
   logged_obj.isLogged = true;
   logged_obj.username_hash = inUsernameHash;
@@ -977,8 +998,9 @@ function attach_login() {
 }
 
 
+
 /*
-Interface switching code.
+==8.0== Interface switching code.
 */
 const interfaces = [
   "search", "set_editor", "card_editor", "runset"
