@@ -149,15 +149,34 @@ function runset_render_qa( card_set_obj ) {
 ==3.0== Card editor interface
 */
 function launch_card_editor_interface( inCardID, inSetID, isNew ) {
-  set_interface( "card_editor", {set_id:inSetID, card_id:inCardID} );
+  //1) Set the current interface and variables.
+  set_interface(
+    "card_editor",
+    {
+      set_id:inSetID,
+      card_id:inCardID
+    }
+  );
+
+  //2) Empty the card tags and repopulate them.
   card_tags.splice(0);
   card_editor_interface_render_tags();
-  if( isNew == false ) {
-    get_card( inCardID );
-    //TODO: Handle this through the attach/detach functions
-    const set_card = document.getElementById("card_editor_interface_set_card");
-    const func_ref = card_editor_interface_update_card.bind( this, inSetID, inCardID );
 
+  //3) Check to see if the card already exists.
+  if( isNew == false ) {
+    //4a) If the card exsists, get the card data.
+    get_card( inCardID );
+
+//TODO: Handle this through the interface management code.
+    //5) Get the card update button.
+    const set_card =
+      document.getElementById("card_editor_interface_set_card");
+
+    //6) Create a bound function with the card's identifying data.
+    const func_ref =
+      card_editor_interface_update_card.bind( this, inSetID, inCardID );
+
+    //7) Remove the existing bound function, if it exists.
     if( bound_functions["card_editor"]["set_card"] ) {
       bound_functions["card_editor"]["set_card"].forEach( (func)=> {
         set_card.removeEventListener( 'click', func );
@@ -165,14 +184,16 @@ function launch_card_editor_interface( inCardID, inSetID, isNew ) {
     }
     bound_functions["card_editor"]["set_card"] = [];
 
+    //8) Add the new bound function as a click event listener.
     set_card.addEventListener( 'click', func_ref );
     bound_functions["card_editor"]["set_card"].push( func_ref );
   } else {
+    //3b) If the card doesn't exist, don't bother.
   }
 }
 
 function proc_txt_card_editor_interface( inText ) {
-  //1) Replace unicode apostrophe with apostrophe.
+  //1) Replace unicode apostrophe with normal apostrophe.
   let outText = inText.replaceAll( "&#39", "\'" );
   return outText;
 }
