@@ -286,11 +286,6 @@ function card_editor_interface_add_tag_button( inCardData ) {
   tag_field.value = "";
 }
 function card_editor_interface_update_tags( inCardData ) {
-/*  const message = card_tags.reduce(
-    (sofar,next) => {
-      return sofar + "&&&" + next;
-    }
-  );*/
   const message = JSON.stringify({
     "event": "update_tags",
     "set_id": inCardData.set_id,
@@ -372,15 +367,12 @@ function set_editor_interface_populate_list( inSetID, inCards ) {
   inCards.forEach( card => {
     dom +=
       "<div class=\"card_element\"> " +
-/*      "<span class=\"card_button\" " +
-      "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\">" +*/
       "<div class=\"card_element_q\" " +
       "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
       ">" + card.question + "</div>" +
       "<div class=\"card_element_a\" " +
       "onclick=\"launch_card_editor_interface(" + card.card_id + ", " + inSetID + ", false)\"" +
       ">" + card.answer + "</div>" +
-/*      "</span>" +*/
       "<button class=\"card_element_delete_button\" " +
       "onclick=\"prompt_delete_card(" + card.card_id + ", " + inSetID + ")\">X</button>" +
       "</div>";
@@ -922,9 +914,7 @@ function logout() {
   logged_obj.isLogged = false;
   if( curr_interface == "search" ) {
     launch_search_interface();
-  } /*else if( curr_interface == "set_editor" ) {
-    launch_set_editor_interface();
-  }*/
+  }
 }
 function attempt_login() {
   //1) Get username and password
@@ -1059,7 +1049,6 @@ function attach_functions( interface, value ) {
     if( value ) {
       let func_ref = functions[interface][button_name].bind(null,value);
       button_ref.addEventListener( 'click', func_ref );
-      //bound_functions[interface][button_name] = func_ref;
       bound_functions[interface][button_name].push( func_ref );
     } else {
       button_ref.addEventListener( 'click', functions[interface][button_name] );
@@ -1076,10 +1065,6 @@ function detach_functions( interface ) {
         button_ref.removeEventListener( 'click', func );
       });
     }
-
-    /*if( bound_functions[interface][button_name] ) {
-      button_ref.removeEventListener( 'click', bound_functions[interface][button_name] );
-    }*/
   };
 }
 
