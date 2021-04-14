@@ -669,6 +669,7 @@ function delete_search_term( inTerm ) {
     }
   }
   render_search_terms();
+  search_interface_run_search();
 }
 
 function render_search_terms() {
