@@ -197,6 +197,7 @@ async function index_search_data( id, topics, text, isCard ) {
 function launchRoutes() {
   app.get('/setlist', async function(req,res) {
     try {
+//TODO: Pagination
       const setlist_query = "SELECT name, set_id, set_creator FROM sets;"
       const [set_rows,field] = await sqlPool.query( setlist_query );
       const setlist = JSON.stringify( set_rows );
@@ -206,6 +207,29 @@ function launchRoutes() {
       res.send( JSON.stringify({
         "result": "error",
         "error_message": "Unspecified error attempting to get set list."
+      }));
+    }
+  });
+
+  app.get('/cardlist', async function(req,res) {
+//TODO: Pagination
+    try {
+      const cardlist_query = "SELECT " +
+        "cards.card_id, cards.question, cards.answer, cards.set_id, " +
+        "sets.set_creator " +
+        "FROM cards " +
+        "INNER JOIN sets " +
+        "ON cards.set_id = sets.set_id;"
+      const [cardlist_rows,cardlist_fields] =
+        await sqlPool.query( cardlist_query );
+      res.send( JSON.stringify({
+        "result": "sucess",
+        "data": cardlist_rows
+      }));
+    } catch( error ) {
+      res.send( JSON.stringify({
+        "result": "failure",
+        "error_message": "Unspecified error attempting to get card list."
       }));
     }
   });

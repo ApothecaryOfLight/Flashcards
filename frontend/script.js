@@ -583,8 +583,13 @@ function search_interface_run_search() {
   //1) If there are no serach terms, use default search or set_editor
 //TODO: Write default set_editor
   if( search_terms.length == 0 ) {
-    getSetList();
-    return;
+    if( list_type == "set" ) {
+      getSetList();
+      return;
+    } else if( list_type == "card" ) {
+      getCardList();
+      return;
+    }
   }
 
   //2) Compose the message.
@@ -705,14 +710,26 @@ function set_logged_elements() {
 }
 
 function getSetList() {
-  const test = new Request(
+  const getSetListObj = new Request(
     ip + 'setlist',
     { method: 'GET' }
   );
-  fetch( test )
+  fetch( getSetListObj )
     .then( obj => obj.json())
     .then( obj => {
       renderSetList( obj );
+    });
+}
+
+function getCardList() {
+  const getCardListObj = new Request(
+    ip + 'cardlist',
+    { method: 'GET' }
+  );
+  fetch( getCardListObj )
+    .then( obj => obj.json())
+    .then( obj => {
+      render_set_editor( obj );
     });
 }
 
