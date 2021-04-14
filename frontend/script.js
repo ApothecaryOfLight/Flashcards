@@ -535,7 +535,7 @@ function delete_set_editor_tag( inTag, inSetID ) {
 function launch_search_interface() {
   set_interface( "search" );
   set_logged_elements();
-  getSetList();
+  search_interface_run_search();
 }
 
 function add_search_term() {
