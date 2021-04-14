@@ -1,3 +1,6 @@
+/* Async */
+const async = require("async");
+
 /*
 Flashcards NodeJS
 */
@@ -25,7 +28,8 @@ const sqlPool = mysql.createPoolPromise({
   user: 'Flashcards_User',
   password: 'Flashcards_Password',
   database: 'Flashcards',
-  connectionLimit: 45
+  connectionLimit: 45,
+  multipleStatements: true
 });
 
 /*HTTPS*/
@@ -440,15 +444,14 @@ function launchRoutes() {
 
   app.post('/delete_set/:set_id', async function(req,res) {
     try {
-      const delete_set_query = "DELETE FROM sets WHERE set_id = " + req.params.set_id + ";";
-      const [delete_row,delete_field] = await sqlPool.query( delete_set_query );
-
-      const retired_set_id = "INSERT INTO sequence_retired " +
-        "(sequence_id,retired_id) VALUES ( 0, " +
-        req.params.set_id + " );";
-      const [retire_id_row,retire_id_field] = await sqlPool.query( retired_set_id );
-
-      res.send( JSON.stringify( { result: "success" } ) );
+      const result = await delete_set( req.params.set_id );
+      if( result == "success" ) {
+        res.send( JSON.stringify({
+          "result": "success"
+        }));
+      } else {
+        throw "yep";
+      }
     } catch( error ) {
       console.log( error );
       res.send( JSON.stringify({
@@ -458,28 +461,48 @@ function launchRoutes() {
     }
   });
 
+
+
+async function delete_set( set_id ) {
+  try {
+    //1) Get list of card ids
+    const card_ids_query =
+      "SELECT card_id FROM cards WHERE set_id = " + set_id + ";";
+    const [card_ids_rows,card_ids_fields] = await sqlPool.query( card_ids_query );
+
+    //2) Compose a string listing the card ids seperated by ORs.
+    let list_of_cards = ""
+    for( index in card_ids_rows ) {
+      list_of_cards += "card_id = " + card_ids_rows[index].card_id + " OR ";
+    }
+    list_of_cards = list_of_cards.slice( 0, list_of_cards.length-4 );
+
+    //3) Compose deletion query.
+    const delete_set_query =
+      "START TRANSACTION;\n" +
+      "DELETE FROM card_search_text WHERE " + list_of_cards + ";\n" +
+      "DELETE FROM card_search_topics WHERE " + list_of_cards + ";\n" +
+      "DELETE FROM cards WHERE " + list_of_cards + ";\n" +
+      "DELETE FROM cardset_search_text WHERE set_id = " + set_id + ";\n" +
+      "DELETE FROM cardset_search_topics WHERE set_id = " + set_id + ";\n" +
+      "DELETE FROM sets WHERE set_id = " + set_id + ";\n" +
+      "COMMIT;"
+
+    console.log( delete_set_query );
+
+    const [delete_set_row,delete_set_field] =
+      await sqlPool.query( delete_set_query );
+    return "success";
+  } catch( error ) {
+    console.error( error );
+    return "failure";
+  }
+}
+
   app.post('/delete_card/:card_id', async function(req,res) {
     try {
-      const delete_card_search_text =
-        "DELETE FROM card_search_text " +
-        "WHERE card_id = " + req.params.card_id + ";";
-      const delete_card_search_topics =
-        "DELETE FROM card_search_topics " +
-        "WHERE card_id = " + req.params.card_id + ";";
-      const delete_cardset_search_text =
-        "DELETE FROM cardset_search_text " +
-        "WHERE card_id = " + req.params.card_id + ";";
-      const delete_cardset_search_topics =
-        "DELETE FROM cardset_search_topics " +
-        "WHERE card_id = " + req.params.card_id + ";";
-      const [delete_card_text_rows,delete_card_text_fields] =
-        await sqlPool.query( delete_card_search_text );
-      const [delete_card_topics_rows,delete_card_topics_fields] =
-        await sqlPool.query( delete_card_search_topics );
-      const [delete_cardset_text_rows,delete_cardset_text_fields] =
-        await sqlPool.query( delete_cardset_search_text );
-      const [delete_cardset_topics_rows,delete_cardset_topics_fields] =
-        await sqlPool.query( delete_cardset_search_text );
+      const tags_deleted =
+        await delete_search_terms_by_card_id( req.params.card_id );
 
       const delete_card_query = "DELETE FROM cards WHERE card_id = " + req.params.card_id + ";";
       const [delete_row,delete_field] = await sqlPool.query( delete_card_query );
