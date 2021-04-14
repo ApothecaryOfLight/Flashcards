@@ -449,6 +449,27 @@ function launchRoutes() {
 
   app.post('/delete_card/:card_id', async function(req,res) {
     try {
+      const delete_card_search_text =
+        "DELETE FROM card_search_text " +
+        "WHERE card_id = " + req.params.card_id + ";";
+      const delete_card_search_topics =
+        "DELETE FROM card_search_topics " +
+        "WHERE card_id = " + req.params.card_id + ";";
+      const delete_cardset_search_text =
+        "DELETE FROM cardset_search_text " +
+        "WHERE card_id = " + req.params.card_id + ";";
+      const delete_cardset_search_topics =
+        "DELETE FROM cardset_search_topics " +
+        "WHERE card_id = " + req.params.card_id + ";";
+      const [delete_card_text_rows,delete_card_text_fields] =
+        await sqlPool.query( delete_card_search_text );
+      const [delete_card_topics_rows,delete_card_topics_fields] =
+        await sqlPool.query( delete_card_search_topics );
+      const [delete_cardset_text_rows,delete_cardset_text_fields] =
+        await sqlPool.query( delete_cardset_search_text );
+      const [delete_cardset_topics_rows,delete_cardset_topics_fields] =
+        await sqlPool.query( delete_cardset_search_text );
+
       const delete_card_query = "DELETE FROM cards WHERE card_id = " + req.params.card_id + ";";
       const [delete_row,delete_field] = await sqlPool.query( delete_card_query );
 
