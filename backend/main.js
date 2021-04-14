@@ -87,6 +87,9 @@ function process_tag( inTag, replaceWith ) {
 }
 
 async function index_search_data( id, topics, text, isCard ) {
+console.log( "indexing: " );
+console.dir( topics );
+console.dir( text );
   //1) Set variables for either card or set processing.
   let table;
   let where_predicate;
@@ -252,7 +255,15 @@ function launchRoutes() {
         " );";
       const [new_set_row,new_set_field] = await sqlPool.query( insert_query );
 
-      //3) Notify client of success.
+      //3) Index search terms (new sets can only have search text).
+      index_search_data(
+        new_set_id,
+        null,
+        req.body.set_name,
+        false
+      );
+
+      //4) Notify client of success.
       res.send( JSON.stringify({
         "result": "success",
         "set_name": req.body.set_name,
