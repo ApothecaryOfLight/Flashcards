@@ -91,9 +91,6 @@ function process_tag( inTag, replaceWith ) {
 }
 
 async function index_search_data( id, topics, text, isCard ) {
-console.log( "indexing: " );
-console.dir( topics );
-console.dir( text );
   //1) Set variables for either card or set processing.
   let table;
   let where_predicate;
@@ -142,10 +139,8 @@ console.dir( text );
   console.log( "\ntopic_query: " + topic_query );
   const [existing_topics_rows,existing_topics_fields] =
     await sqlPool.query( topic_query );
-//TODO: Sorting these arrays first would often speed comparison.
 
   //5) Process the SQL result into a simple array.
-//TODO: There should be a way to return this as an array directly.
   const existing_topics = [];
   for( index in existing_topics_rows ) {
     existing_topics.push( existing_topics_rows[index].name );
@@ -200,6 +195,42 @@ console.dir( text );
   }
 }
 
+async function delete_set( set_id ) {
+  try {
+    //1) Get list of card ids
+    const card_ids_query =
+      "SELECT card_id FROM cards WHERE set_id = " + set_id + ";";
+    const [card_ids_rows,card_ids_fields] = await sqlPool.query( card_ids_query );
+
+    //2) Compose a string listing the card ids seperated by ORs.
+    let list_of_cards = ""
+    for( index in card_ids_rows ) {
+      list_of_cards += "card_id = " + card_ids_rows[index].card_id + " OR ";
+    }
+    list_of_cards = list_of_cards.slice( 0, list_of_cards.length-4 );
+
+    //3) Compose deletion query.
+    const delete_set_query =
+      "START TRANSACTION;\n" +
+      "DELETE FROM card_search_text WHERE " + list_of_cards + ";\n" +
+      "DELETE FROM card_search_topics WHERE " + list_of_cards + ";\n" +
+      "DELETE FROM cards WHERE " + list_of_cards + ";\n" +
+      "DELETE FROM cardset_search_text WHERE set_id = " + set_id + ";\n" +
+      "DELETE FROM cardset_search_topics WHERE set_id = " + set_id + ";\n" +
+      "DELETE FROM sets WHERE set_id = " + set_id + ";\n" +
+      "COMMIT;"
+
+    console.log( delete_set_query );
+
+    const [delete_set_row,delete_set_field] =
+      await sqlPool.query( delete_set_query );
+    return "success";
+  } catch( error ) {
+    console.error( error );
+    return "failure";
+  }
+}
+
 /*Express Routes*/
 function launchRoutes() {
   app.get('/setlist', async function(req,res) {
@@ -241,8 +272,6 @@ function launchRoutes() {
     }
   });
 
-
-//set_cardset_search_topics and set_cardset_search_text
   /*Add a new set of cards*/
   app.post('/new_set', async function(req,res) {
     try {
@@ -309,6 +338,7 @@ function launchRoutes() {
     }
   });
 
+  /*Create Account*/
   app.post('/create_account', async function(req,res) {
     try {
       const create_acct_query = "INSERT INTO users " +
@@ -329,27 +359,6 @@ function launchRoutes() {
     }
   });
 
-  /*Generate a new card ID. DEPRECATED, TODO REMOVE*/
-  app.post('/new_card', async function(req,res) {
-    try {
-      const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
-      const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
-      const new_card_id = new_card_id_row[0].new_card_id;
-      //TODO: On success, on error handling
-      res.send( JSON.stringify({
-        "result": "success",
-        "card_id": new_card_id
-      }));
-    } catch( error ) {
-      console.log( error );
-      res.send( JSON.stringify({
-        "result": "error",
-        "error_message": "Unspecified error attempting to create new card."
-      }));
-    }
-  });
-
-//TODO: set_card_search_text and set_card_search_topics
   /*Add a new card*/
   app.post('/add_card', async function(req,res) {
     try {
@@ -389,7 +398,9 @@ function launchRoutes() {
     }
   });
 
+  /*Update set*/
   app.post( '/update_set', async function(req,res) {
+//TODO: Include updating set name here.
     try {
       index_search_data(
         req.body.set_id,
@@ -442,6 +453,7 @@ function launchRoutes() {
     }
   });
 
+  /*Delete Set*/
   app.post('/delete_set/:set_id', async function(req,res) {
     try {
       const result = await delete_set( req.params.set_id );
@@ -461,44 +473,7 @@ function launchRoutes() {
     }
   });
 
-
-
-async function delete_set( set_id ) {
-  try {
-    //1) Get list of card ids
-    const card_ids_query =
-      "SELECT card_id FROM cards WHERE set_id = " + set_id + ";";
-    const [card_ids_rows,card_ids_fields] = await sqlPool.query( card_ids_query );
-
-    //2) Compose a string listing the card ids seperated by ORs.
-    let list_of_cards = ""
-    for( index in card_ids_rows ) {
-      list_of_cards += "card_id = " + card_ids_rows[index].card_id + " OR ";
-    }
-    list_of_cards = list_of_cards.slice( 0, list_of_cards.length-4 );
-
-    //3) Compose deletion query.
-    const delete_set_query =
-      "START TRANSACTION;\n" +
-      "DELETE FROM card_search_text WHERE " + list_of_cards + ";\n" +
-      "DELETE FROM card_search_topics WHERE " + list_of_cards + ";\n" +
-      "DELETE FROM cards WHERE " + list_of_cards + ";\n" +
-      "DELETE FROM cardset_search_text WHERE set_id = " + set_id + ";\n" +
-      "DELETE FROM cardset_search_topics WHERE set_id = " + set_id + ";\n" +
-      "DELETE FROM sets WHERE set_id = " + set_id + ";\n" +
-      "COMMIT;"
-
-    console.log( delete_set_query );
-
-    const [delete_set_row,delete_set_field] =
-      await sqlPool.query( delete_set_query );
-    return "success";
-  } catch( error ) {
-    console.error( error );
-    return "failure";
-  }
-}
-
+  /*Delete Card*/
   app.post('/delete_card/:card_id', async function(req,res) {
     try {
       const tags_deleted =
@@ -523,6 +498,7 @@ async function delete_set( set_id ) {
     }
   });
 
+  /*Get a list of cards for the set editor interface.*/
   app.get('/get_cardlist/:set_id', async function(req,res) {
     try {
       const get_cardlist_set_name_query = "SELECT name FROM sets WHERE set_id = " +
@@ -557,6 +533,7 @@ async function delete_set( set_id ) {
     }
   });
 
+  /*Get card by ID*/
   app.get('/get_card/:card_id', async function(req,res) {
     try {
 //TODO) Place these in an async function so that both can be run simultaneously.
@@ -590,6 +567,7 @@ async function delete_set( set_id ) {
     }
   });
 
+  /*Get a list of either sets or cards for the Serach Interface*/
   app.post( '/searchlist', async function(req,res) {
     try {
       console.dir( req.body.topics );
@@ -658,43 +636,9 @@ async function delete_set( set_id ) {
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
           card_search_topics_predicate +
-          ") " +
-          "UNION " +
-
-          "(SELECT cards.card_id, cards.answer, cards.question, " +
-          "sets.set_creator, cards.set_id " +
-          "FROM cards " +
-          "INNER JOIN cardset_search_text " +
-          "ON cards.card_id = cardset_search_text.card_id " +
-          "INNER JOIN sets " +
-          "ON cards.set_id = sets.set_id " +
-          cardset_search_text_predicate +
-          ") " +
-          "UNION " +
-
-          "(SELECT cards.card_id, cards.answer, cards.question, " +
-          "sets.set_creator, cards.set_id " +
-          "FROM cards " +
-          "INNER JOIN cardset_search_topics " +
-          "ON cards.card_id = cardset_search_topics.card_id " +
-          "INNER JOIN sets " +
-          "ON cards.set_id = sets.set_id " +
-          cardset_search_topics_predicate +
           ")";
       } else if( req.body.search_type == "set" ) {
         card_search_query =
-          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
-          "INNER JOIN card_search_text " +
-          "ON sets.set_id = card_search_text.set_id " +
-          card_search_text_predicate +
-          ") UNION " +
-
-          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
-          "INNER JOIN card_search_topics " +
-          "ON sets.set_id = card_search_topics.set_id " +
-          card_search_topics_predicate +
-          ") UNION " +
-
           "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
           "INNER JOIN cardset_search_text " +
           "ON sets.set_id = cardset_search_text.set_id " +
