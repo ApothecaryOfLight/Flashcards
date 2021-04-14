@@ -44,7 +44,6 @@ function launch_runset_interface( inSetID ) {
     side: 0,
     prev_cards: []
   };
-  set_interface( "runset", card_set_obj );
 
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
@@ -56,6 +55,7 @@ function launch_runset_interface( inSetID ) {
         card_set_obj.cards = json.cards;
         next_card( card_set_obj );
         runset_render_qa( card_set_obj );
+        set_interface( "runset", card_set_obj );
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
