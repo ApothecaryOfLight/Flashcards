@@ -729,6 +729,29 @@ async function generate_db_backup( res ) {
     }
   });
 
+  app.post( '/card_result', async function(req,res) {
+    try {
+      console.dir( req.body );
+      const result_query = "INSERT INTO card_record " +
+        "(username_hash, card_id, datestamp, result) VALUES " +
+        "( \"" + req.body.userhash + "\", " +
+        req.body.card_id + ", " +
+        "\'2001-01-01\'" + ", " +
+        req.body.result + ");"
+      console.log( result_query );
+      const [res_row,res_field] = await sqlPool.query( result_query );
+      res.send( JSON.stringify({
+        "result": "success"
+      }));
+    } catch(error) {
+      console.error( error );
+      res.send( JSON.stringify({
+        "result": "error"
+      }));
+    }
+  });
+
+
   if( process.argv[2] == "https" ) {
     var server = https.createServer( credentials, app );
     server.listen( 3000 );

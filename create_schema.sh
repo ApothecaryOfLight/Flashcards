@@ -24,6 +24,10 @@ echo "INSERT INTO sequence_last (sequence_id,last) VALUES (0,0);" >> create_sche
 echo "INSERT INTO sequence_last (sequence_id,last) VALUES (1,0);" >> create_schema.sql
 echo "INSERT INTO sequence_last (sequence_id,last) VALUES (2,0);" >> create_schema.sql
 
+
+#Card record
+echo "CREATE TABLE card_record( username_hash VARBINARY(64), card_id INT, datestamp DATE, result INT );" >> create_schema.sql
+
 #Identity manager function
 echo "DELIMITER %%" >> create_schema.sql
 echo "CREATE FUNCTION Flashcards.generate_new_id( in_sequence_id TINYINT )" >> create_schema.sql

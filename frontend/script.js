@@ -109,16 +109,53 @@ function next_card( cards_obj ) {
 function runset_interface_go_back( cards_obj ) {
   launch_search_interface();
 }
+function send_card_result( user_hash, card_id, result ) {
+  const result_object = {
+    userhash: user_hash,
+    card_id: card_id,
+    result: result
+  }
+  const result_request = new Request(
+    ip + 'card_result',
+    {
+      method: 'POST',
+      body: JSON.stringify(result_object),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  fetch( result_request )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "success" ) {
+        
+      } else if( json.result == "error" ) {
+        launch_modal( null, "Weird error.", { "Close": close_modal } );
+      }
+    });
+}
 function runset_interface_missed( cards_obj ) {
   cards_obj.cards[cards_obj.curr_card].correct--;
-//TODO: Send missed to server.
+  if( logged_obj.isLogged == true ) {
+    send_card_result(
+      logged_obj.username_hash,
+      cards_obj.curr_card,
+      -1
+    );
+  }
   next_card( cards_obj );
 }
 function runset_interface_correct( cards_obj ) {
   cards_obj.cards[cards_obj.curr_card].correct++;
-console.dir( cards_obj.cards );
   if( cards_obj.cards[cards_obj.curr_card].correct >= 10 ) {
-//TODO: Send correct to server.
+    if( logged_obj.isLogged == true ) {
+      send_card_result(
+        logged_obj.username_hash,
+        cards_obj.curr_card,
+        -1
+     );
+    }
     cards_obj.cards.splice( cards_obj.curr_card, 1 );
   }
   next_card( cards_obj );
