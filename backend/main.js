@@ -699,33 +699,34 @@ async function generate_db_backup( res ) {
   /*This is about the most insecure thing I can imagine.*/
   /*THIS IS ONLY FOR EARLY DEV. NEVER PUT THIS ON THE ACTUAL INTERNET.*/
   app.post( '/upload_database', async function(req,res) {
-//    console.log( req.body.data );
-    fs.writeFile( "database_backup.sql", req.body.data, 'utf8', async () => {
-/*      const upload_query =
-        "START TRANSACTION;\n" +
-        "CREATE DATABASE IF NOT EXISTS Flashcards;\n" +
-        "USE Flashcards;\n" +
-        "source database_backup.sql\n" +
-        "COMMIT;";
-      console.log( upload_query );
-      const [upload_row,upload_field] = await sqlPool.query( upload_query );*/
-      const load = await exec(
-        "mysql " +
-        "--user='Flashcards_User' " +
-        "--password='Flashcards_Password' " +
-        " < database_backup.sql",
-        async (error,stdout,stderr) => {
-          console.log( "ugh lol" );
-        }
-      );
-      console.log( "All done!" );
-    });
-//    const dump_query = "source test_backup.sql";
-//    const [out_row,out_field] = await sqlPool.query( dump_query );
-//    console.log( out_row );
-    res.send( JSON.stringify({
-        "result": "success"
-    }));
+    try {
+      fs.writeFile( "database_backup.sql", req.body.data, 'utf8', async () => {
+/*        const upload_query =
+          "START TRANSACTION;\n" +
+          "CREATE DATABASE IF NOT EXISTS Flashcards;\n" +
+          "USE Flashcards;\n" +
+          "source database_backup.sql\n" +
+          "COMMIT;";
+        console.log( upload_query );
+        const [upload_row,upload_field] = await sqlPool.query( upload_query );*/
+        const load = await exec(
+          "mysql " +
+          "--user='Flashcards_User' " +
+          "--password='Flashcards_Password' " +
+          " < database_backup.sql",
+          async (error,stdout,stderr) => {
+            res.send( JSON.stringify({
+              "result": "success"
+            }));
+          }
+        );
+      });
+    } catch( error ) {
+      console.error( error );
+      res.send( JSON.stringify({
+        "result": "error"
+      }));
+    }
   });
 
   if( process.argv[2] == "https" ) {
