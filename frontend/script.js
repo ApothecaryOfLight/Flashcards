@@ -53,6 +53,7 @@ function launch_runset_interface( inSetID ) {
     .then( json => {
       if( json.result == "success" ) {
         card_set_obj.cards = json.cards;
+        prepare_cards( card_set_obj.cards );
         next_card( card_set_obj );
         runset_render_qa( card_set_obj );
         set_interface( "runset", card_set_obj );
@@ -65,7 +66,20 @@ function launch_runset_interface( inSetID ) {
     });
 }
 
+function prepare_cards( cards ) {
+  console.dir( cards );
+  for( index in cards ) {
+    cards[index].correct = 0;
+  }
+}
+
 function next_card( cards_obj ) {
+  //0) If set is empty, return to search interface.
+  if( cards_obj.cards.length == 0 ) {
+    launch_search_interface();
+    return;
+  }
+
   //1) Push the last card into the record of previous cards.
   cards_obj.prev_cards.push( cards_obj.curr_card );
 
@@ -79,10 +93,12 @@ function next_card( cards_obj ) {
   let next_card_number = Math.floor( Math.random() * num_cards );
 
   //4) Guarantee that the next card hasn't appeared recently.
-  while( cards_obj.prev_cards.some( (card_number) => {
-    return (card_number == next_card_number);
-  }) == true ) {
-    next_card_number = Math.floor( Math.random() * num_cards );
+  if( cards_obj.cards.length > 1 ) {
+    while( cards_obj.prev_cards.some( (card_number) => {
+      return (card_number == next_card_number);
+    }) == true ) {
+      next_card_number = Math.floor( Math.random() * num_cards );
+    }
   }
 
   //5) Set the next card, set the card to the question side, render it.
@@ -94,9 +110,17 @@ function runset_interface_go_back( cards_obj ) {
   launch_search_interface();
 }
 function runset_interface_missed( cards_obj ) {
+  cards_obj.cards[cards_obj.curr_card].correct--;
+//TODO: Send missed to server.
   next_card( cards_obj );
 }
 function runset_interface_correct( cards_obj ) {
+  cards_obj.cards[cards_obj.curr_card].correct++;
+console.dir( cards_obj.cards );
+  if( cards_obj.cards[cards_obj.curr_card].correct >= 10 ) {
+//TODO: Send correct to server.
+    cards_obj.cards.splice( cards_obj.curr_card, 1 );
+  }
   next_card( cards_obj );
 }
 function runset_interface_flip_card( cards_obj ) {
