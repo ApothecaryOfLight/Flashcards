@@ -1,5 +1,8 @@
 /* Async */
-const async = require("async");
+const nonsync = require("async");
+
+/*System Calls VERY INSECURE ONLY FOR EARLY DEV*/
+const {exec} = require("child_process");
 
 /*
 Flashcards NodeJS
@@ -651,7 +654,6 @@ function launchRoutes() {
           cardset_search_topics_predicate +
           ")";
       }
-console.log( "\n\n" + card_search_query );
       const [out_row,out_field] = await sqlPool.query( card_search_query );
       res.send( JSON.stringify({
         "result": "success",
@@ -665,6 +667,65 @@ console.log( "\n\n" + card_search_query );
         "error_message": "Unspecified error attempting search."
       }));
     }
+  });
+
+/*Generate backup file. VERY INSECURE. Only for early dev.*/
+async function generate_db_backup( res ) {
+  const dump = await exec(
+    "mysqldump --no-tablespaces --user='Flashcards_User' " +
+    "--password='Flashcards_Password' " +
+//    "--routines " + //Brokered. Suggests mysql.proc, but doesn't exist.
+    "--databases Flashcards > backup.sql",
+    async (error,stdout,stderr) => {
+      if( error ) { console.error( error ); }
+      if( stderr ) { console.log( stderr ); }
+      console.log( "callbacky" );
+      fs.readFile('backup.sql', 'utf8', (error,data) => {
+        res.send( JSON.stringify({
+          "result": "success",
+          "data": data
+        }));
+      });
+    }
+  );
+  return;
+}
+
+  app.get( '/download_backup', async function (req,res) {
+    console.log( "downloading backup.." );
+    const done = await generate_db_backup(res);
+  });
+
+  /*This is about the most insecure thing I can imagine.*/
+  /*THIS IS ONLY FOR EARLY DEV. NEVER PUT THIS ON THE ACTUAL INTERNET.*/
+  app.post( '/upload_database', async function(req,res) {
+//    console.log( req.body.data );
+    fs.writeFile( "database_backup.sql", req.body.data, 'utf8', async () => {
+/*      const upload_query =
+        "START TRANSACTION;\n" +
+        "CREATE DATABASE IF NOT EXISTS Flashcards;\n" +
+        "USE Flashcards;\n" +
+        "source database_backup.sql\n" +
+        "COMMIT;";
+      console.log( upload_query );
+      const [upload_row,upload_field] = await sqlPool.query( upload_query );*/
+      const load = await exec(
+        "mysql " +
+        "--user='Flashcards_User' " +
+        "--password='Flashcards_Password' " +
+        " < database_backup.sql",
+        async (error,stdout,stderr) => {
+          console.log( "ugh lol" );
+        }
+      );
+      console.log( "All done!" );
+    });
+//    const dump_query = "source test_backup.sql";
+//    const [out_row,out_field] = await sqlPool.query( dump_query );
+//    console.log( out_row );
+    res.send( JSON.stringify({
+        "result": "success"
+    }));
   });
 
   if( process.argv[2] == "https" ) {
