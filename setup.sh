@@ -29,8 +29,8 @@ echo -n "Set up HTTPS? (y/n)"
 read prompt
 if [ "$prompt" != "${prompt#[Yy]}" ] ;then
   echo "Setting up HTTPS."
-  cd /home/Flashcards/frontend && sudo sed -i "s/const ip = 'http:\/\/52.11.132.13:3000\/'; \'https:\/\/triviacards.net:3000\/\';" script.js
-  cd /home/Flashcards/frontend && sudo sed -i "s/const ip = 'http:\/\/52.11.132.13:3000\/'; \'https:\/\/triviacards.net:3000\/\';" admin.js
+  cd /home/ubuntu/Flashcards/frontend && sudo sed -i "s/const ip = 'http:\/\/52.11.132.13:3000\/'; \'https:\/\/triviacards.net:3000\/\';" script.js
+  cd /home/ubuntu/Flashcards/frontend && sudo sed -i "s/const ip = 'http:\/\/52.11.132.13:3000\/'; \'https:\/\/triviacards.net:3000\/\';" admin.js
   echo -n "Install certbot? (y/n)"
   read prompt
   if [ "$prompt" != "${prompt#[Yy]}" ] ;then
