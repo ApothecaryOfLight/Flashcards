@@ -30,6 +30,7 @@ read prompt
 if [ "$prompt" != "${prompt#[Yy]}" ] ;then
   echo "Setting up HTTPS."
   cd ./frontend && sudo sed -i "s/const ip = 'http:\/\/52.11.132.13:3000\/'; \'https:\/\/triviacards.net:3000\/\';" script.js
+  cd ./frontend && sudo sed -i "s/const ip = 'http:\/\/52.11.132.13:3000\/'; \'https:\/\/triviacards.net:3000\/\';" admin.js
   sudo apt-get install certbot
   sudo apt-get install python3-certbot-nginx
   sudo certbot --nginx
