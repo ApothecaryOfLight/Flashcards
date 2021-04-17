@@ -39,12 +39,6 @@ window.addEventListener( 'load', (loaded_event) => {
 ==2.0== Runset Interface
 */
 function launch_runset_interface( inSetID ) {
-  let card_set_obj = {
-    curr_card: 0,
-    side: 0,
-    prev_cards: []
-  };
-
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
   );
@@ -52,11 +46,12 @@ function launch_runset_interface( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        card_set_obj.cards = json.cards;
+        runset( json.cards );
+/*        card_set_obj.cards = json.cards;
         prepare_cards( card_set_obj.cards );
         next_card( card_set_obj );
         runset_render_qa( card_set_obj );
-        set_interface( "runset", card_set_obj );
+        set_interface( "runset", card_set_obj );*/
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -64,6 +59,19 @@ function launch_runset_interface( inSetID ) {
         launch_modal( null, json.error_message, options );
       }
     });
+}
+
+function runset( inSetData ) {
+  let card_set_obj = {
+    curr_card: 0,
+    side: 0,
+    prev_cards: []
+  };
+  card_set_obj.cards = inSetData;
+  prepare_cards( card_set_obj.cards );
+  next_card( card_set_obj );
+  runset_render_qa( card_set_obj );
+  set_interface( "runset", card_set_obj );
 }
 
 function prepare_cards( cards ) {
@@ -747,8 +755,28 @@ function render_search_terms() {
   search_term_container.innerHTML = dom;
 }
 
-function create_temporary_set() {
-
+function create_temp_set_button() {
+  const get_temp_set = new Request(
+    ip + 'temporary_set',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        "username_hash": "placeholder"
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  fetch( get_temp_set )
+    .then( json => json.json() )
+    .then( json => {
+      if( json.result == "success" ) {
+        runset( json.cards );
+      } else if( json.result == "error" ) {
+        launch_modal( null, json.error_message, { "Close": close_modal } );
+      }
+    });
 }
 
 function draw_paper( inLength ) {
@@ -1127,7 +1155,8 @@ const functions = {
   "search" : {
     "set_name_create": search_interface_set_create,
     "add_search_tag_button": add_search_term,
-    "switch_list_type": switch_list_type
+    "switch_list_type": switch_list_type, 
+    "create_temp_set_button": create_temp_set_button
   },
   "set_editor" : {
     "new": set_editor_interface_new_button,
@@ -1151,7 +1180,8 @@ const bound_functions = {
   "search" : {
     "set_name_create": [],
     "add_search_tag_button": [],
-    "switch_list_type": []
+    "switch_list_type": [],
+    "create_temp_set_button": []
   },
   "set_editor" : {
     "new": [],

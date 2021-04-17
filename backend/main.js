@@ -762,7 +762,7 @@ async function generate_db_backup( res ) {
         "LEFT JOIN card_record " +
         "ON cards.card_id = card_record.card_id " +
         "GROUP BY card_id, card_record.result " +
-        "ORDER BY Result-(Latest/100) DESC " +
+        "ORDER BY Result-(Latest/100) ASC " +
         "LIMIT 25;"
       const [temp_row,temp_field] = await sqlPool.query( temp_set_query );
       res.send( JSON.stringify({
