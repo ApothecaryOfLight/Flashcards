@@ -139,6 +139,7 @@ function send_card_result( user_hash, card_id, result ) {
     result: result,
     date_stamp: get_datestamp()
   }
+console.dir( result_object );
   const result_request = new Request(
     ip + 'card_result',
     {
@@ -175,7 +176,7 @@ function runset_interface_correct( cards_obj ) {
   if( logged_obj.isLogged == true ) {
     send_card_result(
       logged_obj.username_hash,
-      cards_obj.curr_card,
+      cards_obj.cards[cards_obj.curr_card].card_id,
       1
    );
   }
