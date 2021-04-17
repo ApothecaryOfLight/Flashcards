@@ -47,11 +47,6 @@ function launch_runset_interface( inSetID ) {
     .then( json => {
       if( json.result == "success" ) {
         runset( json.cards );
-/*        card_set_obj.cards = json.cards;
-        prepare_cards( card_set_obj.cards );
-        next_card( card_set_obj );
-        runset_render_qa( card_set_obj );
-        set_interface( "runset", card_set_obj );*/
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -156,14 +151,14 @@ function runset_interface_missed( cards_obj ) {
 }
 function runset_interface_correct( cards_obj ) {
   cards_obj.cards[cards_obj.curr_card].correct++;
-  if( cards_obj.cards[cards_obj.curr_card].correct >= 10 ) {
-    if( logged_obj.isLogged == true ) {
-      send_card_result(
-        logged_obj.username_hash,
-        cards_obj.curr_card,
-        -1
-     );
-    }
+  if( logged_obj.isLogged == true ) {
+    send_card_result(
+      logged_obj.username_hash,
+      cards_obj.curr_card,
+      1
+   );
+  }
+  if( cards_obj.cards[cards_obj.curr_card].correct >= 5 ) {
     cards_obj.cards.splice( cards_obj.curr_card, 1 );
   }
   next_card( cards_obj );
