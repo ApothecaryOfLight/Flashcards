@@ -26,7 +26,7 @@ echo "INSERT INTO sequence_last (sequence_id,last) VALUES (2,0);" >> create_sche
 
 
 #Card record
-echo "CREATE TABLE card_record( username_hash VARBINARY(64), card_id INT, datestamp DATE, result INT );" >> create_schema.sql
+echo "CREATE TABLE card_record( username_hash VARBINARY(64), card_id INT, FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE, datestamp DATE, result INT );" >> create_schema.sql
 
 #Identity manager function
 echo "DELIMITER %%" >> create_schema.sql
