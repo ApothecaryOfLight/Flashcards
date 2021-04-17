@@ -139,7 +139,6 @@ async function index_search_data( id, topics, text, isCard ) {
   //4) Find any topics already indexed for this card/set.
   const topic_query =
     "SELECT name FROM " + table + where_predicate + ";"
-  console.log( "\ntopic_query: " + topic_query );
   const [existing_topics_rows,existing_topics_fields] =
     await sqlPool.query( topic_query );
 
@@ -178,7 +177,6 @@ async function index_search_data( id, topics, text, isCard ) {
     }
     insert_query = insert_query.slice( 0, insert_query.length-2 );
     insert_query += ";";
-    console.log( "\ninsert query: " + insert_query );
     const [insert_rows,fields] = await sqlPool.query( insert_query );
   }
 
@@ -193,7 +191,6 @@ async function index_search_data( id, topics, text, isCard ) {
     }
     delete_query = delete_query.slice( 0, delete_query.length-2 );
     delete_query += ");";
-    console.log( "\ndelete_query: " + delete_query );
     const [delete_rows,delete_fields] = await sqlPool.query( delete_query );
   }
 }
@@ -222,9 +219,6 @@ async function delete_set( set_id ) {
       "DELETE FROM cardset_search_topics WHERE set_id = " + set_id + ";\n" +
       "DELETE FROM sets WHERE set_id = " + set_id + ";\n" +
       "COMMIT;"
-
-    console.log( delete_set_query );
-
     const [delete_set_row,delete_set_field] =
       await sqlPool.query( delete_set_query );
     return "success";
@@ -731,14 +725,12 @@ async function generate_db_backup( res ) {
 
   app.post( '/card_result', async function(req,res) {
     try {
-      console.dir( req.body );
       const result_query = "INSERT INTO card_record " +
         "(username_hash, card_id, datestamp, result) VALUES " +
         "( \"" + req.body.userhash + "\", " +
         req.body.card_id + ", " +
         "\'2001-01-01\'" + ", " +
         req.body.result + ");"
-      console.log( result_query );
       const [res_row,res_field] = await sqlPool.query( result_query );
       res.send( JSON.stringify({
         "result": "success"

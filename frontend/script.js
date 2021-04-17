@@ -756,12 +756,16 @@ function render_search_terms() {
 }
 
 function create_temp_set_button() {
+  let user = "unlogged";
+  if( logged_obj.isLogged == true ) {
+    user = logged_obj.username_hash;
+  }
   const get_temp_set = new Request(
     ip + 'temporary_set',
     {
       method: 'POST',
       body: JSON.stringify({
-        "username_hash": "placeholder"
+        "username_hash": user
       }),
       headers: {
         'Content-Type': 'application/json'
