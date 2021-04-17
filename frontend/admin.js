@@ -1,5 +1,3 @@
-const ip = 'http://52.11.132.13:3000/';
-
 window.addEventListener( 'load', (loaded) => {
   console.log( "Ready" );
 
