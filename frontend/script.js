@@ -140,7 +140,7 @@ function runset_interface_missed( cards_obj ) {
   if( logged_obj.isLogged == true ) {
     send_card_result(
       logged_obj.username_hash,
-      cards_obj.curr_card,
+      cards_obj.cards[cards_obj.curr_card].card_id,
       -1
     );
   }

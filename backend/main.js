@@ -751,6 +751,32 @@ async function generate_db_backup( res ) {
     }
   });
 
+  app.post( '/temporary_set', async function(req,res) {
+    try {
+      const temp_set_query =
+        "SELECT cards.card_id, cards.question, cards.answer, " +
+        "COALESCE( SUM(card_record.result), -100 ) AS Result, " +
+        "CAST( (UNIX_TIMESTAMP(CURDATE()) - " +
+        "UNIX_TIMESTAMP( MAX(card_record.datestamp) )) AS SIGNED ) as Latest " +
+        "FROM cards " +
+        "LEFT JOIN card_record " +
+        "ON cards.card_id = card_record.card_id " +
+        "GROUP BY card_id, card_record.result " +
+        "ORDER BY Result-(Latest/100) DESC " +
+        "LIMIT 25;"
+      const [temp_row,temp_field] = await sqlPool.query( temp_set_query );
+      res.send( JSON.stringify({
+        "result": "success",
+        "cards": temp_row
+      }));
+    } catch( error ) {
+      console.error( error );
+      res.send( JSON.stringify({
+        "result": "error"
+      }));
+    }
+  });
+
 
   if( process.argv[2] == "https" ) {
     var server = https.createServer( credentials, app );
@@ -759,3 +785,4 @@ async function generate_db_backup( res ) {
     app.listen(3000);
   }
 }
+ 
