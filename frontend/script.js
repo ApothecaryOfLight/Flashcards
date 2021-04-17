@@ -112,12 +112,34 @@ function next_card( cards_obj ) {
 function runset_interface_go_back( cards_obj ) {
   launch_search_interface();
 }
+function get_datestamp() {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  let month = now.getUTCMonth() + 1;
+  if( month < 10 ) {
+    month = "0" + month;
+  }
+  let day = now.getUTCDate();
+  if( day < 10 ) {
+    day = "0" + day;
+  }
+
+  const now_string =
+    year + "-" +
+    month + "-" +
+    day;
+  console.log( now_string );
+
+  return now_string;
+}
 function send_card_result( user_hash, card_id, result ) {
   const result_object = {
     userhash: user_hash,
     card_id: card_id,
-    result: result
+    result: result,
+    date_stamp: get_datestamp()
   }
+console.dir( result_object );
   const result_request = new Request(
     ip + 'card_result',
     {

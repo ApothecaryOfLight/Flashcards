@@ -729,7 +729,7 @@ async function generate_db_backup( res ) {
         "(username_hash, card_id, datestamp, result) VALUES " +
         "( \"" + req.body.userhash + "\", " +
         req.body.card_id + ", " +
-        "\'2001-01-01\'" + ", " +
+        "\'" + req.body.date_stamp + "\', " +
         req.body.result + ");"
       const [res_row,res_field] = await sqlPool.query( result_query );
       res.send( JSON.stringify({
