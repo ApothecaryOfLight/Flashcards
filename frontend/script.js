@@ -14,7 +14,7 @@ INDEX
 ==1.0== Globals
 */
 //TODO: Get rid of all globals.
-const ip = 'http://52.11.132.13:3000/';
+//const ip = 'http://52.11.132.13:3000/';
 const card_tags = [];
 const set_data = {};
 const set_editor_tags = [];
