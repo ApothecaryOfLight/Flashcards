@@ -139,7 +139,6 @@ function send_card_result( user_hash, card_id, result ) {
     result: result,
     date_stamp: get_datestamp()
   }
-console.dir( result_object );
   const result_request = new Request(
     ip + 'card_result',
     {
@@ -192,6 +191,15 @@ function runset_interface_flip_card( cards_obj ) {
     cards_obj.side = 0;
   }
   runset_render_qa( cards_obj );
+}
+function runset_interface_split_set( cards_obj ) {
+  const number_of_cards = cards_obj.cards.length;
+  for( i=0; i<(number_of_cards/2); i++ ) {
+    const remaining_cards = cards_obj.cards.length;
+    const remove_card_pos = Math.floor( Math.random() * remaining_cards );
+    cards_obj.cards.splice( remove_card_pos, 1 );
+  }
+  next_card( cards_obj );
 }
 
 function proc_txt_runset( inText ) {
@@ -1193,7 +1201,8 @@ const functions = {
     "go_back": runset_interface_go_back,
     "missed": runset_interface_missed,
     "correct": runset_interface_correct,
-    "flip_card": runset_interface_flip_card
+    "flip_card": runset_interface_flip_card,
+    "split_set": runset_interface_split_set
   }
 };
 
@@ -1218,7 +1227,8 @@ const bound_functions = {
     "go_back": [],
     "missed": [],
     "correct": [],
-    "flip_card": []
+    "flip_card": [],
+    "split_set": []
   }
 }
 
