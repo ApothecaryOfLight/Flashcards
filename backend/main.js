@@ -744,6 +744,7 @@ async function generate_db_backup( res ) {
   });
 
   app.post( '/temporary_set', async function(req,res) {
+//TODO: Apply username.
     try {
       const temp_set_query =
         "SELECT cards.card_id, cards.question, cards.answer, " +

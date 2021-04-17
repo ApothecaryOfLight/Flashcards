@@ -136,15 +136,18 @@ Menu
   grid-column: 3;
 }
 .better_buttons {
-  border: none;
+  height: 100%;
+  border: 3px solid #e8d154;
   outline: none;
   font-size: 1rem;
   font-weight: bold;
   font-family: 'Indie Flower', cursive;
   border-radius: 15px;
+
+  background: #FFFFCC;
 }
 .better_buttons:hover {
-  background: blue;
+  background: #FFE64C;
 }
 #search_tag_container {
   font-size: 2rem;
@@ -158,6 +161,7 @@ Menu
   flex-direction: row;
 }
 #search_buttons_container {
+  margin-left: 1rem;
   grid-row: 2;
   grid-column: 2;
 }
@@ -653,6 +657,12 @@ Runset interface
     margin-top: 25vh;
     margin-bottom: 15vh;
   }
+}
+#runset_interface_missed {
+  color: red;
+}
+#runset_interface_correct {
+  color: green;
 }
 
 /*
