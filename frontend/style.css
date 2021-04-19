@@ -652,6 +652,15 @@ Runset interface
   margin-top: 15vh;
   margin-bottom: 25vh;
 }
+#runset_interface_split_set_buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 60vh;
+  width: 8wv;
+  margin-top: 15vh;
+  margin-bottom: 25vh;
+}
 @media (max-height: 800px) {
   #runset_interface_buttons {
     margin-top: 25vh;

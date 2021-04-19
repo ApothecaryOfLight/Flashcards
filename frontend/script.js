@@ -14,7 +14,6 @@ INDEX
 ==1.0== Globals
 */
 //TODO: Get rid of all globals.
-//const ip = 'http://52.11.132.13:3000/';
 const card_tags = [];
 const set_data = {};
 const set_editor_tags = [];
@@ -27,6 +26,8 @@ const logged_obj = {
   isLogged: false,
   username_hash: ""
 }
+const split_buttons = [];
+const merge_buttons = [];
 
 window.addEventListener( 'load', (loaded_event) => {
   launch_search_interface();
@@ -57,57 +58,98 @@ function launch_runset_interface( inSetID ) {
 }
 
 function runset( inSetData ) {
-  let card_set_obj = {
+  let card_sets_obj = {
+    curr_set : 0,
+    sets : []
+  };
+  card_sets_obj.sets[ card_sets_obj.curr_set ] = {
+    cards: inSetData,
     curr_card: 0,
     side: 0,
     prev_cards: []
-  };
-  card_set_obj.cards = inSetData;
-  prepare_cards( card_set_obj.cards );
-  next_card( card_set_obj );
-  runset_render_qa( card_set_obj );
-  set_interface( "runset", card_set_obj );
+  }
+  prepare_cards( card_sets_obj.sets[ card_sets_obj.curr_set ].cards );
+  next_card( card_sets_obj );
+  runset_render_qa( card_sets_obj );
+  runset_render_split_sets( card_sets_obj );
+  set_interface( "runset", card_sets_obj );
 }
 
 function prepare_cards( cards ) {
-  console.dir( cards );
+//  console.dir( cards );
   for( index in cards ) {
     cards[index].correct = 0;
   }
 }
 
-function next_card( cards_obj ) {
-  //0) If set is empty, return to search interface.
-  if( cards_obj.cards.length == 0 ) {
+function remove_empty_subset( card_sets_obj, target ) {
+console.log( "remove_empty_subset" );
+console.log( target );
+  //1) If not sets remain, terminate the recursive chain.
+//  if( card_sets_obj.sets.length == 0 ) {
+//    return;
+//  }
+
+  //2) Remove the empty subset.
+  card_sets_obj.sets.splice(
+//    card_sets_obj.curr_set,
+    Number(target),
+    1
+  );
+
+  //3) Reset the current set to 0.
+  card_sets_obj.curr_set = Math.max( Number(target)-1, 0 );
+
+/*  if( card_sets_obj.sets[ 0 ].length == 0 ) {
+    remove_empty_subset( card_sets_obj );
+  }*/
+  runset_render_split_sets( card_sets_obj );
+}
+
+function next_card( card_sets_obj ) {
+  //1) If current subset is empty, switch to another subset.
+  if( card_sets_obj.sets[ card_sets_obj.curr_set ].cards.length == 0 ) {
+    remove_empty_subset(
+      card_sets_obj,
+      card_sets_obj.curr_set
+    );
+  }
+
+  //2) If there are no more subsets, return to search interface.
+  if( card_sets_obj.sets.length == 0 ) {
     launch_search_interface();
     return;
   }
 
-  //1) Push the last card into the record of previous cards.
-  cards_obj.prev_cards.push( cards_obj.curr_card );
+  //3) Create a reference to the current subset.
+  const current_card_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
 
-  //2) Keep the record of past cards half as large as the set of cards.
-  if( cards_obj.prev_cards.length > cards_obj.cards.length/2 ) {
-    cards_obj.prev_cards.shift();
+//TODO: Switch previous cards over to IDs instead of index place.
+  //4) Push the last card into the record of previous cards.
+  current_card_set.prev_cards.push( current_card_set.curr_card );
+
+  //5) Keep the record of past cards half as large as the set of cards.
+  if( current_card_set.prev_cards.length > current_card_set.cards.length/2 ) {
+    current_card_set.prev_cards.shift();
   }
 
-  //3) Generate the next card.
-  const num_cards = cards_obj.cards.length;
+  //5) Randomly generate the index of the next card.
+  const num_cards = current_card_set.cards.length;
   let next_card_number = Math.floor( Math.random() * num_cards );
 
-  //4) Guarantee that the next card hasn't appeared recently.
-  if( cards_obj.cards.length > 1 ) {
-    while( cards_obj.prev_cards.some( (card_number) => {
+  //6) Guarantee that the next card hasn't appeared recently.
+  if( current_card_set.cards.length > 1 ) {
+    while( current_card_set.prev_cards.some( (card_number) => {
       return (card_number == next_card_number);
     }) == true ) {
       next_card_number = Math.floor( Math.random() * num_cards );
     }
   }
 
-  //5) Set the next card, set the card to the question side, render it.
-  cards_obj.curr_card = next_card_number;
-  cards_obj.side = 0;
-  runset_render_qa( cards_obj );
+  //7) Set the next card, flip the card to the question side, render it.
+  current_card_set.curr_card = next_card_number;
+  current_card_set.side = 0;
+  runset_render_qa( card_sets_obj );
 }
 function runset_interface_go_back( cards_obj ) {
   launch_search_interface();
@@ -139,7 +181,6 @@ function send_card_result( user_hash, card_id, result ) {
     result: result,
     date_stamp: get_datestamp()
   }
-console.dir( result_object );
   const result_request = new Request(
     ip + 'card_result',
     {
@@ -160,47 +201,107 @@ console.dir( result_object );
       }
     });
 }
-function runset_interface_missed( cards_obj ) {
-  cards_obj.cards[cards_obj.curr_card].correct--;
+function runset_interface_missed( card_sets_obj ) {
+  const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
+  curr_subset_ref.cards[ curr_subset_ref.curr_card ].correct--;
   if( logged_obj.isLogged == true ) {
     send_card_result(
       logged_obj.username_hash,
-      cards_obj.cards[cards_obj.curr_card].card_id,
+      curr_subset_ref.cards[ curr_subset_ref.curr_card ].card_id,
       -1
     );
   }
-  next_card( cards_obj );
+  next_card( card_sets_obj );
 }
-function runset_interface_correct( cards_obj ) {
-  cards_obj.cards[cards_obj.curr_card].correct++;
+function runset_interface_correct( card_sets_obj ) {
+  const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
+  curr_subset_ref.cards[curr_subset_ref.curr_card].correct++;
   if( logged_obj.isLogged == true ) {
     send_card_result(
       logged_obj.username_hash,
-      cards_obj.cards[cards_obj.curr_card].card_id,
+      curr_subset_ref.cards[curr_subset_ref.curr_card].card_id,
       1
    );
   }
-  if( cards_obj.cards[cards_obj.curr_card].correct >= 5 ) {
-    cards_obj.cards.splice( cards_obj.curr_card, 1 );
+  if( curr_subset_ref.cards[curr_subset_ref.curr_card].correct >= 5 ) {
+    curr_subset_ref.cards.splice( curr_subset_ref.curr_card, 1 );
   }
-  next_card( cards_obj );
+  next_card( card_sets_obj );
 }
-function runset_interface_flip_card( cards_obj ) {
-  if( cards_obj.side == 0 ) {
-    cards_obj.side = 1;
+function runset_interface_flip_card( card_sets_obj ) {
+  const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
+  if( curr_subset_ref.side == 0 ) {
+    curr_subset_ref.side = 1;
   } else {
-    cards_obj.side = 0;
+    curr_subset_ref.side = 0;
   }
-  runset_render_qa( cards_obj );
+  runset_render_qa( card_sets_obj );
 }
-function runset_interface_split_set( cards_obj ) {
-  const number_of_cards = cards_obj.cards.length;
-  for( i=0; i<(number_of_cards/2); i++ ) {
-    const remaining_cards = cards_obj.cards.length;
+function runset_interface_split_set( card_sets_obj, index ) {
+  //1) Get current number of setsets
+  const number_of_subsets = card_sets_obj.sets.length;
+
+  //2) Get currently selected setset.
+  //const curr_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
+  const sel_set = card_sets_obj.sets[ Number(index) ];
+
+  //3) Insert new subset after current subset.
+  card_sets_obj.sets.splice(
+    Number(index)+1,
+    0,
+    {
+      curr_card: 0,
+      side: 0,
+      prev_cards: [],
+      cards: []
+    }
+  );
+
+  //4) Put half of the cards in the current set into the next.
+  const next_set = card_sets_obj.sets[ Number(index)+1 ];
+  const half_number_of_cards = sel_set.cards.length/2;
+  for( i=0; i<half_number_of_cards; i++ ) {
+    //4a) Randomly select card to shift between sets.
+    const remaining_cards = sel_set.cards.length;
     const remove_card_pos = Math.floor( Math.random() * remaining_cards );
-    cards_obj.cards.splice( remove_card_pos, 1 );
+
+    //4b) Copy that card into the new set.
+    next_set.cards[ next_set.cards.length ] = JSON.parse(
+      JSON.stringify(
+        sel_set.cards[ remove_card_pos ]
+      )
+    );
+
+    //4c) Remove the card from the original set.
+    sel_set.cards.splice( remove_card_pos, 1 );
   }
-  next_card( cards_obj );
+
+  //5) Render split sets.
+  runset_render_split_sets( card_sets_obj );
+
+  //6) Go to the next card.
+  next_card( card_sets_obj );
+}
+function runset_interface_merge_set( card_sets_obj, index ) {
+  //1) Get references to the sets to merge.
+  const first_set = card_sets_obj.sets[ Number(index) ];
+  const second_set = card_sets_obj.sets[ Number(index)+1 ];
+  const second_set_size = second_set.cards.length;
+
+  //2) Deep copy the cards from the second set to the first.
+  for( i=0; i<second_set_size; i++ ) {
+    first_set.cards[ first_set.cards.length ] = JSON.parse(
+      JSON.stringify(
+        second_set.cards[i]
+      )
+    );
+  }
+
+  //3) Delete the second set.
+  remove_empty_subset(
+    card_sets_obj,
+    Number(index)+1
+  );
 }
 
 function proc_txt_runset( inText ) {
@@ -218,24 +319,72 @@ function runset_render_index_card() {
   blue_lines_container.innerHTML = dom;
 }
 
-function runset_render_qa( card_set_obj ) {
+function runset_render_qa( card_sets_obj ) {
+  //1) Draw the lined index card.
   runset_render_index_card();
+
+  //2) Get a reference to the current set.
+  const curr_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
+
+  //3) Get the text field DOM element.
   const qa_field = document.getElementById("runset_interface_qa_text");
-  if( !card_set_obj.cards[card_set_obj.curr_card] ) {
+
+  //4) If the set is empty, don't attempt to render a card.
+  if( !curr_set.cards[ curr_set.curr_card ] ) {
     qa_field.innerHTML = "";
     return;
   }
-  if( card_set_obj.side == 0 ) {
+
+  //5) Render either the question or the answer.
+  if( curr_set.side == 0 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
-      proc_txt_runset( card_set_obj.cards[card_set_obj.curr_card].question ) +
+      proc_txt_runset( curr_set.cards[ curr_set.curr_card ].question ) +
       "</span>";
     qa_field.innerHTML = dom;
-  } else if( card_set_obj.side == 1 ) {
+  } else if( curr_set.side == 1 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
-      proc_txt_runset( card_set_obj.cards[card_set_obj.curr_card].answer ) +
+      proc_txt_runset( curr_set.cards[ curr_set.curr_card ].answer ) +
       "</span>";
     qa_field.innerHTML = dom;
   }
+}
+
+function runset_render_split_sets( card_sets_obj ) {
+  //1) Get DOM element reference to split set button container.
+  const split_buttons_container =
+    document.getElementById("runset_interface_split_set_buttons");
+
+  //2) Compose HTMl.
+  let html_string = "";
+  for( index in card_sets_obj.sets ) {
+    const bound_split_func = runset_interface_split_set.bind(
+      null,
+      card_sets_obj,
+      index
+    );
+    split_buttons[index] = bound_split_func;
+    html_string +=
+      "<div " +
+      "onclick=\"split_buttons[" + index + "]()\" " +
+      ">" +
+      "<span class=\"button material-icons md-32\">swap_horiz</span>" +
+      card_sets_obj.sets[index].cards.length +
+      "</div>";
+    if( index < card_sets_obj.sets.length-1 ) {
+      const bound_merge_func = runset_interface_merge_set.bind(
+        null,
+        card_sets_obj,
+        index
+      );
+      merge_buttons[index] = bound_merge_func;
+      html_string +=
+        "<div " +
+        "onclick=\"merge_buttons[" + index + "]()\" " +
+        ">" +
+        "<span class=\"button material-icons md-32\">swap_vert</span></div>";
+    }
+  }
+  split_buttons_container.innerHTML = html_string;
 }
 
 
@@ -1202,8 +1351,8 @@ const functions = {
     "go_back": runset_interface_go_back,
     "missed": runset_interface_missed,
     "correct": runset_interface_correct,
-    "flip_card": runset_interface_flip_card,
-    "split_set": runset_interface_split_set
+    "flip_card": runset_interface_flip_card/*,
+    "split_set": runset_interface_split_set*/
   }
 };
 
@@ -1228,8 +1377,8 @@ const bound_functions = {
     "go_back": [],
     "missed": [],
     "correct": [],
-    "flip_card": [],
-    "split_set": []
+    "flip_card": []/*,
+    "split_set": []*/
   }
 }
 
