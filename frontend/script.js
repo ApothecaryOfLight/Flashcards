@@ -28,6 +28,7 @@ const logged_obj = {
 }
 const split_buttons = [];
 const merge_buttons = [];
+const go_to_set_buttons = [];
 
 window.addEventListener( 'load', (loaded_event) => {
   launch_search_interface();
@@ -303,6 +304,10 @@ function runset_interface_merge_set( card_sets_obj, index ) {
     Number(index)+1
   );
 }
+function go_to_set( card_sets_obj, index ) {
+  card_sets_obj.curr_set = index;
+  next_card( card_sets_obj );
+}
 
 function proc_txt_runset( inText ) {
   let outText = inText.replaceAll( "\n", "<br>" );
@@ -363,13 +368,25 @@ function runset_render_split_sets( card_sets_obj ) {
       index
     );
     split_buttons[index] = bound_split_func;
+
+    const bound_go_to_set_func = go_to_set.bind(
+      null,
+      card_sets_obj,
+      index
+    );
+    go_to_set_buttons[index] = bound_go_to_set_func;
+
     html_string +=
+      "<div style=\"display:flex; flex-direction:row;\"> " +
       "<div " +
       "onclick=\"split_buttons[" + index + "]()\" " +
       ">" +
       "<span class=\"button material-icons md-32\">swap_horiz</span>" +
       card_sets_obj.sets[index].cards.length +
-      "</div>";
+      "</div>" +
+      "<div " +
+      "onclick=\"go_to_set_buttons[" + index + "]()\">Use" +
+      "</div></div>";
     if( index < card_sets_obj.sets.length-1 ) {
       const bound_merge_func = runset_interface_merge_set.bind(
         null,
