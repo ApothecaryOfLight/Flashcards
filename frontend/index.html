@@ -18,10 +18,6 @@
 
 </head>
 <body>
-<!--div id="menu_bar">
-  <div id="sets_button" class="tab">Sets</div>
-  <div id="cards_button" class="tab">Cards</div>
-</div-->
 
 <div id="root">
 <div id="search_interface">
@@ -49,19 +45,19 @@
 
   <div id="search_interface_field_container">
     <input id="search_interface_set_name"
-      type="text" autocomplete="off" placeholder="Search"/>
-    <div id="search_interface_set_name_create">
-      <div id="search_interface_set_name_create_text">
-        Create
-      </div>
-    </div>
+      type="text" autocomplete="off" placeholder="Type Here..."/>
   </div>
 
   <div id="search_buttons_container">
-    <button id="search_interface_add_search_tag_button" class="better_buttons">Add Search Term</button>
-    <button id="search_interface_create_temp_set_button" class="better_buttons">Create Temporary Set</button>
+    <button id="search_interface_add_search_tag_button"
+      class="better_buttons">Add Search Term</button>
+    <button id="search_interface_create_temp_set_button"
+      class="better_buttons">Create Temp Set</button>
+    <button id="search_interface_set_name_create"
+      class="better_buttons">Create Set</button>
+    <button id="search_interface_switch_list_type"
+      class="better_buttons">List Cards</button>
   </div>
-  <button id="search_interface_switch_list_type" class="better_buttons">List Cards</button>
 
   <div id="search_tag_container"></div>
 
@@ -83,7 +79,9 @@
   <div id="set_editor_interface_lower_container">
     <div id="set_editor_interface_tags_container">
       <input type="text"  id="set_editor_interface_tags_field"/>
-      <button id="set_editor_interface_add_tag_button">Add Topic</button>
+      <button id="set_editor_interface_add_tag_button">
+        Add Topic
+      </button>
     </div>
     <div id="set_editor_interface_tags_list"></div>
     <div id="set_editor_interface_card_list"></div>
@@ -95,19 +93,29 @@
 
   <div id="card_editor_interface_tags_container">
     <input type="text"  id="card_editor_interface_tags_field"/>
-    <button id="card_editor_interface_add_tag_button">Add Topic</button>
+    <button id="card_editor_interface_add_tag_button">
+      Add Topic
+    </button>
   </div>
   <div id="card_editor_interface_tags_list"></div>
 
-  <textarea id="card_editor_interface_q_text" placeholder="Question here.">
+  <textarea
+    id="card_editor_interface_q_text"
+    placeholder="Question here.">
   </textarea>
-  <textarea id="card_editor_interface_a_text" placeholder="Answer here.">
+  <textarea
+    id="card_editor_interface_a_text"
+    placeholder="Answer here.">
   </textarea>
   <div id="card_editor_interface_buttons">
     <button id="card_editor_interface_go_back"
-      class="quarter_button card_editor_interface_button">Go Back</button>
+      class="quarter_button card_editor_interface_button">
+      Go Back
+    </button>
     <button id="card_editor_interface_set_card"
-      class="quarter_button card_editor_interface_button">Set Card</button>
+      class="quarter_button card_editor_interface_button">
+      Set Card
+    </button>
   </div>
 </div>
 
@@ -121,13 +129,21 @@
   </div>
   <div id="runset_interface_buttons">
     <span id="runset_interface_go_back"
-     class="button material-icons md-32">arrow_circle_up</span>
+     class="button material-icons md-32">
+     arrow_circle_up
+    </span>
     <span id="runset_interface_missed"
-      class="button material-icons md-32">close</span>
+      class="button material-icons md-32">
+      close
+    </span>
     <span id="runset_interface_correct"
-      class="button material-icons md-32">check</span>
+      class="button material-icons md-32">
+      check
+    </span>
     <span id="runset_interface_flip_card"
-      class="button material-icons md-32">rotate_90_degrees_ccw</span>
+      class="button material-icons md-32">
+      rotate_90_degrees_ccw
+    </span>
   </div>
   <div id="runset_interface_split_set_buttons">
   </div>

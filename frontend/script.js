@@ -991,7 +991,7 @@ function set_logged_elements() {
   if( logged_obj.isLogged == false ) {
     create_set_button.style.display = "none";
   } else if( logged_obj.isLogged == true ) {
-    create_set_button.style.display = "flex";
+    create_set_button.style.display = "inline-block";
   }
 }
 

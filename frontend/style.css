@@ -89,12 +89,14 @@ Menu
 #menu {
   position: absolute;
   top: .5em;
-  right: .5em;
+  left: .5em;
 }
 #login_element {
   grid-column: 2;
   display: flex;
-  justify-conent: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
 }
 #login_element:hover {
   color: #6699FF;
@@ -110,7 +112,9 @@ Menu
 #logout_element {
   grid-column: 2;
   display: flex;
-  justify-conent: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1rem;
 }
 #logout_element:hover {
   color: #6699FF;  
@@ -122,6 +126,9 @@ Menu
   align-self: center;
   font-weight: bold;
   margin-right: 0.5em;
+}
+#logout_button {
+  text-align: center;
 }
 
 
@@ -139,7 +146,7 @@ Menu
   height: 100%;
   border: 3px solid #e8d154;
   outline: none;
-  font-size: 1rem;
+  font-size: .8rem;
   font-weight: bold;
   font-family: 'Indie Flower', cursive;
   border-radius: 15px;
@@ -472,8 +479,7 @@ search interface
 #search_interface {
   display: grid;
   grid-template-rows: 4rem 3rem 3rem auto;
-/*  grid-template-columns: 6.2em calc(100% - 6.2em);*/
-  grid-template-columns: 6.2rem auto 6rem 6rem;
+  grid-template-columns: 6.2rem auto;
 }
 #search_interface_field_container {
   grid-row: 1;
@@ -497,44 +503,9 @@ search interface
   padding-left: 1em;
   outline: none;
 }
-#search_interface_set_name_create {
-  width: 6em;
-  height: 2.2em;
-  background: #3366FF;
-  color: white;
-  border-radius: 0px 16px 16px 0px;
-  grid-row: 1;
-  grid-column: 2;
-  position: relative;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-}
 @media (min-width:300px) {
-  #search_interface_set_name_create {
-    width: 4em;
-  }
-  #search_interface_set_name {
-    max-width: 60vw;
-  }
 }
 @media (min-width:600px) {
-  #search_interface_set_name_create {
-    width: 6em;
-  }
-  #search_interface_set_name {
-    max-width: 100vw;
-  }
-}
-
-#search_interface_set_name_create:hover {
-  background: #003399;
-}
-#search_interface_set_name_create:active {
-  background: #000099;
-}
-#search_interface_set_name_create_text {
-  align-self: center;
 }
 #search_interface_create {
   margin-top: 1em;
