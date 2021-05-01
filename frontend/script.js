@@ -377,7 +377,7 @@ function runset_render_split_sets( card_sets_obj ) {
     go_to_set_buttons[index] = bound_go_to_set_func;
 
     html_string +=
-      "<div style=\"display:flex; flex-direction:row;\"> " +
+      "<div class=\'runset_interface_split_set_button_group\'> " +
       "<div " +
       "onclick=\"split_buttons[" + index + "]()\" " +
       ">" +

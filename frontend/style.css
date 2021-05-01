@@ -72,7 +72,7 @@ Paper
   top: 0px;
   width: 100%;
   height: 100%;
-  margin-top: 10em;
+  margin-top: 15em;
 }
 .blue_line {
   box-sizing: content-box;
@@ -143,18 +143,20 @@ Menu
   grid-column: 3;
 }
 .better_buttons {
-  height: 100%;
-  border: 3px solid #e8d154;
+  height: 2rem;
   outline: none;
-  font-size: .8rem;
+  font-size: 1rem;
   font-weight: bold;
   font-family: 'Indie Flower', cursive;
   border-radius: 15px;
 
-  background: #FFFFCC;
+  margin-bottom: .2rem;
+
+  background: #DBF1FF;
+  border: 3px solid #B1CFE7;
 }
 .better_buttons:hover {
-  background: #FFE64C;
+  background: #BFD1FD;
 }
 #search_tag_container {
   font-size: 2rem;
@@ -478,7 +480,7 @@ search interface
 */
 #search_interface {
   display: grid;
-  grid-template-rows: 4rem 3rem 3rem auto;
+  grid-template-rows: 4rem 8rem 3rem auto;
   grid-template-columns: 6.2rem auto;
 }
 #search_interface_field_container {
@@ -491,7 +493,7 @@ search interface
   grid-template-columns: 80% 5em;
 }
 #search_interface_set_name {
-  width: 100%;
+  width: 80%;
   height: 2.5em;
   grid-row: 1;
   grid-column-start: 1;
@@ -580,7 +582,7 @@ Runset interface
   font-size: 1.5em;
   width: 75%;
   height: 80%;
-  margin: 5%;
+  margin: 3%;
   -webkit-box-shadow: 7px 7px 11px -1px #000000; 
   box-shadow: 7px 7px 11px -1px #000000;
 }
@@ -614,30 +616,40 @@ Runset interface
   margin-left: 0.5em;
   width: 72%;
 }
+/*Mobile Media*/
+@media (max-width:620px) {
+  #runset_interface_qa_text {
+    width: 50%;
+  }
+}
 #runset_interface_buttons {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   width: 8vh;
-  height: 60vh;
+  height: 70vh;
   margin-top: 15vh;
-  margin-bottom: 25vh;
+  margin-bottom: 15vh;
+  margin-right: 2rem;
 }
 #runset_interface_split_set_buttons {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   height: 60vh;
-  width: 8wv;
   margin-top: 15vh;
   margin-bottom: 25vh;
 }
-@media (max-height: 800px) {
+.runset_interface_split_set_button_group {
+  display: flex;
+  flex-direction: column;
+}
+/*@media (max-height: 800px) {
   #runset_interface_buttons {
     margin-top: 25vh;
     margin-bottom: 15vh;
   }
-}
+}*/
 #runset_interface_missed {
   color: red;
 }
