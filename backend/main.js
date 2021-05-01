@@ -725,6 +725,13 @@ async function generate_db_backup( res ) {
 
   app.post( '/card_result', async function(req,res) {
     try {
+      if( req.body.passphrase != "5101924eb0febac1f19f6529acc4883a" ) {
+        res.send( JSON.stringify({
+          "result": "failure",
+          "reason": "Failed to authenticate."
+        }));
+        return;
+      }
       const result_query = "INSERT INTO card_record " +
         "(username_hash, card_id, datestamp, result) VALUES " +
         "( \"" + req.body.userhash + "\", " +

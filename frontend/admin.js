@@ -11,7 +11,9 @@ window.addEventListener( 'load', (loaded) => {
 function download_database() {
   const download_obj = new Request(
     ip + 'download_backup',
-    { method: 'GET' }
+    {
+      method: 'GET'
+    }
   );
   fetch( download_obj )
     .then( result => result.json())
@@ -36,6 +38,10 @@ function save_backup( data ) {
 }
 
 function upload_database() {
+  const passphrase_element =
+    document.getElementById("passphrase_field");
+  const passphrase = md5( passphrase_element.value );
+
   const input = document.createElement('input');
   input.type = 'file';
   input.onchange = e => {
@@ -48,6 +54,7 @@ function upload_database() {
         {
           method: 'POST',
           body: JSON.stringify({
+            passphrase: passphrase,
             data: readerEvent.target.result
           }),
           headers: {
