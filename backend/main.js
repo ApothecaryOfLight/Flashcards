@@ -473,9 +473,6 @@ function launchRoutes() {
   /*Delete Card*/
   app.post('/delete_card/:card_id', async function(req,res) {
     try {
-      const tags_deleted =
-        await delete_search_terms_by_card_id( req.params.card_id );
-
       const delete_card_query = "DELETE FROM cards WHERE card_id = " + req.params.card_id + ";";
       const [delete_row,delete_field] = await sqlPool.query( delete_card_query );
 
