@@ -85,8 +85,6 @@ function prepare_cards( cards ) {
 }
 
 function remove_empty_subset( card_sets_obj, target ) {
-console.log( "remove_empty_subset" );
-console.log( target );
   //1) If not sets remain, terminate the recursive chain.
 
   //2) Remove the empty subset.
@@ -102,8 +100,6 @@ console.log( target );
 }
 
 function next_card( card_sets_obj ) {
-console.log( "\n\nnext_card" );
-conosle.dir( card_sets_obj );
   //1) If current subset is empty, switch to another subset.
   if( card_sets_obj.sets[ card_sets_obj.curr_set ].cards.length == 0 ) {
     remove_empty_subset(
@@ -135,7 +131,7 @@ conosle.dir( card_sets_obj );
   let next_card_number = Math.floor( Math.random() * num_cards );
 
   //6) Guarantee that the next card hasn't appeared recently.
-  if( current_card_set.cards.length > 1 ) {
+  if( current_card_set.cards.length > 3 ) {
     while( current_card_set.prev_cards.some( (card_number) => {
       return (card_number == next_card_number);
     }) == true ) {
@@ -198,7 +194,6 @@ function send_card_result( user_hash, card_id, result ) {
     });
 }
 function runset_interface_missed( card_sets_obj ) {
-console.log( "runset_interface_missed" );
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[ curr_subset_ref.curr_card ].correct--;
   if( logged_obj.isLogged == true ) {
@@ -211,7 +206,6 @@ console.log( "runset_interface_missed" );
   next_card( card_sets_obj );
 }
 function runset_interface_correct( card_sets_obj ) {
-console.log( "runset_interface_correct" );
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[curr_subset_ref.curr_card].correct++;
   if( logged_obj.isLogged == true ) {
@@ -223,6 +217,7 @@ console.log( "runset_interface_correct" );
   }
   if( curr_subset_ref.cards[curr_subset_ref.curr_card].correct >= 5 ) {
     curr_subset_ref.cards.splice( curr_subset_ref.curr_card, 1 );
+    runset_render_split_sets( card_sets_obj );
   }
   next_card( card_sets_obj );
 }
