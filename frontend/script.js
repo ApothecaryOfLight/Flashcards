@@ -41,6 +41,7 @@ window.addEventListener( 'load', (loaded_event) => {
 ==2.0== Runset Interface
 */
 function launch_runset_interface( inSetID ) {
+console.log( "launch_runset_interface" );
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
   );
@@ -87,13 +88,9 @@ function remove_empty_subset( card_sets_obj, target ) {
 console.log( "remove_empty_subset" );
 console.log( target );
   //1) If not sets remain, terminate the recursive chain.
-//  if( card_sets_obj.sets.length == 0 ) {
-//    return;
-//  }
 
   //2) Remove the empty subset.
   card_sets_obj.sets.splice(
-//    card_sets_obj.curr_set,
     Number(target),
     1
   );
@@ -101,13 +98,12 @@ console.log( target );
   //3) Reset the current set to 0.
   card_sets_obj.curr_set = Math.max( Number(target)-1, 0 );
 
-/*  if( card_sets_obj.sets[ 0 ].length == 0 ) {
-    remove_empty_subset( card_sets_obj );
-  }*/
   runset_render_split_sets( card_sets_obj );
 }
 
 function next_card( card_sets_obj ) {
+console.log( "\n\nnext_card" );
+conosle.dir( card_sets_obj );
   //1) If current subset is empty, switch to another subset.
   if( card_sets_obj.sets[ card_sets_obj.curr_set ].cards.length == 0 ) {
     remove_empty_subset(
@@ -196,13 +192,13 @@ function send_card_result( user_hash, card_id, result ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        
       } else if( json.result == "error" ) {
         launch_modal( null, "Weird error.", { "Close": close_modal } );
       }
     });
 }
 function runset_interface_missed( card_sets_obj ) {
+console.log( "runset_interface_missed" );
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[ curr_subset_ref.curr_card ].correct--;
   if( logged_obj.isLogged == true ) {
@@ -215,6 +211,7 @@ function runset_interface_missed( card_sets_obj ) {
   next_card( card_sets_obj );
 }
 function runset_interface_correct( card_sets_obj ) {
+console.log( "runset_interface_correct" );
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[curr_subset_ref.curr_card].correct++;
   if( logged_obj.isLogged == true ) {
