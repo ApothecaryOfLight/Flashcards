@@ -41,7 +41,6 @@ window.addEventListener( 'load', (loaded_event) => {
 ==2.0== Runset Interface
 */
 function launch_runset_interface( inSetID ) {
-console.log( "launch_runset_interface" );
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
   );
@@ -78,7 +77,6 @@ function runset( inSetData ) {
 }
 
 function prepare_cards( cards ) {
-//  console.dir( cards );
   for( index in cards ) {
     cards[index].correct = 0;
   }
@@ -123,18 +121,14 @@ function next_card( card_sets_obj ) {
   current_card_set.prev_cards.push( current_card_set.curr_card );
 
   //5) Keep the record of past cards half as large as the set of cards.
-  while(
-    current_card_set.prev_cards.length >
-    current_card_set.cards.length/2 )
-  {
+  while( current_card_set.prev_cards.length > current_card_set.cards.length/2 ) {
     current_card_set.prev_cards.shift();
   }
 
   //5) Randomly generate the index of the next card.
   const num_cards = current_card_set.cards.length;
   let next_card_number = Math.floor( Math.random() * num_cards );
-console.log( "Length: " + current_card_set.cards.length );
-console.log( "Prev Cards: " + current_card_set.prev_cards );
+
   //6) Guarantee that the next card hasn't appeared recently.
   if( current_card_set.cards.length > 1 ) {
     while( current_card_set.prev_cards.includes(next_card_number) ) {
@@ -166,7 +160,6 @@ function get_datestamp() {
     year + "-" +
     month + "-" +
     day;
-  console.log( now_string );
 
   return now_string;
 }
@@ -234,15 +227,11 @@ function runset_interface_flip_card( card_sets_obj ) {
   runset_render_qa( card_sets_obj );
 }
 function runset_interface_split_set( card_sets_obj, index ) {
-  //1) Get current number of setsets
-  const number_of_subsets = card_sets_obj.sets.length;
-
-  //2) Get currently selected setset.
-  //const curr_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
+  //1) Get currently selected setset.
   const sel_set = card_sets_obj.sets[ Number(index) ];
   sel_set.prev_cards = [];
 
-  //3) Insert new subset after current subset.
+  //2) Insert new subset after current subset.
   card_sets_obj.sets.splice(
     Number(index)+1,
     0,
@@ -254,29 +243,29 @@ function runset_interface_split_set( card_sets_obj, index ) {
     }
   );
 
-  //4) Put half of the cards in the current set into the next.
+  //3) Put half of the cards in the current set into the next.
   const next_set = card_sets_obj.sets[ Number(index)+1 ];
   const half_number_of_cards = sel_set.cards.length/2;
   for( i=0; i<half_number_of_cards; i++ ) {
-    //4a) Randomly select card to shift between sets.
+    //3a) Randomly select card to shift between sets.
     const remaining_cards = sel_set.cards.length;
     const remove_card_pos = Math.floor( Math.random() * remaining_cards );
 
-    //4b) Copy that card into the new set.
+    //3b) Copy that card into the new set.
     next_set.cards[ next_set.cards.length ] = JSON.parse(
       JSON.stringify(
         sel_set.cards[ remove_card_pos ]
       )
     );
 
-    //4c) Remove the card from the original set.
+    //3c) Remove the card from the original set.
     sel_set.cards.splice( remove_card_pos, 1 );
   }
 
-  //5) Render split sets.
+  //4) Render split sets.
   runset_render_split_sets( card_sets_obj );
 
-  //6) Go to the next card.
+  //5) Go to the next card.
   next_card( card_sets_obj );
 }
 function runset_interface_merge_set( card_sets_obj, index ) {
