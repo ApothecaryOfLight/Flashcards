@@ -118,23 +118,26 @@ function next_card( card_sets_obj ) {
   const current_card_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
 
 //TODO: Switch previous cards over to IDs instead of index place.
+
   //4) Push the last card into the record of previous cards.
   current_card_set.prev_cards.push( current_card_set.curr_card );
 
   //5) Keep the record of past cards half as large as the set of cards.
-  if( current_card_set.prev_cards.length > current_card_set.cards.length/2 ) {
+  while(
+    current_card_set.prev_cards.length >
+    current_card_set.cards.length/2 )
+  {
     current_card_set.prev_cards.shift();
   }
 
   //5) Randomly generate the index of the next card.
   const num_cards = current_card_set.cards.length;
   let next_card_number = Math.floor( Math.random() * num_cards );
-
+console.log( "Length: " + current_card_set.cards.length );
+console.log( "Prev Cards: " + current_card_set.prev_cards );
   //6) Guarantee that the next card hasn't appeared recently.
-  if( current_card_set.cards.length > 3 ) {
-    while( current_card_set.prev_cards.some( (card_number) => {
-      return (card_number == next_card_number);
-    }) == true ) {
+  if( current_card_set.cards.length > 1 ) {
+    while( current_card_set.prev_cards.includes(next_card_number) ) {
       next_card_number = Math.floor( Math.random() * num_cards );
     }
   }
@@ -237,6 +240,7 @@ function runset_interface_split_set( card_sets_obj, index ) {
   //2) Get currently selected setset.
   //const curr_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
   const sel_set = card_sets_obj.sets[ Number(index) ];
+  sel_set.prev_cards = [];
 
   //3) Insert new subset after current subset.
   card_sets_obj.sets.splice(
