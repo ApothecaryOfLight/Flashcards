@@ -1,18 +1,18 @@
 /*
-Modal Interface
+==6.0== Modal Interface
 */
 function modal_button( button_name ) {
   modal_buttons_storage[button_name]();
 }
 
 function launch_modal( isPrompt, inMessage, inButtons ) {
-  const modal_handle = document.getElementById("modal_interface_screen>
+  const modal_handle = document.getElementById("modal_interface_screen_cover");
   modal_handle.style.display = "flex";
 
-  const modal_message = document.getElementById( "modal_interface_mess>
+  const modal_message = document.getElementById( "modal_interface_message" );
   modal_message.innerHTML = inMessage;
 
-  const modal_prompts = document.getElementById( "modal_interface_prom>
+  const modal_prompts = document.getElementById( "modal_interface_prompts" );
   let prompt_dom = "";
   if( isPrompt ) {
     for( prompt_name in isPrompt ) {
@@ -30,12 +30,12 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
       "onclick=\"modal_button(\'" + button_name + "\')\">" +
       button_name + "</button>"
   }
-  const modal_buttons = document.getElementById( "modal_interface_butt>
+  const modal_buttons = document.getElementById( "modal_interface_button_container" );
   modal_buttons.innerHTML = dom;
 }
 
 function close_modal() {
-  const modal_handle = document.getElementById("modal_interface_screen>
+  const modal_handle = document.getElementById("modal_interface_screen_cover");
   modal_handle.style.display = "none";
 }
 
@@ -89,7 +89,7 @@ function prompt_delete_card( inCardID, inSetID ) {
     "Cancel": close_modal
   }
 
-  launch_modal( null, "Are you sure you want to delete this card?", op>
+  launch_modal( null, "Are you sure you want to delete this card?", options );
 }
 
 function prompt_delete_set( inSetID ) {
@@ -98,5 +98,5 @@ function prompt_delete_set( inSetID ) {
     "Cancel": close_modal
   }
 
-  launch_modal( null, "Are you sure you want to delete this set?", opt>
+  launch_modal( null, "Are you sure you want to delete this set?", options );
 }
