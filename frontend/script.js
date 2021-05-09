@@ -782,6 +782,7 @@ function launch_search_interface() {
   set_interface( "search" );
   set_logged_elements();
   search_interface_run_search();
+  
 }
 
 function add_search_term() {
@@ -980,9 +981,9 @@ function set_logged_elements() {
   }
 }
 
-function getSetList() {
+function getSetList( inPage ) {
   const getSetListObj = new Request(
-    ip + 'setlist',
+    ip + 'setlist/' + (inPage ?? 0),
     { method: 'GET' }
   );
   fetch( getSetListObj )
@@ -1004,7 +1005,9 @@ function getCardList() {
     });
 }
 
-function renderSetList( setList ) {
+function renderSetList( inSetListObj ) {
+  renderSetListPagination( Math.ceil( inSetListObj.page_count ) );
+  const setList = inSetListObj.set_rows;
   const search_dom_obj = document.getElementById("search_interface_set_list");
   let dom_string = "";
   draw_paper( setList.length );
@@ -1031,6 +1034,25 @@ function renderSetList( setList ) {
     dom_string +=  "</div>";
   });
   search_dom_obj.innerHTML = dom_string;
+}
+
+function search_interface_page_selection( pageNum ) {
+  getSetList( pageNum );
+}
+
+function renderSetListPagination( inPages ) {
+  const container =
+    document.getElementById("search_interface_pagination_container" );
+  let dom = "";
+
+  for( counter=0; counter<Number(inPages); counter++ ) {
+    dom += "<div class=\'setlist_interface_page_button\' " +
+      "onclick=\'getSetList(" + counter + ")'\'" +
+      ">" +
+      counter +
+      "</div>";
+  }
+  container.innerHTML = dom;
 }
 
 function playSet( inSetID ) {

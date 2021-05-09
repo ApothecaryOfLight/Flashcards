@@ -230,12 +230,29 @@ async function delete_set( set_id ) {
 
 /*Express Routes*/
 function launchRoutes() {
-  app.get('/setlist', async function(req,res) {
+  app.get('/setlist/:page_num', async function(req,res) {
     try {
 //TODO: Pagination
-      const setlist_query = "SELECT name, set_id, set_creator FROM sets;"
+
+      const page_count_query = "SELECT " +
+        "COUNT(sets.set_id) AS page_count " +
+        "FROM sets;"
+      const [count_row,count_field] =
+        await sqlPool.query( page_count_query );
+
+      const offset = req.params.page_num * 5;
+      const setlist_query = "SELECT " +
+        "name, set_id, set_creator " +
+        "FROM sets " +
+        "LIMIT 5 " +
+        "OFFSET " + offset +
+        ";"
+
       const [set_rows,field] = await sqlPool.query( setlist_query );
-      const setlist = JSON.stringify( set_rows );
+      const setlist = JSON.stringify({
+        "set_rows": set_rows,
+        "page_count": count_row[0].page_count/5
+      });
       res.send( setlist );
     } catch( error ) {
       console.log( error );
@@ -619,7 +636,7 @@ function launchRoutes() {
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
           card_search_text_predicate +
-          ") " +
+          "LIMIT 5 ) " +
           "UNION " +
 
           "(SELECT cards.card_id, cards.answer, cards.question, " +
@@ -630,20 +647,20 @@ function launchRoutes() {
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
           card_search_topics_predicate +
-          ")";
+          "LIMIT 5 )";
       } else if( req.body.search_type == "set" ) {
         card_search_query =
           "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
           "INNER JOIN cardset_search_text " +
           "ON sets.set_id = cardset_search_text.set_id " +
           cardset_search_text_predicate +
-          ") UNION " +
+          "LIMIT 5 ) UNION " +
 
           "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
           "INNER JOIN cardset_search_topics " +
           "ON sets.set_id = cardset_search_topics.set_id " +
           cardset_search_topics_predicate +
-          ")";
+          "LIMIT 5 )";
       }
       const [out_row,out_field] = await sqlPool.query( card_search_query );
       res.send( JSON.stringify({
@@ -770,6 +787,26 @@ async function generate_db_backup( res ) {
       console.error( error );
       res.send( JSON.stringify({
         "result": "error"
+      }));
+    }
+  });
+
+  app.post( '/page_count', async function(req,res) {
+    try {
+      const page_count_query = "SELECT COUNT(sets.set_id) " +
+        "AS count " +
+        "FROM sets;";
+      const [count_row,count_field] =
+        await sqlPool.query( page_count_query );
+      res.send( JSON.stringify({
+        "result": "success",
+        "count": count_row[0].count
+      }));
+    } catch( error_obj ) {
+      console.error( error_obj );
+      res.send( JSON.stringify({
+        "result": "error",
+        "reason": error_obj.toString()
       }));
     }
   });

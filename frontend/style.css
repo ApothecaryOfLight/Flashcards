@@ -760,3 +760,28 @@ Modal interface
 .modal_button:active {
   background: #003366;
 }
+
+/*Pagination*/
+#search_interface_pagination_container {
+  grid-row: 5;
+  grid-column-start: 2;
+  grid-column-end: 4;
+  display: flex;
+  flex-direction: row;
+  width: 20%;
+  margin-left: 40%;
+  margin-right: 40%;
+  justify-content: space-between;
+}
+.setlist_interface_page_button {
+  border: 1px solid black;
+  width: 1.5rem;
+  height: 1.5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.setlist_interface_page_button:hover {
+  background: blue;
+}
