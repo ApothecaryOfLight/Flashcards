@@ -1356,7 +1356,6 @@ function prompt_login() {
 function attach_login() {
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
-  //const logged_name = document.getElementById("logged_in_name");
   logout_element.style.display = "none";
   login_element.addEventListener( 'click', (click_event) => {
     prompt_login();
@@ -1422,8 +1421,7 @@ const bound_functions = {
     "go_back": [],
     "missed": [],
     "correct": [],
-    "flip_card": []/*,
-    "split_set": []*/
+    "flip_card": []
   }
 }
 
