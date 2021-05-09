@@ -141,9 +141,11 @@ function next_card( card_sets_obj ) {
   current_card_set.side = 0;
   runset_render_qa( card_sets_obj );
 }
+
 function runset_interface_go_back( cards_obj ) {
   launch_search_interface();
 }
+
 function get_datestamp() {
   const now = new Date();
   const year = now.getUTCFullYear();
@@ -163,6 +165,7 @@ function get_datestamp() {
 
   return now_string;
 }
+
 function send_card_result( user_hash, card_id, result ) {
   const result_object = {
     userhash: user_hash,
@@ -189,6 +192,7 @@ function send_card_result( user_hash, card_id, result ) {
       }
     });
 }
+
 function runset_interface_missed( card_sets_obj ) {
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[ curr_subset_ref.curr_card ].correct--;
@@ -201,6 +205,7 @@ function runset_interface_missed( card_sets_obj ) {
   }
   next_card( card_sets_obj );
 }
+
 function runset_interface_correct( card_sets_obj ) {
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[curr_subset_ref.curr_card].correct++;
@@ -217,6 +222,7 @@ function runset_interface_correct( card_sets_obj ) {
   }
   next_card( card_sets_obj );
 }
+
 function runset_interface_flip_card( card_sets_obj ) {
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   if( curr_subset_ref.side == 0 ) {
@@ -226,6 +232,7 @@ function runset_interface_flip_card( card_sets_obj ) {
   }
   runset_render_qa( card_sets_obj );
 }
+
 function runset_interface_split_set( card_sets_obj, index ) {
   //1) Get currently selected setset.
   const sel_set = card_sets_obj.sets[ Number(index) ];
@@ -268,6 +275,7 @@ function runset_interface_split_set( card_sets_obj, index ) {
   //5) Go to the next card.
   next_card( card_sets_obj );
 }
+
 function runset_interface_merge_set( card_sets_obj, index ) {
   //1) Get references to the sets to merge.
   const first_set = card_sets_obj.sets[ Number(index) ];
@@ -289,6 +297,7 @@ function runset_interface_merge_set( card_sets_obj, index ) {
     Number(index)+1
   );
 }
+
 function go_to_set( card_sets_obj, index ) {
   card_sets_obj.curr_set = index;
   next_card( card_sets_obj );
@@ -560,6 +569,7 @@ function card_editor_interface_go_back( inCardData ) {
     launch_search_interface();
   }
 }
+
 function card_editor_interface_add_tag_button( inCardData ) {
   //1) Get tag
   const tag_field = document.getElementById("card_editor_interface_tags_field");
@@ -583,6 +593,7 @@ function card_editor_interface_add_tag_button( inCardData ) {
   //5) Blank out search term.
   tag_field.value = "";
 }
+
 function card_editor_interface_update_tags( inCardData ) {
   const message = JSON.stringify({
     "event": "update_tags",
@@ -591,6 +602,7 @@ function card_editor_interface_update_tags( inCardData ) {
     "data": card_tags
   });
 }
+
 function card_editor_interface_render_tags() {
   let dom = "";
   for( index in card_tags ) {
@@ -604,6 +616,7 @@ function card_editor_interface_render_tags() {
   const tag_container = document.getElementById("card_editor_interface_tags_list");
   tag_container.innerHTML = dom;
 }
+
 function delete_card_tag( inTag ) {
   inTag = inTag.replace( /\s/g, "&nbsp;" );
   for( index in card_tags ) {
@@ -653,10 +666,12 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
       }
     });
 }
+
 function set_editor_interface_scroll_to_bottom() {
   const set_editor_scr = document.getElementById("set_editor_interface_card_list");
   set_editor_scr.scrollTo( 0, set_editor_scr.scrollHeight );
 }
+
 function set_editor_interface_populate_list( inSetID, inCards ) {
   const set_editor_interface_card_list = document.getElementById("set_editor_interface_card_list" );
   let dom = "";
@@ -691,9 +706,11 @@ function set_editor_interface_populate_list( inSetID, inCards ) {
 function set_editor_interface_new_button( inSetID ) {
   launch_card_editor_interface( null, inSetID, true, "set_editor" );
 }
+
 function set_editor_interface_go_back() {
   launch_search_interface();
 }
+
 function set_editor_interface_add_tag_button( inSetID ) {
   //1) Get tag
   const tag_field = document.getElementById("set_editor_interface_tags_field");
@@ -718,6 +735,7 @@ function set_editor_interface_add_tag_button( inSetID ) {
   //5) Blank out search term.
   tag_field.value = "";
 }
+
 function set_editor_interface_update_tags( inSetID ) {
 //TODO: Allow for set to be renamed
   const body_content = JSON.stringify({
@@ -748,6 +766,7 @@ function set_editor_interface_update_tags( inSetID ) {
     });
 
 }
+
 function set_editor_interface_render_tags( inSetID ) {
   let dom = "";
   for( index in set_editor_tags ) {
@@ -762,6 +781,7 @@ function set_editor_interface_render_tags( inSetID ) {
   const tag_container = document.getElementById("set_editor_interface_tags_list");
   tag_container.innerHTML = dom;
 }
+
 function delete_set_editor_tag( inTag, inSetID ) {
   inTag = inTag.replace( /\s/g, "&nbsp;" );
   for( index in set_editor_tags ) {
@@ -811,8 +831,6 @@ function add_search_term() {
   //6) Send updated search term list
   search_interface_run_search();
 }
-
-
 
 function switch_list_type() {
   const button = document.getElementById("search_interface_switch_list_type");
@@ -1220,6 +1238,7 @@ function login( inUsernameHash ) {
     launch_search_interface();
   }
 }
+
 function attempt_create_account() {
   //1) Get username and password
   const username_field = document.getElementById("username_field");
@@ -1260,6 +1279,7 @@ function attempt_create_account() {
 
   //)Relaunch interface
 }
+
 function logout() {
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
@@ -1271,6 +1291,7 @@ function logout() {
     launch_search_interface();
   }
 }
+
 function attempt_login() {
   //1) Get username and password
   const username_field = document.getElementById("username_field");
@@ -1310,12 +1331,14 @@ function attempt_login() {
 
   //3) If refused, prompt failure message, fallback into login prompt.
 }
+
 function prompt_failed_login( inFailureReason ) {
   const options = {
     "Okay" : prompt_login
   };
   launch_modal( null, inFailureReason, options );
 }
+
 function prompt_login() {
   //1) Launch login prompt.
   const prompts = {
@@ -1329,6 +1352,7 @@ function prompt_login() {
   }
   launch_modal( prompts, "Log In", options );
 }
+
 function attach_login() {
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
