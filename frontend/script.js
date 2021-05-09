@@ -1036,10 +1036,6 @@ function renderSetList( inSetListObj ) {
   search_dom_obj.innerHTML = dom_string;
 }
 
-function search_interface_page_selection( pageNum ) {
-  getSetList( pageNum );
-}
-
 function renderSetListPagination( inPages ) {
   const container =
     document.getElementById("search_interface_pagination_container" );
@@ -1047,7 +1043,8 @@ function renderSetListPagination( inPages ) {
 
   for( counter=0; counter<Number(inPages); counter++ ) {
     dom += "<div class=\'setlist_interface_page_button\' " +
-      "onclick=\'getSetList(" + counter + ")'\'" +
+      "onclick=\'getSetList(" + counter + "); " +
+      "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
       ">" +
       counter +
       "</div>";
