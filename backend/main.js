@@ -240,18 +240,18 @@ function launchRoutes() {
       const [count_row,count_field] =
         await sqlPool.query( page_count_query );
 
-      const offset = req.params.page_num * 5;
+      const offset = req.params.page_num * 10;
       const setlist_query = "SELECT " +
         "name, set_id, set_creator " +
         "FROM sets " +
-        "LIMIT 5 " +
+        "LIMIT 10 " +
         "OFFSET " + offset +
         ";"
 
       const [set_rows,field] = await sqlPool.query( setlist_query );
       const setlist = JSON.stringify({
         "set_rows": set_rows,
-        "page_count": count_row[0].page_count/5
+        "page_count": count_row[0].page_count/10
       });
       res.send( setlist );
     } catch( error ) {
