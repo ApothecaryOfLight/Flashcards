@@ -47,9 +47,8 @@ function switch_list_type() {
   search_interface_run_search();
 }
 
-function search_interface_run_search() {
+function search_interface_run_search( inPage ) {
   //1) If there are no serach terms, use default search or set_editor
-//TODO: Write default set_editor
   if( search_terms.length == 0 ) {
     if( list_type == "set" ) {
       getSetList();
@@ -63,7 +62,8 @@ function search_interface_run_search() {
   //2) Compose the message.
   const search_request_object = JSON.stringify({
     topics: search_terms,
-    search_type: list_type
+    search_type: list_type,
+    page_num: (inPage ?? 0)
   });
 
   //3) Send search
@@ -86,7 +86,11 @@ function search_interface_run_search() {
       if( json.search_type == "card" ) {
         render_set_editor( json );
       } else if( json.search_type == "set" ) {
-        renderSetList( json.data );
+        renderSetList({
+          "set_rows": json.set_rows,
+          "page_count": json.page_count,
+          "search_type": json.search_type
+        });
       }
     } else if( json.result == "error" ) {
       const options = {
@@ -227,7 +231,10 @@ function getCardList() {
 }
 
 function renderSetList( inSetListObj ) {
-  renderSetListPagination( Math.ceil( inSetListObj.page_count ) );
+  renderSetListPagination(
+    Math.ceil( inSetListObj.page_count ),
+    inSetListObj.search_type
+  );
   const setList = inSetListObj.set_rows;
   const search_dom_obj = document.getElementById("search_interface_set_list");
   let dom_string = "";
@@ -257,15 +264,20 @@ function renderSetList( inSetListObj ) {
   search_dom_obj.innerHTML = dom_string;
 }
 
-function renderSetListPagination( inPages ) {
+function renderSetListPagination( inPages, search_type ) {
   const container =
     document.getElementById("search_interface_pagination_container" );
   let dom = "";
-
+console.log( search_type );
   for( counter=0; counter<Number(inPages); counter++ ) {
-    dom += "<div class=\'setlist_interface_page_button\' " +
-      "onclick=\'getSetList(" + counter + "); " +
-      "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
+    dom += "<div class=\'setlist_interface_page_button\' ";
+    if( search_type ) {
+      dom += "onclick=\'search_interface_run_search(" +
+        counter + "); ";
+    } else {
+      dom += "onclick=\'getSetList(" + counter + "); ";
+    }
+    dom += "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
       ">" +
       counter +
       "</div>";

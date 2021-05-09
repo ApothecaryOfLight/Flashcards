@@ -581,7 +581,6 @@ function launchRoutes() {
   /*Get a list of either sets or cards for the Serach Interface*/
   app.post( '/searchlist', async function(req,res) {
     try {
-      console.dir( req.body.topics );
       let card_search_text_predicate = "";
       let card_search_topics_predicate = "";
       let cardset_search_text_predicate = "";
@@ -623,9 +622,10 @@ function launchRoutes() {
         cardset_search_topics_predicate += " ";
       }
 
-
-      //1) Determine whether serach is for sets or for cards.
+      const page_offset = Number( req.body.page_num*10 );
+      //1) Determine whether search is for sets or for cards.
       let card_search_query = "";
+      let page_query = "";
       if( req.body.search_type == "card" ) {
         card_search_query =
           "(SELECT cards.card_id, cards.answer, cards.question, " +
@@ -636,7 +636,7 @@ function launchRoutes() {
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
           card_search_text_predicate +
-          "LIMIT 5 ) " +
+          "LIMIT 10 OFFSET " + page_offset + ") " +
           "UNION " +
 
           "(SELECT cards.card_id, cards.answer, cards.question, " +
@@ -647,32 +647,77 @@ function launchRoutes() {
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
           card_search_topics_predicate +
-          "LIMIT 5 )";
+          "LIMIT 10 OFFSET " + page_offset + ")";
+
+        page_query =
+          "(SELECT COUNT(cards.card_id) AS page_count " +
+          "sets.set_creator, cards.set_id " +
+          "FROM cards " +
+          "INNER JOIN card_search_text " +
+          "ON cards.card_id = card_search_text.card_id " +
+          "INNER JOIN sets " +
+          "ON cards.set_id = sets.set_id " +
+          card_search_text_predicate +
+          ") " +
+          "UNION " +
+
+          "(SELECT COUNT(cards.card_id) AS page_count " +
+          "sets.set_creator, cards.set_id " +
+          "FROM cards " +
+          "INNER JOIN card_search_topics " +
+          "ON cards.card_id = card_search_topics.card_id " +
+          "INNER JOIN sets " +
+          "ON cards.set_id = sets.set_id " +
+          card_search_topics_predicate +
+          ")";
       } else if( req.body.search_type == "set" ) {
         card_search_query =
-          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
+          "(SELECT sets.set_id, sets.name, sets.set_creator " +
+          "FROM sets " +
           "INNER JOIN cardset_search_text " +
           "ON sets.set_id = cardset_search_text.set_id " +
           cardset_search_text_predicate +
-          "LIMIT 5 ) UNION " +
+          "LIMIT 10 OFFSET " + page_offset + ") UNION " +
 
           "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
           "INNER JOIN cardset_search_topics " +
           "ON sets.set_id = cardset_search_topics.set_id " +
           cardset_search_topics_predicate +
-          "LIMIT 5 )";
+          "LIMIT 10 OFFSET " + page_offset + ")";
+
+        page_query =
+          "(SELECT COUNT(sets.set_id) AS page_count " +
+          "FROM sets " +
+          "INNER JOIN cardset_search_text " +
+          "ON sets.set_id = cardset_search_text.set_id " +
+          cardset_search_text_predicate +
+          ") UNION " +
+
+          "(SELECT COUNT(sets.set_id) AS page_count " +
+          "FROM sets " +
+          "INNER JOIN cardset_search_topics " +
+          "ON sets.set_id = cardset_search_topics.set_id " +
+          cardset_search_topics_predicate +
+          ")";
       }
-      const [out_row,out_field] = await sqlPool.query( card_search_query );
+
+      const [out_row,out_field] =
+        await sqlPool.query( card_search_query );
+
+      const [page_row,page_field] =
+        await sqlPool.query( page_query );
+
       res.send( JSON.stringify({
         "result": "success",
-        "data": out_row,
+        "set_rows": out_row,
+        "page_count": page_row[0].page_count/10,
         "search_type": req.body.search_type
       }));
     } catch(error) {
       console.log( error );
       res.send( JSON.stringify({
         "result": "error",
-        "error_message": "Unspecified error attempting search."
+        "error_message": error.toString()
       }));
     }
   });
@@ -709,14 +754,6 @@ async function generate_db_backup( res ) {
   app.post( '/upload_database', async function(req,res) {
     try {
       fs.writeFile( "database_backup.sql", req.body.data, 'utf8', async () => {
-/*        const upload_query =
-          "START TRANSACTION;\n" +
-          "CREATE DATABASE IF NOT EXISTS Flashcards;\n" +
-          "USE Flashcards;\n" +
-          "source database_backup.sql\n" +
-          "COMMIT;";
-        console.log( upload_query );
-        const [upload_row,upload_field] = await sqlPool.query( upload_query );*/
         const load = await exec(
           "mysql " +
           "--user='Flashcards_User' " +
