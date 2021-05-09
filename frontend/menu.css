@@ -1,0 +1,47 @@
+/*
+Menu
+*/
+#menu {
+  position: absolute;
+  top: .5em;
+  left: .5em;
+}
+#login_element {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+}
+#login_element:hover {
+  color: #6699FF;
+}
+#login_element:active {
+  color: #003399;
+}
+#login_text {
+  align-self: center;
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+#logout_element {
+  grid-column: 2;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1rem;
+}
+#logout_element:hover {
+  color: #6699FF;
+}
+#logout_element:active {
+  color: #003399;
+}
+#logout_text {
+  align-self: center;
+  font-weight: bold;
+  margin-right: 0.5em;
+}
+#logout_button {
+  text-align: center;
+}

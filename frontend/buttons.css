@@ -1,0 +1,41 @@
+/*
+Button
+*/
+.button {
+  border: 0px;
+  border-radius: 16px;
+  outline: none;
+  font-weight: bold;
+}
+.button:hover {
+  color: #6699FF;
+  text-decoration: underline;
+}
+.button:active {
+  color: #003399;
+}
+.wide_button {
+  width: 100%;
+}
+.half_button {
+  width: 50%;
+}
+.quarter_button {
+  width: 25%;
+}
+.better_buttons {
+  height: 2rem;
+  outline: none;
+  font-size: 1rem;
+  font-weight: bold;
+  font-family: 'Indie Flower', cursive;
+  border-radius: 15px;
+
+  margin-bottom: .2rem;
+
+  background: #DBF1FF;
+  border: 3px solid #B1CFE7;
+}
+.better_buttons:hover {
+  background: #BFD1FD;
+}

@@ -1,0 +1,103 @@
+/*
+Modal interface
+*/
+#modal_interface_screen_cover {
+  display: none;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: #000000DD;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  justify-content: center;
+}
+
+#modal_interface {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 40%;
+  height: 30%;
+  align-self: center;
+  background: white;
+  border-radius: 16px;
+  border: 3px solid black;
+  background: white;
+  min-height: 220px;
+  min-width: 350px;
+}
+@media (min-width: 300px) {
+  #modal_interface {
+    width: 90%;
+  }
+}
+@media (min-width: 500px) {
+  #modal_interface {
+    width: 40%;
+  }
+}
+@media (min-height:500px) {
+  #modal_interface {
+     height: 30%;
+  }
+}
+@media (min-width:800px) {
+  #modal_interface {
+  }
+}
+#modal_interface_message {
+  grid-row: 1;
+  grid-column: 2;
+  font-weight: bold;
+  text-align: center;
+  font-size: 2em;
+}
+#modal_interface_prompts {
+  grid-row: 2;
+  grid-column-start: 1;
+  grid-column-end: 4;
+
+  margin-left: 2em;
+  margin-right: 2em;
+
+  display: flex;
+  flex-direction: column;
+}
+.prompt_input_field {
+  margin-bottom: 1em;
+  height: 2em;
+  border-radius: 16px;
+  border: 0px;
+  outline: none;
+  padding-left: 1em;
+  border: 3px solid #0066CC;
+}
+#modal_interface_button_container {
+  grid-row: 3;
+  grid-column-start: 1;
+  grid-column-end: 4;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+@media (min-height:300px) {
+}
+@media (min-height:600px) {
+}
+.modal_button {
+  border: 0px;
+  border-radius: 16px;
+  outline: none;
+  height: 4em;
+  font-weight: bold;
+  color: white;
+  background: #0066FF;
+  min-width: 7em;
+}
+.modal_button:hover {
+  background: #003399;
+}
+.modal_button:active {
+  background: #003366;
+}
