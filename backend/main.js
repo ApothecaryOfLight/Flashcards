@@ -424,6 +424,10 @@ function launchRoutes() {
         null,
         false
       );
+
+      res.send( JSON.stringify({
+        "result": "success"
+      }));
     } catch( error ) {
       console.log( error );
       res.send( JSON.stringify({

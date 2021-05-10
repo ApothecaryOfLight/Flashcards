@@ -95,9 +95,6 @@ function set_editor_interface_add_tag_button( inSetID ) {
   //3) Add search term to search_terms
   set_editor_tags.push( tag_text );
 
-console.log( "adding: " + tag_text );
-console.dir( set_editor_tags );
-
   //4) Render updated search terms.
   set_editor_interface_render_tags( inSetID );
   set_editor_interface_update_tags( inSetID );
@@ -108,8 +105,14 @@ console.dir( set_editor_tags );
 
 function set_editor_interface_update_tags( inSetID ) {
 //TODO: Allow for set to be renamed
-console.log( "set_editor_interface_update_tags" );
-console.dir( set_editor_tags );
+  for( index in set_editor_tags ) {
+    set_editor_tags[index] =
+      set_editor_tags[index].replace(
+        /&nbsp;/g,
+        " "
+      );
+  }
+
   const body_content = JSON.stringify({
     "set_id": inSetID,
     "tags": set_editor_tags
@@ -141,7 +144,14 @@ console.dir( set_editor_tags );
 
 function set_editor_interface_render_tags( inSetID ) {
   let dom = "";
+
   for( index in set_editor_tags ) {
+    set_editor_tags[index] =
+      set_editor_tags[index].replace(
+        /&nbsp;/g,
+        " "
+      );
+
     dom += "<div class=\"set_editor_interface_tag_container\">" +
       set_editor_tags[index] +
       "<div class=\"set_editor_interface_tag_delete_button\"" +
@@ -155,11 +165,6 @@ function set_editor_interface_render_tags( inSetID ) {
 }
 
 function delete_set_editor_tag( inTag, inSetID ) {
-console.log( "delete_set_editor_tag" );
-console.dir( set_editor_tags );
-  inTag = inTag.replace( /\s/g, "&nbsp;" );
-console.log( inTag );
-
   for( index in set_editor_tags ) {
     if( set_editor_tags[index] == inTag ) {
       set_editor_tags.splice( index, 1 );
