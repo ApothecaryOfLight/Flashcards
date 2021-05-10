@@ -17,7 +17,6 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
       if( json.result == "success" ) {
         set_name_element.innerHTML = json.set_name.name;
         set_editor_interface_populate_list( inSetID, json.cards );
-
         for( index in json.topics ) {
           set_editor_tags.push( json.topics[index].name );
         }
@@ -81,10 +80,10 @@ function set_editor_interface_go_back() {
 
 function set_editor_interface_add_tag_button( inSetID ) {
   //1) Get tag
-  const tag_field = document.getElementById("set_editor_interface_tags_field");
+  const tag_field =
+    document.getElementById("set_editor_interface_tags_field");
   let tag_text = tag_field.value;
   if( tag_text == "" ) { return; }
-  tag_text = tag_text.replace( /\s/g, "&nbsp;" );
 
   //2) Ensure that search term doesn't already exist.
   for( index in set_editor_tags ) {
@@ -96,6 +95,9 @@ function set_editor_interface_add_tag_button( inSetID ) {
   //3) Add search term to search_terms
   set_editor_tags.push( tag_text );
 
+console.log( "adding: " + tag_text );
+console.dir( set_editor_tags );
+
   //4) Render updated search terms.
   set_editor_interface_render_tags( inSetID );
   set_editor_interface_update_tags( inSetID );
@@ -106,6 +108,8 @@ function set_editor_interface_add_tag_button( inSetID ) {
 
 function set_editor_interface_update_tags( inSetID ) {
 //TODO: Allow for set to be renamed
+console.log( "set_editor_interface_update_tags" );
+console.dir( set_editor_tags );
   const body_content = JSON.stringify({
     "set_id": inSetID,
     "tags": set_editor_tags
@@ -151,7 +155,11 @@ function set_editor_interface_render_tags( inSetID ) {
 }
 
 function delete_set_editor_tag( inTag, inSetID ) {
+console.log( "delete_set_editor_tag" );
+console.dir( set_editor_tags );
   inTag = inTag.replace( /\s/g, "&nbsp;" );
+console.log( inTag );
+
   for( index in set_editor_tags ) {
     if( set_editor_tags[index] == inTag ) {
       set_editor_tags.splice( index, 1 );

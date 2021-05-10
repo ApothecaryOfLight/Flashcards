@@ -268,7 +268,6 @@ function renderSetListPagination( inPages, search_type ) {
   const container =
     document.getElementById("search_interface_pagination_container" );
   let dom = "";
-console.log( search_type );
   for( counter=0; counter<Number(inPages); counter++ ) {
     dom += "<div class=\'setlist_interface_page_button\' ";
     if( search_type ) {

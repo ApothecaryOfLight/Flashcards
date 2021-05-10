@@ -6,6 +6,7 @@ function modal_button( button_name ) {
 }
 
 function launch_modal( isPrompt, inMessage, inButtons ) {
+console.log( "launch_modal" );
   const modal_handle = document.getElementById("modal_interface_screen_cover");
   modal_handle.style.display = "flex";
 

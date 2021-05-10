@@ -88,9 +88,11 @@ function process_input( inText ) {
 }
 
 function process_tag( inTag, replaceWith ) {
-  return inTag.replace(
-    /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, " "
+  let return_string = inTag.replace(
+    /^[bd]\.|[^\w][bd]\.|&#39s|[^&\w]/g, " "
   );
+  return_string= return_string.replace( /\s/g, "&nbsp;" );
+  return return_string;
 }
 
 async function index_search_data( id, topics, text, isCard ) {
@@ -129,7 +131,8 @@ async function index_search_data( id, topics, text, isCard ) {
     table += "text ";
   }
 
-  //3) Make sure each value is unique, not empty, and longer than 1 character.
+  //3) Make sure each value is unique, not empty,
+  //     and longer than 1 character.
   const unique_topics = in_terms.filter( (value,index,self) => {
     if( value != "" && value.length > 1 ) {
       return self.indexOf(value) === index;
@@ -170,13 +173,12 @@ async function index_search_data( id, topics, text, isCard ) {
       table +
       insert_fields;
     for( index in new_tags ) {
-      insert_query += "(\"" + new_tags[index].replace(
-        /^[bd]\.|[^\w][bd]\.|&#39s|[^\w]/g, ""
-      );
+      insert_query += "(\"" + new_tags[index];
       insert_query += "\", " + id + "), ";
     }
     insert_query = insert_query.slice( 0, insert_query.length-2 );
     insert_query += ";";
+
     const [insert_rows,fields] = await sqlPool.query( insert_query );
   }
 

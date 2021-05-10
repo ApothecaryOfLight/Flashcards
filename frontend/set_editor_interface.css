@@ -94,3 +94,6 @@ set_editor interface
   align-self: center;
   margin-left: .25rem;
 }
+.set_editor_interface_tag_delete_button:hover {
+  background: blue;
+}
