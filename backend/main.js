@@ -234,8 +234,6 @@ async function delete_set( set_id ) {
 function launchRoutes() {
   app.get('/setlist/:page_num', async function(req,res) {
     try {
-//TODO: Pagination
-
       const page_count_query = "SELECT " +
         "COUNT(sets.set_id) AS page_count " +
         "FROM sets;"
@@ -265,21 +263,33 @@ function launchRoutes() {
     }
   });
 
-  app.get('/cardlist', async function(req,res) {
+  app.get('/cardlist/:page_num', async function(req,res) {
 //TODO: Pagination
     try {
+      const page_count_query = "SELECT " +
+        "COUNT(cards.card_id) AS page_count " +
+        "FROM cards;"
+      const [count_row,count_field] =
+        await sqlPool.query( page_count_query );
+
+      const offset = req.params.page_num * 10;
       const cardlist_query = "SELECT " +
         "cards.card_id, cards.question, " +
         "cards.answer, cards.set_id, " +
         "sets.set_creator " +
         "FROM cards " +
         "INNER JOIN sets " +
-        "ON cards.set_id = sets.set_id;"
+        "ON cards.set_id = sets.set_id " +
+        "LIMIT 10 " +
+        "OFFSET " + offset +
+        ";"
+
       const [cardlist_rows,cardlist_fields] =
         await sqlPool.query( cardlist_query );
       res.send( JSON.stringify({
         "result": "sucess",
-        "data": cardlist_rows
+        "data": cardlist_rows,
+        "page_count": count_row[0].page_count/10
       }));
     } catch( error ) {
       res.send( JSON.stringify({

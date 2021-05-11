@@ -106,6 +106,7 @@ function search_interface_run_search( inPage ) {
 }
 
 function render_search_cards( inSearch_set_editor ) {
+console.dir( inSearch_set_editor );
   render_search_cards_pagination(
     Math.ceil( inSearch_set_editor.page_count ),
     inSearch_set_editor.search_type
@@ -248,14 +249,15 @@ function getSetList( inPage ) {
     });
 }
 
-function getCardList() {
+function getCardList( inPage ) {
   const getCardListObj = new Request(
-    ip + 'cardlist',
+    ip + 'cardlist/' + (inPage ?? 0),
     { method: 'GET' }
   );
   fetch( getCardListObj )
     .then( obj => obj.json())
     .then( obj => {
+console.dir( obj );
       render_search_cards( obj );
     });
 }
