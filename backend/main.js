@@ -670,7 +670,8 @@ includes the cards from those sets with a join.
 */
 
         page_query =
-          "(SELECT COUNT(cards.card_id) AS page_count " +
+          "SELECT SUM(tempTable.page_count) as page_count FROM " +
+          "((SELECT COUNT(cards.card_id) AS page_count " +
           "FROM cards " +
           "LEFT JOIN card_search_text " +
           "ON cards.card_id = card_search_text.card_id " +
@@ -695,7 +696,7 @@ includes the cards from those sets with a join.
           card_search_topics_predicate +
           " OR " +
           cardset_search_topics_predicate.substr(6) +
-          ")";
+          ")) as tempTable";
       } else if( req.body.search_type == "set" ) {
         card_search_query =
           "(SELECT sets.set_id, sets.name, sets.set_creator " +

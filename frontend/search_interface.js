@@ -84,12 +84,16 @@ console.log( "run search" );
     .then( json => json.json() )
     .then( json => {
     if( json.result == "success" ) {
+console.log( "Search results: " );
+console.dir( json );
       if( json.search_type == "card" ) {
-console.dir( json );
-        render_set_editor( {data:json.set_rows} );
+        render_search_cards({
+          data:json.set_rows,
+          "page_count": json.page_count,
+          "search_type": json.search_type
+        });
       } else if( json.search_type == "set" ) {
-console.dir( json );
-        renderSetList({
+        render_search_sets({
           "set_rows": json.set_rows,
           "page_count": json.page_count,
           "search_type": json.search_type
@@ -104,9 +108,14 @@ console.dir( json );
   });
 }
 
-function render_set_editor( inSearch_set_editor ) {
-console.log( "render_set_editor" );
+function render_search_cards( inSearch_set_editor ) {
+console.log( "render_search_cards" );
 console.dir( inSearch_set_editor );
+  render_search_cards_pagination(
+    Math.ceil( inSearch_set_editor.page_count ),
+    inSearch_set_editor.search_type
+  );
+
   const cards = inSearch_set_editor.data;
   const search_dom_obj =
     document.getElementById("search_interface_set_list");
@@ -134,6 +143,29 @@ console.dir( cards );
     dom += "</div>";
   });
   search_dom_obj.innerHTML = dom;
+}
+
+function render_search_cards_pagination( inPages, search_type ) {
+console.log( "render_search_cards_pagination" );
+console.log( inPages );
+console.log( search_type );
+  const container =
+    document.getElementById("search_interface_pagination_container" );
+  let dom = "";
+  for( counter=0; counter<Number(inPages); counter++ ) {
+    dom += "<div class=\'setlist_interface_page_button\' ";
+    if( search_type ) {
+      dom += "onclick=\'search_interface_run_search(" +
+        counter + "); ";
+    } else {
+      dom += "onclick=\'getCardList(" + counter + "); ";
+    }
+    dom += "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
+      ">" +
+      counter +
+      "</div>";
+  }
+  container.innerHTML = dom;
 }
 
 function getCard( inCardID, inSetID ) {
@@ -222,7 +254,7 @@ console.log( "getSetList" );
   fetch( getSetListObj )
     .then( obj => obj.json())
     .then( obj => {
-      renderSetList( obj );
+      render_search_sets( obj );
     });
 }
 
@@ -235,12 +267,12 @@ console.log( "getCardList" );
   fetch( getCardListObj )
     .then( obj => obj.json())
     .then( obj => {
-      render_set_editor( obj );
+      render_search_cards( obj );
     });
 }
 
-function renderSetList( inSetListObj ) {
-  renderSetListPagination(
+function render_search_sets( inSetListObj ) {
+  render_search_sets_pagination(
     Math.ceil( inSetListObj.page_count ),
     inSetListObj.search_type
   );
@@ -273,7 +305,7 @@ function renderSetList( inSetListObj ) {
   search_dom_obj.innerHTML = dom_string;
 }
 
-function renderSetListPagination( inPages, search_type ) {
+function render_search_sets_pagination( inPages, search_type ) {
   const container =
     document.getElementById("search_interface_pagination_container" );
   let dom = "";
