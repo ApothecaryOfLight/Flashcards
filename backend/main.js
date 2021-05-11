@@ -664,11 +664,6 @@ function launchRoutes() {
           cardset_search_topics_predicate.substr(6) +
           "LIMIT 10 OFFSET " + page_offset + ")";
 
-/*TODO: An additional pair of unions that looks at the
-set level for topics and text but instead of including sets
-includes the cards from those sets with a join.
-*/
-
         page_query =
           "SELECT SUM(tempTable.page_count) as page_count FROM " +
           "((SELECT COUNT(cards.card_id) AS page_count " +
@@ -728,11 +723,9 @@ includes the cards from those sets with a join.
           ")";
       }
 
-console.log( "\n\nCARD_SEARCH_QUERY: " + card_search_query );
       const [out_row,out_field] =
         await sqlPool.query( card_search_query );
 
-console.log( "\n\nPAGE_QUERY: " + page_query );
       const [page_row,page_field] =
         await sqlPool.query( page_query );
 
