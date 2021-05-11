@@ -106,7 +106,6 @@ function search_interface_run_search( inPage ) {
 }
 
 function render_search_cards( inSearch_set_editor ) {
-console.dir( inSearch_set_editor );
   render_search_cards_pagination(
     Math.ceil( inSearch_set_editor.page_count ),
     inSearch_set_editor.search_type
@@ -257,7 +256,6 @@ function getCardList( inPage ) {
   fetch( getCardListObj )
     .then( obj => obj.json())
     .then( obj => {
-console.dir( obj );
       render_search_cards( obj );
     });
 }
