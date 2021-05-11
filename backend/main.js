@@ -269,7 +269,8 @@ function launchRoutes() {
 //TODO: Pagination
     try {
       const cardlist_query = "SELECT " +
-        "cards.card_id, cards.question, cards.answer, cards.set_id, " +
+        "cards.card_id, cards.question, " +
+        "cards.answer, cards.set_id, " +
         "sets.set_creator " +
         "FROM cards " +
         "INNER JOIN sets " +
@@ -637,44 +638,63 @@ function launchRoutes() {
           "(SELECT cards.card_id, cards.answer, cards.question, " +
           "sets.set_creator, cards.set_id " +
           "FROM cards " +
-          "INNER JOIN card_search_text " +
+          "LEFT JOIN card_search_text " +
           "ON cards.card_id = card_search_text.card_id " +
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
+          "LEFT JOIN cardset_search_text " +
+          "ON cards.set_id = cardset_search_text.set_id " +
           card_search_text_predicate +
+          " OR " +
+          cardset_search_text_predicate.substr(6) +
           "LIMIT 10 OFFSET " + page_offset + ") " +
           "UNION " +
 
           "(SELECT cards.card_id, cards.answer, cards.question, " +
           "sets.set_creator, cards.set_id " +
           "FROM cards " +
-          "INNER JOIN card_search_topics " +
+          "LEFT JOIN card_search_topics " +
           "ON cards.card_id = card_search_topics.card_id " +
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
+          "LEFT JOIN cardset_search_topics " +
+          "ON cards.set_id = cardset_search_topics.set_id " +
           card_search_topics_predicate +
+          " OR " +
+          cardset_search_topics_predicate.substr(6) +
           "LIMIT 10 OFFSET " + page_offset + ")";
+
+/*TODO: An additional pair of unions that looks at the
+set level for topics and text but instead of including sets
+includes the cards from those sets with a join.
+*/
 
         page_query =
           "(SELECT COUNT(cards.card_id) AS page_count " +
-          "sets.set_creator, cards.set_id " +
           "FROM cards " +
-          "INNER JOIN card_search_text " +
+          "LEFT JOIN card_search_text " +
           "ON cards.card_id = card_search_text.card_id " +
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
+          "LEFT JOIN cardset_search_text " +
+          "ON cards.set_id = cardset_search_text.set_id " +
           card_search_text_predicate +
+          " OR " +
+          cardset_search_text_predicate.substr(6) +
           ") " +
           "UNION " +
 
           "(SELECT COUNT(cards.card_id) AS page_count " +
-          "sets.set_creator, cards.set_id " +
           "FROM cards " +
-          "INNER JOIN card_search_topics " +
+          "LEFT JOIN card_search_topics " +
           "ON cards.card_id = card_search_topics.card_id " +
           "INNER JOIN sets " +
           "ON cards.set_id = sets.set_id " +
+          "LEFT JOIN cardset_search_topics " +
+          "ON cards.set_id = cardset_search_topics.set_id " +
           card_search_topics_predicate +
+          " OR " +
+          cardset_search_topics_predicate.substr(6) +
           ")";
       } else if( req.body.search_type == "set" ) {
         card_search_query =
@@ -707,9 +727,11 @@ function launchRoutes() {
           ")";
       }
 
+console.log( "\n\nCARD_SEARCH_QUERY: " + card_search_query );
       const [out_row,out_field] =
         await sqlPool.query( card_search_query );
 
+console.log( "\n\nPAGE_QUERY: " + page_query );
       const [page_row,page_field] =
         await sqlPool.query( page_query );
 

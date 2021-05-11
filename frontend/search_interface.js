@@ -48,6 +48,7 @@ function switch_list_type() {
 }
 
 function search_interface_run_search( inPage ) {
+console.log( "run search" );
   //1) If there are no serach terms, use default search or set_editor
   if( search_terms.length == 0 ) {
     if( list_type == "set" ) {
@@ -84,8 +85,10 @@ function search_interface_run_search( inPage ) {
     .then( json => {
     if( json.result == "success" ) {
       if( json.search_type == "card" ) {
-        render_set_editor( json );
+console.dir( json );
+        render_set_editor( {data:json.set_rows} );
       } else if( json.search_type == "set" ) {
+console.dir( json );
         renderSetList({
           "set_rows": json.set_rows,
           "page_count": json.page_count,
@@ -102,9 +105,13 @@ function search_interface_run_search( inPage ) {
 }
 
 function render_set_editor( inSearch_set_editor ) {
+console.log( "render_set_editor" );
+console.dir( inSearch_set_editor );
   const cards = inSearch_set_editor.data;
-  const search_dom_obj = document.getElementById("search_interface_set_list");
+  const search_dom_obj =
+    document.getElementById("search_interface_set_list");
   let dom_string = "";
+console.dir( cards );
   draw_paper( cards.length );
   let dom = "";
   cards.forEach( card => {
@@ -207,6 +214,7 @@ function set_logged_elements() {
 }
 
 function getSetList( inPage ) {
+console.log( "getSetList" );
   const getSetListObj = new Request(
     ip + 'setlist/' + (inPage ?? 0),
     { method: 'GET' }
@@ -219,6 +227,7 @@ function getSetList( inPage ) {
 }
 
 function getCardList() {
+console.log( "getCardList" );
   const getCardListObj = new Request(
     ip + 'cardlist',
     { method: 'GET' }
