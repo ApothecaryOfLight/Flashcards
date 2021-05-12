@@ -188,6 +188,7 @@ function render_search_terms() {
   search_term_container.innerHTML = dom;
 }
 
+//TODO: Apply search criteria to creation of temp set.
 function create_temp_set_button() {
   let user = "unlogged";
   if( logged_obj.isLogged == true ) {
@@ -198,7 +199,8 @@ function create_temp_set_button() {
     {
       method: 'POST',
       body: JSON.stringify({
-        "username_hash": user
+        "username_hash": user,
+        "topics": search_terms
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -209,6 +211,7 @@ function create_temp_set_button() {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+console.dir( json.cards );
         runset( json.cards );
       } else if( json.result == "error" ) {
         launch_modal( null, json.error_message, { "Close": close_modal } );
