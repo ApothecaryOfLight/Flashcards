@@ -212,14 +212,22 @@ async function delete_set( set_id ) {
     list_of_cards = list_of_cards.slice( 0, list_of_cards.length-4 );
 
     //3) Compose deletion query.
-    const delete_set_query =
-      "START TRANSACTION;\n" +
-      "DELETE FROM card_search_text WHERE " + list_of_cards + ";\n" +
-      "DELETE FROM card_search_topics WHERE " + list_of_cards + ";\n" +
-      "DELETE FROM cards WHERE " + list_of_cards + ";\n" +
-      "DELETE FROM cardset_search_text WHERE set_id = " + set_id + ";\n" +
-      "DELETE FROM cardset_search_topics WHERE set_id = " + set_id + ";\n" +
-      "DELETE FROM sets WHERE set_id = " + set_id + ";\n" +
+    let delete_set_query =
+      "START TRANSACTION;\n";
+    if( list_of_cards.length > 0 ) {
+      delete_set_query += "DELETE FROM card_search_text " +
+        "WHERE " + list_of_cards + ";\n" +
+        "DELETE FROM card_search_topics " +
+        "WHERE " + list_of_cards + ";\n" +
+        "DELETE FROM cards " +
+        "WHERE " + list_of_cards + ";\n";
+    }
+    delete_set_query += "DELETE FROM cardset_search_text " +
+      "WHERE set_id = " + set_id + ";\n" +
+      "DELETE FROM cardset_search_topics " +
+      "WHERE set_id = " + set_id + ";\n" +
+      "DELETE FROM sets " +
+      "WHERE set_id = " + set_id + ";\n" +
       "COMMIT;"
     const [delete_set_row,delete_set_field] =
       await sqlPool.query( delete_set_query );
