@@ -825,13 +825,6 @@ async function generate_db_backup( res ) {
 
   app.post( '/card_result', async function(req,res) {
     try {
-      if( req.body.passphrase != "5101924eb0febac1f19f6529acc4883a" ) {
-        res.send( JSON.stringify({
-          "result": "failure",
-          "reason": "Failed to authenticate."
-        }));
-        return;
-      }
       const result_query = "INSERT INTO card_record " +
         "(username_hash, card_id, datestamp, result) VALUES " +
         "( \"" + req.body.userhash + "\", " +
@@ -851,7 +844,6 @@ async function generate_db_backup( res ) {
   });
 
   app.post( '/temporary_set', async function(req,res) {
-//TODO: Apply username.
     try {
       let card_search_text_predicate = "";
       let card_search_topics_predicate = "";
@@ -902,7 +894,6 @@ async function generate_db_backup( res ) {
         "FROM cards " +
         "LEFT JOIN card_record " +
         "ON cards.card_id = card_record.card_id ";
-//WHERE predicate
 
       if( req.body.topics.length > 0 ) {
         temp_set_query += "LEFT JOIN cardset_search_text " +
@@ -918,6 +909,11 @@ async function generate_db_backup( res ) {
           cardset_search_text_predicate.substr(6) + " OR " +
           card_search_topics_predicate.substr(6) + " OR " +
           card_search_text_predicate.substr(6);
+      }
+
+      if( req.body.username_hash != "unlogged" ) {
+        temp_set_query += "WHERE card_record.username_hash = " +
+          "\'" + req.body.username_hash + "\' ";
       }
 
       temp_set_query += "GROUP BY card_id, card_record.result " +

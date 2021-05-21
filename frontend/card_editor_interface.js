@@ -90,7 +90,7 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
     "answer": answer_text,
     "tags": card_tags
   });
-console.dir( JSON.parse( JSON.stringify( body_content ) ) );
+
   const update_card = new Request(
     ip + 'update_card',
     {
