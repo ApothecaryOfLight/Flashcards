@@ -912,14 +912,14 @@ async function generate_db_backup( res ) {
       }
 
       if( req.body.username_hash != "unlogged" ) {
-        temp_set_query += "WHERE card_record.username_hash = " +
+        temp_set_query += "AND card_record.username_hash = " +
           "\'" + req.body.username_hash + "\' ";
       }
 
       temp_set_query += "GROUP BY card_id, card_record.result " +
         "ORDER BY Result-(Latest/100) ASC " +
         "LIMIT 25;"
-console.log( temp_set_query );
+
       const [temp_row,temp_field] = await sqlPool.query( temp_set_query );
       res.send( JSON.stringify({
         "result": "success",
