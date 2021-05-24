@@ -261,6 +261,7 @@ function launchRoutes() {
       const setlist_query = "SELECT " +
         "name, set_id, set_creator " +
         "FROM sets " +
+        "ORDER BY name " +
         "LIMIT 10 " +
         "OFFSET " + offset +
         ";"
@@ -689,7 +690,8 @@ function launchRoutes() {
           card_search_topics_predicate +
           " OR " +
           cardset_search_topics_predicate.substr(6) +
-          "LIMIT 10 OFFSET " + page_offset + ")";
+          "LIMIT 10 OFFSET " + page_offset +
+          ")";
 
         page_query =
           "SELECT SUM(tempTable.page_count) as page_count FROM " +
@@ -732,7 +734,9 @@ function launchRoutes() {
           "INNER JOIN cardset_search_topics " +
           "ON sets.set_id = cardset_search_topics.set_id " +
           cardset_search_topics_predicate +
-          "LIMIT 10 OFFSET " + page_offset + ")";
+          "ORDER BY sets.name " +
+          "LIMIT 10 OFFSET " + page_offset +
+          ")";
 
         page_query =
           "(SELECT COUNT(sets.set_id) AS page_count " +
