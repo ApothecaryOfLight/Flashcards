@@ -282,7 +282,6 @@ function launchRoutes() {
   });
 
   app.get('/cardlist/:page_num', async function(req,res) {
-//TODO: Pagination
     try {
       const page_count_query = "SELECT " +
         "COUNT(cards.card_id) AS page_count " +

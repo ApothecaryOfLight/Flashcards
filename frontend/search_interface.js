@@ -263,50 +263,7 @@ function getCardList( inPage ) {
     });
 }
 
-/*
-Unused function.
-Only can be used if all set names are delivered to client.
-Instead, an optimized alphabetized table should
-be maintained server-side, pointing to the actual sets table.
-*/
-function alphabetize_sets( inSearchSet ) {
-  console.dir( inSearchSet.set_rows );
-  const AToZ_set_rows = [];
-
-  const origin = inSearchSet.set_rows;
-
-  AToZ_set_rows.splice(
-    0,
-    0,
-    origin[0]
-  );
-  origin.splice(
-    0,
-    1
-  );
-
-  for( origin_index in origin ) {
-    for( dest_index in AToZ_set_rows ) {
-      if( origin[origin_index].name > AToZ_set_rows[dest_index].name ) {
-        AToZ_set_rows.splice(
-          dest_index,
-          0,
-          origin[origin_index]
-        );
-        break;
-      }
-    }
-  }
-
-  return AToZ_set_rows;
-}
-
 function render_search_sets( inSetListObj ) {
-//  inSetListObj.set_rows = alphabetize_sets( inSetListObj );
-//console.dir( alphabetize_sets( inSetListObj ) );
-
-console.dir( inSetListObj );
-
   render_search_sets_pagination(
     Math.ceil( inSetListObj.page_count ),
     inSetListObj.search_type
