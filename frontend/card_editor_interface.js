@@ -42,6 +42,10 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
     bound_functions["card_editor"]["set_card"].push( func_ref );
   } else {
     //3b) If the card doesn't exist, don't bother.
+    const question_text = document.getElementById("card_editor_interface_q_text");
+    const answer_text = document.getElementById("card_editor_interface_a_text");
+    question_text.value = "";
+    answer_text.value = "";
   }
 }
 
