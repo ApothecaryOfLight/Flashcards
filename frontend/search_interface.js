@@ -8,11 +8,8 @@ function launch_search_interface( doSearch ) {
     search_interface_run_search();
   } else {
     scroll_to();
+    window.scrollTo({top:scrollY,behavior:"auto"});
   }
-}
-
-function scroll_to() {
-  window.scrollTo({top:scrollY,behavior:"auto"});
 }
 
 function add_search_term() {
