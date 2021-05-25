@@ -306,7 +306,8 @@ function render_search_sets_pagination( inPages, search_type ) {
     document.getElementById("search_interface_pagination_container" );
   let dom = "";
   for( counter=0; counter<Number(inPages); counter++ ) {
-    dom += "<div class=\'setlist_interface_page_button\' ";
+    dom += "<div class=\'setlist_interface_page_button " +
+      "better_buttons\' ";
     if( search_type ) {
       dom += "onclick=\'search_interface_run_search(" +
         counter + "); ";
