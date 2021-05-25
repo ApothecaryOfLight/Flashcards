@@ -10,11 +10,12 @@ const logged_obj = {
   isLogged: false,
   username_hash: ""
 }
+let scrollY = 0;
 const split_buttons = [];
 const merge_buttons = [];
 const go_to_set_buttons = [];
 
 window.addEventListener( 'load', (loaded_event) => {
-  launch_search_interface();
+  launch_search_interface( true );
   attach_login();
 });

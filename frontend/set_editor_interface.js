@@ -75,7 +75,7 @@ function set_editor_interface_new_button( inSetID ) {
 }
 
 function set_editor_interface_go_back() {
-  launch_search_interface();
+  launch_search_interface( false );
 }
 
 function set_editor_interface_add_tag_button( inSetID ) {

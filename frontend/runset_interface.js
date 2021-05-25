@@ -69,7 +69,7 @@ function next_card( card_sets_obj ) {
 
   //2) If there are no more subsets, return to search interface.
   if( card_sets_obj.sets.length == 0 ) {
-    launch_search_interface();
+    launch_search_interface( false );
     return;
   }
 
@@ -104,7 +104,7 @@ function next_card( card_sets_obj ) {
 }
 
 function runset_interface_go_back( cards_obj ) {
-  launch_search_interface();
+  launch_search_interface( false );
 }
 
 function get_datestamp() {

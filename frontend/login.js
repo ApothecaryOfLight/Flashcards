@@ -12,7 +12,7 @@ function login( inUsernameHash ) {
   logout_element.style.display = "flex";
   //)Relaunch interface.
   if( curr_interface == "search" ) {
-    launch_search_interface();
+    launch_search_interface( true );
   }
 }
 
@@ -65,7 +65,7 @@ function logout() {
   //)Relaunch interface.
   logged_obj.isLogged = false;
   if( curr_interface == "search" ) {
-    launch_search_interface();
+    launch_search_interface( true );
   }
 }
 

@@ -73,7 +73,7 @@ function delete_set( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        launch_search_interface();
+        launch_search_interface( true );
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal

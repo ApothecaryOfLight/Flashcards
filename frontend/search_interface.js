@@ -1,11 +1,18 @@
 /*
 Search interface
 */
-function launch_search_interface() {
+function launch_search_interface( doSearch ) {
   set_interface( "search" );
   set_logged_elements();
-  search_interface_run_search();
+  if( doSearch ) {
+    search_interface_run_search();
+  } else {
+    scroll_to();
+  }
+}
 
+function scroll_to() {
+  window.scrollTo({top:scrollY,behavior:"auto"});
 }
 
 function add_search_term() {
@@ -318,10 +325,12 @@ function render_search_sets_pagination( inPages, search_type ) {
 }
 
 function playSet( inSetID ) {
+  scrollY = window.scrollY;
   launch_runset_interface( inSetID );
 }
 
 function getSet( inSetID ) {
+  scrollY = window.scrollY;
   launch_set_editor_interface( inSetID );
 }
 
