@@ -9,6 +9,7 @@ function launch_runset_interface( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+        console.dir( json.cards );
         runset( json.cards );
       } else if( json.result == "error" ) {
         const options = {

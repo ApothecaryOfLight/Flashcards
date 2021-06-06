@@ -890,7 +890,8 @@ async function generate_db_backup( res ) {
       }
 
       let temp_set_query =
-        "SELECT cards.card_id, cards.question, cards.answer, " +
+        "SELECT " +
+        "cards.card_id, cards.question, cards.answer, " +
         "COALESCE( SUM(card_record.result), -100 ) AS Result, " +
         "CAST( (UNIX_TIMESTAMP(CURDATE()) - " +
         "UNIX_TIMESTAMP( MAX(card_record.datestamp) )) AS SIGNED ) as Latest " +
@@ -908,20 +909,26 @@ async function generate_db_backup( res ) {
           "LEFT JOIN card_search_topics " +
           "ON cards.card_id = card_search_topics.card_id ";
 
-        temp_set_query += cardset_search_topics_predicate + " OR " +
+        temp_set_query += "WHERE (" +
+          cardset_search_topics_predicate.substr(6) + " OR " +
           cardset_search_text_predicate.substr(6) + " OR " +
           card_search_topics_predicate.substr(6) + " OR " +
-          card_search_text_predicate.substr(6);
+          card_search_text_predicate.substr(6) + ") ";
       }
 
       if( req.body.username_hash != "unlogged" ) {
-        temp_set_query += "AND card_record.username_hash = " +
-          "\'" + req.body.username_hash + "\' ";
+        temp_set_query += "AND ( card_record.username_hash = " +
+          "\'" + req.body.username_hash + "\' " +
+          "OR card_record.username_hash IS NULL ) ";
       }
 
-      temp_set_query += "GROUP BY card_id, card_record.result " +
-        "ORDER BY Result-(Latest/100) ASC " +
+      temp_set_query += "GROUP BY card_id " +
+        "ORDER BY " +
+        "COALESCE( SUM(card_record.result), -100 ) " +
+        " -(Latest/100) ASC " +
         "LIMIT 25;"
+
+console.log( temp_set_query );
 
       const [temp_row,temp_field] = await sqlPool.query( temp_set_query );
       res.send( JSON.stringify({
