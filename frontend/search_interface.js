@@ -7,7 +7,6 @@ function launch_search_interface( doSearch ) {
   if( doSearch ) {
     search_interface_run_search();
   } else {
-    scroll_to();
     window.scrollTo({top:scrollY,behavior:"auto"});
   }
 }
