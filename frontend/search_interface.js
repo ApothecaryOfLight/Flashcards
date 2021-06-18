@@ -268,6 +268,7 @@ function getCardList( inPage ) {
 }
 
 function render_search_sets( inSetListObj ) {
+console.dir( inSetListObj );
   render_search_sets_pagination(
     Math.ceil( inSetListObj.page_count ),
     inSetListObj.search_type

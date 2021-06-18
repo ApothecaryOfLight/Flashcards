@@ -738,6 +738,7 @@ function launchRoutes() {
           ")";
 
         page_query =
+          "SELECT SUM(page_count) as page_count FROM (" +
           "(SELECT COUNT(sets.set_id) AS page_count " +
           "FROM sets " +
           "INNER JOIN cardset_search_text " +
@@ -750,7 +751,8 @@ function launchRoutes() {
           "INNER JOIN cardset_search_topics " +
           "ON sets.set_id = cardset_search_topics.set_id " +
           cardset_search_topics_predicate +
-          ")";
+          ")" +
+          ") as tmp_table;";
       }
 
       const [out_row,out_field] =
