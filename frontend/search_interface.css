@@ -110,24 +110,38 @@ search interface
   grid-column-end: 4;
   display: flex;
   flex-direction: row;
-  width: 20%;
-  margin-left: 40%;
-  margin-right: 40%;
+
+  margin-left: 10%;
+  margin-right: 10%;
+
   justify-content: space-around;
 
   margin-bottom: 5rem;
 }
 .setlist_interface_page_button {
-  border: 1px solid black;
   width: 1.5rem;
   height: 1.5rem;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  outline: none;
+  font-size: 1rem;
+  font-weight: bold;
+  background: #DBF1FF;
+  border: 3px solid #B1CFE7;
+  border-radius: 50%;
 }
 .setlist_interface_page_button:hover {
-  background: blue;
+  background: #BFD1FD;
+}
+@media (min-width: 1000px) {
+  #search_interface_pagination_container {
+    width: 20%;
+    margin-left: 40%;
+    margin-right: 40%;
+  }
 }
 
 /*Search tags*/
