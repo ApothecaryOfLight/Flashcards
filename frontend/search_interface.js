@@ -111,9 +111,6 @@ function search_interface_run_search( inPage ) {
 }
 
 function process_page_buttons( inPages, inCurrPage ) {
-console.log( "inPages: " + inPages );
-console.log( "inCurrPage: " + inCurrPage );
-console.log( "diff: "+ (inPages-inCurrPage) );
   const page_buttons = [];
   if( inPages < 9 ) {
     for( let i=1; i<=inPages; i++ ) {
@@ -121,21 +118,18 @@ console.log( "diff: "+ (inPages-inCurrPage) );
     }
   } else if( inPages > 9 ) {
     if( inCurrPage < 4 ) {
-console.log( "lower range" );
       page_buttons.push( 1, 2, 3, 4 );
       page_buttons.push( Math.floor( inPages/2 ) );
-      page_buttons.push( inPages-2, inPages-1 );
+      page_buttons.push( inPages-1, inPages );
     } else if( (inPages-inCurrPage) < 4 ) {
-console.log( "upper range" );
       page_buttons.push( 1, 2 );
       page_buttons.push( Math.floor( inPages/2 ) );
-      page_buttons.push( inPages-4, inPages-3, inPages-2, inPages-1 );
+      page_buttons.push( inPages-3, inPages-2, inPages-1, inPages );
     } else {
-console.log( "mid range" );
       page_buttons.push( 1, 2 );
       page_buttons.push( inCurrPage-2, inCurrPage-1, inCurrPage );
       page_buttons.push( inCurrPage+1, inCurrPage+2 );
-      page_buttons.push( inPages-2, inPages-1 );
+      page_buttons.push( inPages-1, inPages );
     }
   }
   return page_buttons;
@@ -182,15 +176,15 @@ function render_search_cards_pagination( inPages, search_type, inCurrPage ) {
   const container =
     document.getElementById("search_interface_pagination_container" );
   let dom = "";
-  console.dir( pages_obj );
+
   for( page_key in pages_obj ) {
-    console.log( pages_obj[page_key] );
+    const real_page_number = Number( pages_obj[page_key]-1 );
     dom += "<div class=\'setlist_interface_page_button\' ";
     if( search_type ) {
       dom += "onclick=\'search_interface_run_search(" +
-        pages_obj[page_key] + "); ";
+        real_page_number + "); ";
     } else {
-      dom += "onclick=\'getCardList(" + pages_obj[page_key] + "); ";
+      dom += "onclick=\'getCardList(" + real_page_number + "); ";
     }
     dom += "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
       ">" +
@@ -293,7 +287,6 @@ function getSetList( inPage ) {
 }
 
 function getCardList( inPage ) {
-console.log( "getCardList" );
   const getCardListObj = new Request(
     ip + 'cardlist/' + (inPage ?? 0),
     { method: 'GET' }
@@ -306,7 +299,6 @@ console.log( "getCardList" );
 }
 
 function render_search_sets( inSetListObj, inPage ) {
-console.dir( inSetListObj );
   render_search_sets_pagination(
     Math.ceil( inSetListObj.page_count ),
     inSetListObj.search_type,
@@ -341,21 +333,24 @@ console.dir( inSetListObj );
   search_dom_obj.innerHTML = dom_string;
 }
 
-function render_search_sets_pagination( inPages, search_type, inCurrentPage ) {
+function render_search_sets_pagination( inPages, search_type, inCurrPage ) {
+  const pages_obj = process_page_buttons( inPages, inCurrPage ?? 1 );
+
   const container =
     document.getElementById("search_interface_pagination_container" );
   let dom = "";
-  for( counter=0; counter<Number(inPages); counter++ ) {
+  for( page_key in pages_obj ) {
+    const real_page_number = Number( pages_obj[page_key] - 1 );
     dom += "<div class=\'setlist_interface_page_button\' ";
     if( search_type ) {
       dom += "onclick=\'search_interface_run_search(" +
-        counter + "); ";
+        real_page_number + "); ";
     } else {
-      dom += "onclick=\'getSetList(" + counter + "); ";
+      dom += "onclick=\'getSetList(" + real_page_number + "); ";
     }
     dom += "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
       ">" +
-      counter +
+      pages_obj[page_key] +
       "</div>";
   }
   container.innerHTML = dom;

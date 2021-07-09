@@ -283,7 +283,6 @@ function launchRoutes() {
 
   app.get('/cardlist/:page_num', async function(req,res) {
     try {
-console.log( "cardlist request page number: " + req.params.page_num );
       const page_count_query = "SELECT " +
         "COUNT(cards.card_id) AS page_count " +
         "FROM cards;"
