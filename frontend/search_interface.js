@@ -179,7 +179,11 @@ function render_search_cards_pagination( inPages, search_type, inCurrPage ) {
 
   for( page_key in pages_obj ) {
     const real_page_number = Number( pages_obj[page_key]-1 );
-    dom += "<div class=\'setlist_interface_page_button\' ";
+    dom += "<div class=\'setlist_interface_page_button";
+    if( Number(pages_obj[page_key]-1) == Number(inCurrPage??0) ) {
+      dom += " setlist_interface_current_page_button";
+    }
+    dom += "\' ";
     if( search_type ) {
       dom += "onclick=\'search_interface_run_search(" +
         real_page_number + "); ";
@@ -341,7 +345,11 @@ function render_search_sets_pagination( inPages, search_type, inCurrPage ) {
   let dom = "";
   for( page_key in pages_obj ) {
     const real_page_number = Number( pages_obj[page_key] - 1 );
-    dom += "<div class=\'setlist_interface_page_button\' ";
+    dom += "<div class=\'setlist_interface_page_button";
+    if( Number(pages_obj[page_key]-1) == Number(inCurrPage??0) ) {
+      dom += " setlist_interface_current_page_button";
+    }
+    dom += "\' ";
     if( search_type ) {
       dom += "onclick=\'search_interface_run_search(" +
         real_page_number + "); ";

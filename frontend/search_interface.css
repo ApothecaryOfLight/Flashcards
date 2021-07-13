@@ -133,6 +133,9 @@ search interface
   border: 3px solid #B1CFE7;
   border-radius: 50%;
 }
+.setlist_interface_current_page_button {
+  border: 3px solid #648ef7;
+}
 .setlist_interface_page_button:hover {
   background: #BFD1FD;
 }
