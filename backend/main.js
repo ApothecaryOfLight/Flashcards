@@ -96,10 +96,6 @@ function process_tag( inTag, replaceWith ) {
 }
 
 async function index_search_data( id, topics, text, isCard ) {
-console.log( "id: " + id );
-console.log( "topics: " + topics );
-console.log( "text: " + text );
-console.log( "idCard: " + isCard );
   try {
     //1) Set variables for either card or set processing.
     let table;
@@ -271,7 +267,6 @@ function launchRoutes() {
         "set_rows": set_rows,
         "page_count": count_row[0].page_count/10
       });
-
       res.send( setlist );
     } catch( error ) {
       console.log( error );
@@ -930,8 +925,6 @@ async function generate_db_backup( res ) {
         "COALESCE( SUM(card_record.result), -100 ) " +
         " -(Latest/100) ASC " +
         "LIMIT 25;"
-
-console.log( temp_set_query );
 
       const [temp_row,temp_field] = await sqlPool.query( temp_set_query );
       res.send( JSON.stringify({
