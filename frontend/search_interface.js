@@ -116,7 +116,7 @@ function process_page_buttons( inPages, inCurrPage ) {
     for( let i=1; i<=inPages; i++ ) {
       page_buttons.push( i );
     }
-  } else if( inPages > 9 ) {
+  } else if( inPages >= 9 ) {
     if( inCurrPage < 4 ) {
       page_buttons.push( 1, 2, 3, 4 );
       page_buttons.push( Math.floor( inPages/2 ) );
@@ -250,7 +250,6 @@ function create_temp_set_button() {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-console.dir( json.cards );
         runset( json.cards );
       } else if( json.result == "error" ) {
         launch_modal( null, json.error_message, { "Close": close_modal } );

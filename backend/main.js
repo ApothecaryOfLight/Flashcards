@@ -271,6 +271,7 @@ function launchRoutes() {
         "set_rows": set_rows,
         "page_count": count_row[0].page_count/10
       });
+
       res.send( setlist );
     } catch( error ) {
       console.log( error );
