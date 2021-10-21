@@ -20,7 +20,7 @@ app.use(cors());
 
 /*Body data*/
 const body_parser = require('body-parser');
-app.use( body_parser.json({limit:'2mb'}) );
+app.use( body_parser.json({limit:'20mb'}) );
 
 /*mySQL*/
 const mysql = require('mysql2');
