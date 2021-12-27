@@ -43,8 +43,8 @@ var certificate;
 var credentials;
 
 if( process.argv[2] == "https" ) {
-  privateKey = fs.readFileSync('/home/ubuntu/Flashcards/privkey.pem');
-  certificate = fs.readFileSync('/home/ubuntu/Flashcards/fullchain.pem');
+  privateKey = fs.readFileSync('../privkey.pem');
+  certificate = fs.readFileSync('../fullchain.pem');
   credentials = {key: privateKey, cert: certificate};
 }
 
@@ -962,9 +962,9 @@ async function generate_db_backup( res ) {
 
   if( process.argv[2] == "https" ) {
     var server = https.createServer( credentials, app );
-    server.listen( 3000 );
+    server.listen( 3001 );
   } else {
-    app.listen(3000);
+    app.listen(3001);
   }
 }
  
