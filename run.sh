@@ -2,10 +2,10 @@
 if [[ "$1" = "dev" ]];
 then
   IP=$(hostname -I | xargs)
-  echo "const ip = \"ws://${IP}:8001\";" > ./frontend/ip_file.sh
+  echo "const ip = \"ws://${IP}:3001\";" > ./frontend/ip_file.sh
 elif [[ "$1" = "prod" ]];
 then
-  echo "const ip = \"wss://triviacards.net:8001\";" > ./frontend/ip_file.sh
+  echo "const ip = \"wss://triviacards.net:3001\";" > ./frontend/ip_file.sh
 else
   echo "Command line argument:";
   echo "  run.sh dev";
