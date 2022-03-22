@@ -12,6 +12,7 @@ else
   echo "    Will run Flashcards without an SSL/TSL Certificates.";
   echo "  run.sh prod";
   echo "    Will run Flashcards with SSL/TSL Certificates.";
+  exit -1
 fi
 
 cd backend && screen -d -m -S Flashcards bash -c './run.sh "$1"'
