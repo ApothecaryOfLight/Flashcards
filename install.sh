@@ -17,7 +17,8 @@ then
   sudo apt-get install nginx -y
   sudo ufw allow 'Nginx HTTP'
   sudo ufw allow ssh
-  sudo ufw allow 3000
+  sudo ufw allow 3001
+  sudo ufw allow 8001
   sudo ufw enable
   sudo systemctl restart nginx
 
@@ -31,6 +32,10 @@ then
 
   #==NPM Packages==
   cd backend && npm i
+
+  #==Ports==
+  sudo ufw allow 3001
+  sudo ufw allow 8001
 else
   echo "Command line argument:";
   echo "  install.sh standalone";
