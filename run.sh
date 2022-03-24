@@ -2,10 +2,10 @@
 cd "${0%/*}"
 if [[ "$1" = "http" ]];
 then
-  echo "const ip = \"ws://${2}:3001\/\";" > ./frontend/ip_file.js
+  echo "const ip = \"http://${2}:3001\/\";" > ./frontend/ip_file.js
 elif [[ "$1" = "https" ]];
 then
-  echo "const ip = \"wss://triviacards.net:3001\/\";" > ./frontend/ip_file.js
+  echo "const ip = \"https://triviacards.net:3001\/\";" > ./frontend/ip_file.js
 else
   echo "Command line argument:";
   echo "  run.sh dev";
