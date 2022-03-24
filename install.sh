@@ -11,7 +11,7 @@ then
 
   #==mySQL Schema==
   ./create_schema.sh
-  sudo mysql < create_schema.sh
+  sudo mysql < create_schema.sql
 
   #==NGINX==
   sudo apt-get install nginx -y
