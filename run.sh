@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "${0%/*}"
 if [[ "$1" = "dev" ]];
 then
   IP=$(hostname -I | xargs)
