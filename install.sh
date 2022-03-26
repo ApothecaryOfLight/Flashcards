@@ -31,6 +31,7 @@ then
   #==mySQL Schema==
   ./create_schema.sh
   sudo mysql < create_schema.sql
+  rm create_schema.sql
 
   #==NPM Packages==
   cd backend && npm i
