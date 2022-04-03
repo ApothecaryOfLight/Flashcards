@@ -7,7 +7,7 @@ then
 elif [[ "$1" = "https" ]];
 then
   echo "const ip = \"https://triviacards.net:3001\/\";" > ./frontend/ip_file.js
-  cd backend && screen -d -m -S Flashcards bash -c './run.sh https
+  cd backend && screen -d -m -S Flashcards bash -c './run.sh https'
 else
   echo "Command line argument:";
   echo "  run.sh dev";
