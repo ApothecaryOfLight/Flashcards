@@ -1,10 +1,15 @@
 /*
 Interface switching code.
 */
+
+
+//Available interfaces.
 const interfaces = [
   "search", "set_editor", "card_editor", "runset"
 ];
 
+
+//Functions to attach to the interfaces.
 const functions = {
   "search" : {
     "set_name_create": search_interface_set_create,
@@ -31,6 +36,8 @@ const functions = {
   }
 };
 
+
+//Object storing the bound functions of each interface.
 const bound_functions = {
   "search" : {
     "set_name_create": [],
@@ -57,6 +64,13 @@ const bound_functions = {
 }
 
 
+/*
+Function to attach an interface's functions to it.
+
+interface: Interface to attach functions to.
+
+value: Value to bind to the interface's functions.
+*/
 function attach_functions( interface, value ) {
   for( const button_name in functions[interface] ) {
     const button_ref = document.getElementById( interface + "_interface_" + button_name );
@@ -70,6 +84,12 @@ function attach_functions( interface, value ) {
   };
 }
 
+
+/*
+Function to detach an interface's functions from it.
+
+interface: Interface to detach all functions from.
+*/
 function detach_functions( interface ) {
   for( const button_name in functions[interface] ) {
     const button_ref = document.getElementById( interface + "_interface_" + button_name );
@@ -82,6 +102,14 @@ function detach_functions( interface ) {
   };
 }
 
+
+/*
+Function to switch between interfaces.
+
+interface: Target interface to display.
+
+value: Value to bind to all the interface's functions.
+*/
 function set_interface( interface, value ) {
   curr_interface = interface;
   const body = document.body;

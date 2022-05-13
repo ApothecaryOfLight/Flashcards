@@ -1,21 +1,36 @@
 /*
-==7.0== Logging in/out code
+Function to login.
+
+inUsernameHash: A hash of the user's username.
 */
 function login( inUsernameHash ) {
+  //Set the global login variables.
   logged_obj.isLogged = true;
   logged_obj.username_hash = inUsernameHash;
 
+  //Close the login modal.
   close_modal();
+
+  //Get references to the login elements.
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
+
+  //Hide the login element.
   login_element.style.display = "none";
+
+  //Display the logout element.
   logout_element.style.display = "flex";
-  //)Relaunch interface.
+
+  //Relaunch interface.
   if( curr_interface == "search" ) {
     launch_search_interface( true );
   }
 }
 
+
+/*
+Function to attempt to create an account.
+*/
 function attempt_create_account() {
   //1) Get username and password
   const username_field = document.getElementById("username_field");
@@ -53,22 +68,36 @@ function attempt_create_account() {
         prompt_failed_login( json.issue );
       }
     });
-
-  //)Relaunch interface
 }
 
+
+/*
+Function to logout.
+*/
 function logout() {
+  //Get refernces to the login and logout elements.
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
+
+  //Hide the logout element.
   logout_element.style.display = "none";
+
+  //Display the login element.
   login_element.style.display = "flex";
-  //)Relaunch interface.
+
+  //Update the global login variable.
   logged_obj.isLogged = false;
+
+  //Relaunch interface.
   if( curr_interface == "search" ) {
     launch_search_interface( true );
   }
 }
 
+
+/*
+Function to attempt to login.
+*/
 function attempt_login() {
   //1) Get username and password
   const username_field = document.getElementById("username_field");
@@ -105,19 +134,28 @@ function attempt_login() {
         prompt_failed_login( json.reason );
       }
     });
-
-  //3) If refused, prompt failure message, fallback into login prompt.
 }
 
+
+/*
+Function that launches a modal upon a failed login.
+*/
 function prompt_failed_login( inFailureReason ) {
+  //Construct the modal object.
   const options = {
     "Okay" : prompt_login
   };
+
+  //Launch the modal.
   launch_modal( null, inFailureReason, options );
 }
 
+
+/*
+Function that launches the login modal.
+*/
 function prompt_login() {
-  //1) Launch login prompt.
+  //Create the modal object.
   const prompts = {
     "username_field" : "Enter Username Here",
     "password_field" : "Enter Password Here"
@@ -127,13 +165,24 @@ function prompt_login() {
     "Login" : attempt_login,
     "Create Account" : attempt_create_account
   }
+
+  //Launch the modal object.
   launch_modal( prompts, "Log In", options );
 }
 
+
+/*
+Function to attach login/logout events to the login/logout buttons.
+*/
 function attach_login() {
+  //Get references to the login/logout elements.
   const login_element = document.getElementById("login_element");
   const logout_element = document.getElementById("logout_element");
+
+  //Hide the logout element.
   logout_element.style.display = "none";
+
+  //Attach the logout/logout events to their respective buttons.
   login_element.addEventListener( 'click', (click_event) => {
     prompt_login();
   });

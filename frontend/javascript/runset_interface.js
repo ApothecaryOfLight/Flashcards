@@ -1,7 +1,16 @@
 /*
-Runset Interface
+Function to launch the runset interface.
+
+Runset interface is a question mode, which prompts the user with each card,
+displaying the question. The user can flip the card over to see the answer.
+
+Additionally the user can split a set into smaller sets, select which set to
+use, and combine split sets.
+
+inSetID: Unique identifier of a set of cards.
 */
 function launch_runset_interface( inSetID ) {
+  //Compose a message asking the server for a set of cards.
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
   );
@@ -9,9 +18,10 @@ function launch_runset_interface( inSetID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        console.dir( json.cards );
+        //Upon success, begin the runset.
         runset( json.cards );
       } else if( json.result == "error" ) {
+        //Upon failure, display an error to the user.
         const options = {
           "Close" : close_modal
         }
@@ -20,47 +30,86 @@ function launch_runset_interface( inSetID ) {
     });
 }
 
+
+/*
+Function to execute a runset.
+
+inSetData: List of the cards in the set.
+*/
 function runset( inSetData ) {
+  //Create an object to track set information.
   let card_sets_obj = {
     curr_set : 0,
     sets : []
   };
+
+  //Create an object inside the cardset object to track this run.
   card_sets_obj.sets[ card_sets_obj.curr_set ] = {
     cards: inSetData,
     curr_card: 0,
     side: 0,
     prev_cards: []
-  }
+  };
+
+  //Initialize the cards, setting the number of correct guesses to 0 for each.
   prepare_cards( card_sets_obj.sets[ card_sets_obj.curr_set ].cards );
+
+  //Display the first card.
   next_card( card_sets_obj );
+
+  //Display the question.
   runset_render_qa( card_sets_obj );
+
+  //Display the card set menu.
   runset_render_split_sets( card_sets_obj );
+
+  //Set the interface to the runset interface.
   set_interface( "runset", card_sets_obj );
 }
 
+
+/*
+Function to initialize cards by setting the correct number of guesses to 0.
+*/
 function prepare_cards( cards ) {
+  //Iterate through each card.
   for( index in cards ) {
+    //Set the number of correct guesses to 0.
     cards[index].correct = 0;
   }
 }
 
-function remove_empty_subset( card_sets_obj, target ) {
-  //1) If not sets remain, terminate the recursive chain.
 
-  //2) Remove the empty subset.
+/*
+Function to remove an empty subset once all the cards in it have been
+successfully guessed a certain number of times.
+
+card_sets_obj: Object containing information about this run.
+
+target: Subset to remove.
+*/
+function remove_empty_subset( card_sets_obj, target ) {
+  //Remove the empty subset.
   card_sets_obj.sets.splice(
     Number(target),
     1
   );
 
-  //3) Reset the current set to 0.
+  //Reset the current set to 0.
   card_sets_obj.curr_set = Math.max( Number(target)-1, 0 );
 
+  //Render the side menu with the updated data.
   runset_render_split_sets( card_sets_obj );
 }
 
+
+/*
+Function to display the next card.
+
+card_sets_obj: Object containing information about this run.
+*/
 function next_card( card_sets_obj ) {
-  //1) If current subset is empty, switch to another subset.
+  //If current subset is empty, switch to another subset.
   if( card_sets_obj.sets[ card_sets_obj.curr_set ].cards.length == 0 ) {
     remove_empty_subset(
       card_sets_obj,
@@ -68,46 +117,52 @@ function next_card( card_sets_obj ) {
     );
   }
 
-  //2) If there are no more subsets, return to search interface.
+  //If there are no more subsets, return to search interface.
   if( card_sets_obj.sets.length == 0 ) {
     launch_search_interface( false );
     return;
   }
 
-  //3) Create a reference to the current subset.
+  //Create a reference to the current subset.
   const current_card_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
 
-//TODO: Switch previous cards over to IDs instead of index place.
-
-  //4) Push the last card into the record of previous cards.
+  //Push the last card into the record of previous cards.
   current_card_set.prev_cards.push( current_card_set.curr_card );
 
-  //5) Keep the record of past cards half as large as the set of cards.
+  //Keep the record of past cards half as large as the set of cards.
   while( current_card_set.prev_cards.length > current_card_set.cards.length/2 ) {
     current_card_set.prev_cards.shift();
   }
 
-  //5) Randomly generate the index of the next card.
+  //Randomly generate the index of the next card.
   const num_cards = current_card_set.cards.length;
   let next_card_number = Math.floor( Math.random() * num_cards );
 
-  //6) Guarantee that the next card hasn't appeared recently.
+  //Guarantee that the next card hasn't appeared recently.
   if( current_card_set.cards.length > 1 ) {
     while( current_card_set.prev_cards.includes(next_card_number) ) {
       next_card_number = Math.floor( Math.random() * num_cards );
     }
   }
 
-  //7) Set the next card, flip the card to the question side, render it.
+  //Set the next card, flip the card to the question side, render it.
   current_card_set.curr_card = next_card_number;
   current_card_set.side = 0;
   runset_render_qa( card_sets_obj );
 }
 
-function runset_interface_go_back( cards_obj ) {
+
+/*
+Function to call upon clicking the button to go back to the main interface.
+*/
+function runset_interface_go_back() {
   launch_search_interface( false );
 }
 
+
+/*
+Function to return a timestamp.
+*/
 function get_datestamp() {
   const now = new Date();
   const year = now.getUTCFullYear();
@@ -128,7 +183,18 @@ function get_datestamp() {
   return now_string;
 }
 
+
+/*
+Function to notify the server about an incorrect or correct guess.
+
+user_hash: User's username hash.
+
+card_id: Unique identifier of card that has a result to record.
+
+result: Whether the card was guessed correctly or not.
+*/
 function send_card_result( user_hash, card_id, result ) {
+  //Create the message to send to the server.
   const result_object = {
     userhash: user_hash,
     card_id: card_id,
@@ -145,19 +211,30 @@ function send_card_result( user_hash, card_id, result ) {
       }
     }
   );
+
+  //Send the message to the server.
   fetch( result_request )
     .then( json => json.json() )
     .then( json => {
-      if( json.result == "success" ) {
-      } else if( json.result == "error" ) {
+      if( json.result == "error" ) {
+        //Upon error, notify the user.
         launch_modal( null, "Weird error.", { "Close": close_modal } );
       }
     });
 }
 
+
+/*
+Function to call upon an incorrect guess.
+
+card_sets_obj: Object containing information about this current run.
+*/
 function runset_interface_missed( card_sets_obj ) {
+  //Decrement the number of correct guesses.
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[ curr_subset_ref.curr_card ].correct--;
+
+  //If the user is logged in, send the result of the guess to the server.
   if( logged_obj.isLogged == true ) {
     send_card_result(
       logged_obj.username_hash,
@@ -165,12 +242,23 @@ function runset_interface_missed( card_sets_obj ) {
       -1
     );
   }
+
+  //Display the next card.
   next_card( card_sets_obj );
 }
 
+
+/*
+Function to be called upon a correct guess.
+
+card_sets_obj: Object containing information about this current run.
+*/
 function runset_interface_correct( card_sets_obj ) {
+  //Increment the number of correct guesses for this card.
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[curr_subset_ref.curr_card].correct++;
+
+  //If the user is logged in, notify the server of the result of the guess.
   if( logged_obj.isLogged == true ) {
     send_card_result(
       logged_obj.username_hash,
@@ -178,29 +266,56 @@ function runset_interface_correct( card_sets_obj ) {
       1
    );
   }
+
+  //If the card has been guessed correctly more than it has been guessed wrong,
+  //by a margin of 5, remove the card from this run.
   if( curr_subset_ref.cards[curr_subset_ref.curr_card].correct >= 5 ) {
+    //Remove the card.
     curr_subset_ref.cards.splice( curr_subset_ref.curr_card, 1 );
+
+    //Update the side menu.
     runset_render_split_sets( card_sets_obj );
   }
+
+  //Display the next card.
   next_card( card_sets_obj );
 }
 
+
+/*
+Function to toggle between question and answer of a card.
+
+card_sets_obj: Object containing information about this current run.
+*/
 function runset_interface_flip_card( card_sets_obj ) {
+  //Get the card.
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
+
+  //Toggle between the two sides.
   if( curr_subset_ref.side == 0 ) {
     curr_subset_ref.side = 1;
   } else {
     curr_subset_ref.side = 0;
   }
+
+  //Rerender the interface.
   runset_render_qa( card_sets_obj );
 }
 
+
+/*
+Function to split a set or subset into two subsets.
+
+card_sets_obj: Object containing information about this current run.
+
+index: Position of the set to be split.
+*/
 function runset_interface_split_set( card_sets_obj, index ) {
-  //1) Get currently selected setset.
+  //Get currently selected setset.
   const sel_set = card_sets_obj.sets[ Number(index) ];
   sel_set.prev_cards = [];
 
-  //2) Insert new subset after current subset.
+  //Insert new subset after current subset.
   card_sets_obj.sets.splice(
     Number(index)+1,
     0,
@@ -212,39 +327,47 @@ function runset_interface_split_set( card_sets_obj, index ) {
     }
   );
 
-  //3) Put half of the cards in the current set into the next.
+  //Put half of the cards in the current set into the next.
   const next_set = card_sets_obj.sets[ Number(index)+1 ];
   const half_number_of_cards = sel_set.cards.length/2;
   for( i=0; i<half_number_of_cards; i++ ) {
-    //3a) Randomly select card to shift between sets.
+    //Randomly select card to shift between sets.
     const remaining_cards = sel_set.cards.length;
     const remove_card_pos = Math.floor( Math.random() * remaining_cards );
 
-    //3b) Copy that card into the new set.
+    //Copy that card into the new set.
     next_set.cards[ next_set.cards.length ] = JSON.parse(
       JSON.stringify(
         sel_set.cards[ remove_card_pos ]
       )
     );
 
-    //3c) Remove the card from the original set.
+    //Remove the card from the original set.
     sel_set.cards.splice( remove_card_pos, 1 );
   }
 
-  //4) Render split sets.
+  //Render split sets.
   runset_render_split_sets( card_sets_obj );
 
-  //5) Go to the next card.
+  //Go to the next card.
   next_card( card_sets_obj );
 }
 
+
+/*
+Function to combine two subsets into one subset or set.
+
+card_sets_obj: Object containing information about this current run.
+
+index: Position of first set/subset to merge.
+*/
 function runset_interface_merge_set( card_sets_obj, index ) {
-  //1) Get references to the sets to merge.
+  //Get references to the sets to merge.
   const first_set = card_sets_obj.sets[ Number(index) ];
   const second_set = card_sets_obj.sets[ Number(index)+1 ];
   const second_set_size = second_set.cards.length;
 
-  //2) Deep copy the cards from the second set to the first.
+  //Deep copy the cards from the second set to the first.
   for( i=0; i<second_set_size; i++ ) {
     first_set.cards[ first_set.cards.length ] = JSON.parse(
       JSON.stringify(
@@ -253,50 +376,86 @@ function runset_interface_merge_set( card_sets_obj, index ) {
     );
   }
 
-  //3) Delete the second set.
+  //Delete the second set.
   remove_empty_subset(
     card_sets_obj,
     Number(index)+1
   );
 }
 
+
+/*
+Switch to another subset.
+
+card_sets_obj: Object containing information about this current run.
+
+index: Position of subset to switch to.
+*/
 function go_to_set( card_sets_obj, index ) {
+  //Set the current subset to the target subset.
   card_sets_obj.curr_set = index;
+
+  //Render the next card.
   next_card( card_sets_obj );
 }
 
+
+/*
+Function to convert newline characters into HTML linebreaks.
+
+inText: Text from server to make HTML compatible.
+*/
 function proc_txt_runset( inText ) {
+  //Regex the newline characters into HTML linebreaks.
   let outText = inText.replaceAll( "\n", "<br>" );
+
+  //Return the regex processed line.
   return outText;
 }
 
+
+/*
+Function to create HTML elements that will create the familiar layout of a standard
+index card.
+*/
 function runset_render_index_card() {
+  //Get the containiner that will hold the blue lines.
   const blue_lines_container = document.getElementById("index_card_blue_line_container");
+
+  //Compose the blue lines.
   let dom = "";
   for( i=0; i<36; i++ ) {
     dom += "<div class=\"index_card_blue_line\"></div>";
   }
+
+  //Set the DOM to contain the blue lines.
   blue_lines_container.innerHTML = "";
   blue_lines_container.innerHTML = dom;
 }
 
+
+/*
+Render the card, whether it is in question or answer mode.
+
+card_sets_obj: Object containing information about this current run.
+*/
 function runset_render_qa( card_sets_obj ) {
-  //1) Draw the lined index card.
+  //Draw the lined index card.
   runset_render_index_card();
 
-  //2) Get a reference to the current set.
+  //Get a reference to the current set.
   const curr_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
 
-  //3) Get the text field DOM element.
+  //Get the text field DOM element.
   const qa_field = document.getElementById("runset_interface_qa_text");
 
-  //4) If the set is empty, don't attempt to render a card.
+  //If the set is empty, don't attempt to render a card.
   if( !curr_set.cards[ curr_set.curr_card ] ) {
     qa_field.innerHTML = "";
     return;
   }
 
-  //5) Render either the question or the answer.
+  //Render either the question or the answer.
   if( curr_set.side == 0 ) {
     const dom = "<span onclick=\"switchSide( 0 )\">" +
       proc_txt_runset( curr_set.cards[ curr_set.curr_card ].question ) +
@@ -310,14 +469,22 @@ function runset_render_qa( card_sets_obj ) {
   }
 }
 
+
+/*
+Render the side menu, listing all available subsets and buttons.
+
+card_sets_obj: Object containing information about this current run.
+*/
 function runset_render_split_sets( card_sets_obj ) {
-  //1) Get DOM element reference to split set button container.
+  //Get DOM element reference to split set button container.
   const split_buttons_container =
     document.getElementById("runset_interface_split_set_buttons");
 
-  //2) Compose HTMl.
+  //Compose HTMl.
   let html_string = "";
+  //Iterate through each subset.
   for( index in card_sets_obj.sets ) {
+    //Create the bound function to display each set.
     const bound_split_func = runset_interface_split_set.bind(
       null,
       card_sets_obj,
@@ -332,6 +499,7 @@ function runset_render_split_sets( card_sets_obj ) {
     );
     go_to_set_buttons[index] = bound_go_to_set_func;
 
+    //Compose the HTML for each button.
     html_string +=
       "<div class=\'runset_interface_split_set_button_group\'> " +
       "<div " +

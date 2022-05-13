@@ -1,13 +1,29 @@
 /*
-Set Editor Interface
+Function to launch the set editor interface.
+
+inSetID: Unique identifier of the set to display.
+
+go_to_end: Boolean indicating whether the editor should be scrolled to the top,
+in the event of starting to edit the set, or to the bottom, in the event that the
+set is already being edited and a new card has just been added, for example.
 */
 function launch_set_editor_interface( inSetID, go_to_end ) {
+  //Set the interface to the set editor.
   set_interface( "set_editor", inSetID );
-  set_data.set_id = inSetID; //TODO: Attach this to interface
+
+  //Set the global variable for the set.
+  set_data.set_id = inSetID;
+
+  //Get a reference to the set editor set name.
   const set_name_element = document.getElementById("set_editor_interface_set_name");
+
+  //Empty the set editor tags.
   set_editor_tags.splice(0);
+
+  //Render the search topic tags of the set.
   set_editor_interface_render_tags( inSetID );
-//TODO: Populate set_editor_tags
+
+  //Get the cardlist from the server.
   const get_cardlist = new Request(
     ip + 'get_cardlist/' + inSetID
   );
@@ -15,17 +31,26 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+        //Upon success, set the HTML set name element to the name of the set.
         set_name_element.innerHTML = json.set_name.name;
+
+        //Populate the interface with the cards.
         set_editor_interface_populate_list( inSetID, json.cards );
+
+        //Iterate through the topics and add them to the list of topics locally stored.
         for( index in json.topics ) {
           set_editor_tags.push( json.topics[index].name );
         }
+        
+        //Render the search topics.
         set_editor_interface_render_tags( inSetID );
 
+        //If already being edited, scroll to bottom of set.
         if( go_to_end ) {
           set_editor_interface_scroll_to_bottom();
         }
       } else if( json.result == "error" ) {
+        //Upon error, notify user.
         const options = {
           "Close" : close_modal
         }
@@ -34,13 +59,32 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
     });
 }
 
+
+/*
+Function to scroll to bottom of set editor interface.
+
+To be called when the user has already been editing the set. For example, upon adding
+a new card and returning to this interface, the new card will be at the bottom of the
+set, and so the interface should be scrolled to that newest card.
+*/
 function set_editor_interface_scroll_to_bottom() {
   const set_editor_scr = document.getElementById("set_editor_interface_card_list");
   set_editor_scr.scrollTo( 0, set_editor_scr.scrollHeight );
 }
 
+
+/*
+Populate the list of cards.
+
+inSetID: Unique identifier of the card set.
+
+inCards: List of the cards in the set.
+*/
 function set_editor_interface_populate_list( inSetID, inCards ) {
+  //Get a reference to the card list container.
   const set_editor_interface_card_list = document.getElementById("set_editor_interface_card_list" );
+
+  //Transform the JSON data into HTML elements for each card.
   let dom = "";
   inCards.forEach( card => {
     dom +=
@@ -67,44 +111,69 @@ function set_editor_interface_populate_list( inSetID, inCards ) {
       inSetID + ")\">X</button>" +
       "</div>";
   });
+
+  //Display the HTML elements of each card.
   set_editor_interface_card_list.innerHTML = dom;
 }
 
+
+/*
+Function to create a new card.
+
+inSetID: Unique identifier of the card set.
+*/
 function set_editor_interface_new_button( inSetID ) {
+  //Launch the card editor inteface to create a new card in the set.
   launch_card_editor_interface( null, inSetID, true, "set_editor" );
 }
 
+
+/*
+Function to return to the search interface.
+*/
 function set_editor_interface_go_back() {
   launch_search_interface( false );
 }
 
+
+/*
+Function to add a search topic tag to this set.
+
+inSetID: Unique identifier of this card set.
+*/
 function set_editor_interface_add_tag_button( inSetID ) {
-  //1) Get tag
+  //Get tag
   const tag_field =
     document.getElementById("set_editor_interface_tags_field");
   let tag_text = tag_field.value;
   if( tag_text == "" ) { return; }
 
-  //2) Ensure that search term doesn't already exist.
+  //Ensure that search term doesn't already exist.
   for( index in set_editor_tags ) {
     if( set_editor_tags[index] == tag_text ) {
       return;
     }
   }
 
-  //3) Add search term to search_terms
+  //Add search term to search_terms
   set_editor_tags.push( tag_text );
 
-  //4) Render updated search terms.
+  //Render updated search terms.
   set_editor_interface_render_tags( inSetID );
   set_editor_interface_update_tags( inSetID );
 
-  //5) Blank out search term.
+  //Blank out search term.
   tag_field.value = "";
 }
 
+
+/*
+Function to update the search topic tags of a set.
+
+inSetID: Unique identifier of the set.
+*/
 function set_editor_interface_update_tags( inSetID ) {
-//TODO: Allow for set to be renamed
+  //Iterate through each tag and preform regex on it to make it server compatible.
   for( index in set_editor_tags ) {
     set_editor_tags[index] =
       set_editor_tags[index].replace(
@@ -113,11 +182,11 @@ function set_editor_interface_update_tags( inSetID ) {
       );
   }
 
+  //Compose the message to send to the server.
   const body_content = JSON.stringify({
     "set_id": inSetID,
     "tags": set_editor_tags
   });
-
   const update_set = new Request(
     ip + 'update_set',
     {
@@ -128,11 +197,13 @@ function set_editor_interface_update_tags( inSetID ) {
       }
     }
   );
+
+  //Send the message to the server.
   fetch( update_set )
     .then( json => json.json() )
     .then( json => {
-      if( json.result == "success" ) {
-      } else if( json.result == "error" ) {
+      if( json.result == "error" ) {
+        //Upon error, notify the user.
         const options = {
           "Close" : close_modal
         }
@@ -142,9 +213,16 @@ function set_editor_interface_update_tags( inSetID ) {
 
 }
 
+
+/*
+Render the search topic tags of the set.
+
+inSetID: Unique identifier of this set of cards.
+*/
 function set_editor_interface_render_tags( inSetID ) {
   let dom = "";
 
+  //Regex the tag text values converting it from server compatible to HTML readable.
   for( index in set_editor_tags ) {
     set_editor_tags[index] =
       set_editor_tags[index].replace(
@@ -152,6 +230,7 @@ function set_editor_interface_render_tags( inSetID ) {
         " "
       );
 
+    //Concatenate the HTML for this tag onto the DOM string that will be rendered.
     dom += "<div class=\"set_editor_interface_tag_container\">" +
       set_editor_tags[index] +
       "<div class=\"set_editor_interface_tag_delete_button\"" +
@@ -160,18 +239,34 @@ function set_editor_interface_render_tags( inSetID ) {
       ">X</div>" +
       "</div>";
   }
+
+  //Get a reference to the tag container.
   const tag_container = document.getElementById("set_editor_interface_tags_list");
+
+  //Set the content of the tag container to the DOM string.
   tag_container.innerHTML = dom;
 }
 
+
+/*
+Function to delete a search topic tag for this set.
+
+inTag: Tag to delete.
+
+inSetID: Unique identifier of the set from which the tag should be deleted.
+*/
 function delete_set_editor_tag( inTag, inSetID ) {
+  //Iterate through each tag.
   for( index in set_editor_tags ) {
+    //If this is the tag to delete, splice it out.
     if( set_editor_tags[index] == inTag ) {
       set_editor_tags.splice( index, 1 );
     }
   }
+
+  //Render the new list of tags.
   set_editor_interface_render_tags( inSetID );
+
+  //Send a notification to the server that this tag has been deleted.
   set_editor_interface_update_tags( inSetID );
 }
-
-

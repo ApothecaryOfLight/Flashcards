@@ -1,5 +1,18 @@
 /*Card Editor Interface*/
 
+
+/*
+Launch the interface used for editing cards.
+
+inCardID: The unique identifier of the card to edit.
+
+inSetID: The unique identifier of the set to which the card belongs.
+
+isNew: Boolean indicating whether the card has just been created or already exists.
+
+inPrevInt: Previous interface displayed. Used to return to that interface after
+exiting the card editor interface.
+*/
 function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
   //1) Set the current interface and variables.
   set_interface(
@@ -20,7 +33,6 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
     //4a) If the card exsists, get the card data.
     get_card( inCardID );
 
-//TODO: Handle this through the interface management code.
     //5) Get the card update button.
     const set_card =
       document.getElementById("card_editor_interface_set_card");
@@ -49,22 +61,39 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
   }
 }
 
+
+/*
+Process card text data sent from the server, using regex to replace HTML characters
+with ASCII characters.
+*/
 function proc_txt_card_editor_interface( inText ) {
   //1) Replace unicode apostrophe with normal apostrophe.
   let outText = inText.replaceAll( "&#39", "\'" );
   return outText;
 }
 
+
+/*
+This function is used to get the content of a card from the server.
+
+inCardID: The unique identifier of the card to fetch from the server.
+*/
 function get_card( inCardID ) {
+  //Create a request to get a card.
   const get_card = new Request(
     ip + 'get_card/' + inCardID
   );
-  const question_text = document.getElementById("card_editor_interface_q_text");
-  const answer_text = document.getElementById("card_editor_interface_a_text");
+
+  //Ask the server for the card.
   fetch( get_card )
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+        //Get references to the text fields for the question and the answer.
+        const question_text = document.getElementById("card_editor_interface_q_text");
+        const answer_text = document.getElementById("card_editor_interface_a_text");
+
+        //Upon success, set the question and answer text values to the card data.
         question_text.value = proc_txt_card_editor_interface( json.card.question );
         answer_text.value = proc_txt_card_editor_interface( json.card.answer );
 
@@ -73,6 +102,7 @@ function get_card( inCardID ) {
         }
         card_editor_interface_render_tags();
       } else if( json.result == "error" ) {
+        //Upon failure, notify the user of an error.
         const options = {
           "Close" : close_modal
         }
@@ -81,12 +111,24 @@ function get_card( inCardID ) {
     });
 }
 
+
+/*
+This function is used to update an existing card from the card editor interface.
+
+inSetID: Unique indetifier of the set to which the card belongs.
+
+inCardID: Unique identifier of the card to update.
+*/
 function card_editor_interface_update_card( inSetID, inCardID ) {
+  //Get refernces to the question and answer text fields of the card.
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
+
+  //Get the values of the question and answer text fields.
   const question_text = card_q_handle.value;
   const answer_text = card_a_handle.value;
 
+  //Compose the message to send to the server.
   const body_content = JSON.stringify({
     "set_id": inSetID,
     "card_id": inCardID,
@@ -95,6 +137,7 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
     "tags": card_tags
   });
 
+  //Send the request to update the card to the server.
   const update_card = new Request(
     ip + 'update_card',
     {
@@ -109,10 +152,14 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+        //Upon success, blank the text values.
         card_q_handle.value = "";
         card_a_handle.value = "";
+
+        //Return to the set editor interface.
         launch_set_editor_interface( inSetID );
       } else if( json.result == "error" ) {
+        //Upon failure, notify the user of an error.
         const options = {
           "Close" : close_modal
         }
@@ -121,11 +168,22 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
     });
 }
 
+
+/*
+Function to be called upon creating a new card in the card editor interface.
+
+inCardData: Object containing the unique identifiers of the card and set.
+*/
 function card_editor_interface_set_card( inCardData ) {
+  //Get references to the question and answer text fields.
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
+
+  //Get the text value stored in the question and answer text fields.
   const question_text = card_q_handle.value;
   const answer_text = card_a_handle.value;
+
+  //Compose the message to send to the sever.
   const body_content = JSON.stringify({
     "question": question_text,
     "answer": answer_text,
@@ -133,6 +191,8 @@ function card_editor_interface_set_card( inCardData ) {
     "card_id": inCardData.card_id,
     "tags": card_tags
   });
+
+  //Send the request to the server.
   const new_card = new Request(
     ip + 'add_card',
     {
@@ -147,10 +207,12 @@ function card_editor_interface_set_card( inCardData ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+        //Upon success, blank the text fields and return to the set editor interface.
         card_q_handle.value = "";
         card_a_handle.value = "";
         launch_set_editor_interface( inCardData.set_id, true );
       } else if( json.result == "error" ) {
+        //Upon failure, notify the user of an error.
         const options = {
           "Close" : close_modal
         }
@@ -159,11 +221,20 @@ function card_editor_interface_set_card( inCardData ) {
     });
 }
 
+
+/*
+Function to return to the previous interface.
+*/
 function card_editor_interface_go_back( inCardData ) {
+  //Get references to the question and answer text fields.
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
+
+  //Blank the text value of the question and answer text fields.
   card_q_handle.value = "";
   card_a_handle.value = "";
+
+  //Return to the interface the user was in before the card editor interface.
   if( inCardData.previous_interface == "set_editor" ) {
     launch_set_editor_interface( inCardData.set_id );
   } else if( inCardData.previous_interface == "search" ) {
@@ -171,6 +242,12 @@ function card_editor_interface_go_back( inCardData ) {
   }
 }
 
+
+/*
+Function to be used to add a subject tag to a card.
+
+inCardData: Object containing the unique identifiers of the card and set.
+*/
 function card_editor_interface_add_tag_button( inCardData ) {
   //1) Get tag
   const tag_field = document.getElementById("card_editor_interface_tags_field");
@@ -195,18 +272,15 @@ function card_editor_interface_add_tag_button( inCardData ) {
   tag_field.value = "";
 }
 
-function card_editor_interface_update_tags( inCardData ) {
-  const message = JSON.stringify({
-    "event": "update_tags",
-    "set_id": inCardData.set_id,
-    "card_id": inCardData.card_id,
-    "data": card_tags
-  });
-}
 
+/*
+Function to convert card topic tags into HTML elements.
+*/
 function card_editor_interface_render_tags() {
   let dom = "";
+  //Iterate through each card tag.
   for( index in card_tags ) {
+    //Create an element for this tag, concatenate it onto the dom string.
     dom += "<div class=\"card_editor_interface_tag_container\">" +
       card_tags[index] +
       "<div class=\"card_editor_interface_tag_delete_button\"" +
@@ -214,16 +288,31 @@ function card_editor_interface_render_tags() {
       ">X</div>" +
       "</div>";
   }
+
+  //Get a reference to the tags container.
   const tag_container = document.getElementById("card_editor_interface_tags_list");
+
+  //Assign the dom string to the container.
   tag_container.innerHTML = dom;
 }
 
+
+/*
+Function to delete a card search tag.
+
+inTag: The tag being deleted.
+*/
 function delete_card_tag( inTag ) {
   inTag = inTag.replace( /\s/g, "&nbsp;" );
+
+  //Iterate through the card tags.
   for( index in card_tags ) {
     if( card_tags[index] == inTag ) {
+      //Remove the tag from the array.
       card_tags.splice( index, 1 );
     }
   }
+
+  //Render the array that has the targeted tag removed.
   card_editor_interface_render_tags();
 }
