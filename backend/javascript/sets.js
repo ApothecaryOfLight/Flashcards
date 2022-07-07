@@ -1,5 +1,3 @@
-const indexer = require('./indexer.js');
-
 async function delete_set( set_id ) {
     try {
         //1) Get list of card ids
@@ -42,7 +40,7 @@ async function delete_set( set_id ) {
 }
 exports.delete_set = delete_set;
 
-function attach_new_set_route( app, sqlPool ) {
+function attach_new_set_route( error_log, app, sqlPool, indexer, sanitizer ) {
   /*Add a new set of cards*/
   app.post('/new_set', async function(req,res) {
     try {
@@ -61,6 +59,7 @@ function attach_new_set_route( app, sqlPool ) {
 
       //3) Index search terms (new sets can only have search text).
       indexer.index_search_data(
+        sanitizer,
         new_set_id,
         null,
         req.body.set_name,
@@ -84,11 +83,12 @@ function attach_new_set_route( app, sqlPool ) {
 }
 exports.attach_new_set_route = attach_new_set_route;
 
-function attach_update_sets_route( app ) {
+function attach_update_sets_route( error_log, app, indexer, sanitizer ) {
     /*Update set*/
     app.post( '/update_set', async function(req,res) {
       try {
         indexer.index_search_data(
+          sanitizer,
           req.body.set_id,
           req.body.tags,
           null,
@@ -109,7 +109,7 @@ function attach_update_sets_route( app ) {
 }
 exports.attach_update_sets_route = attach_update_sets_route;
 
-function attach_delete_set_route( app, sqlPool ) {
+function attach_delete_set_route( error_log, app, sqlPool ) {
   /*Delete Set*/
   app.post('/delete_set/:set_id', async function(req,res) {
     try {

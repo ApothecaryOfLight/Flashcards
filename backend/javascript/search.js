@@ -1,4 +1,4 @@
-function attach_searchlist_route( app, sqlPool ) {
+function attach_searchlist_route( error_log, app, sqlPool ) {
       /*Get a list of either sets or cards for the Serach Interface*/
   app.post( '/searchlist', async function(req,res) {
     try {

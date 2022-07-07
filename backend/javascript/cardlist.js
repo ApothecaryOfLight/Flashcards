@@ -1,4 +1,4 @@
-function attach_cardlist_page_num_route( app, sqlPool ) {
+function attach_cardlist_page_num_route( error_log, app, sqlPool ) {
     app.get('/cardlist/:page_num', async function(req,res) {
         try {
           const page_count_query = "SELECT " +
@@ -36,7 +36,7 @@ function attach_cardlist_page_num_route( app, sqlPool ) {
 }
 exports.attach_cardlist_page_num_route = attach_cardlist_page_num_route;
 
-function attach_get_cardlist_setid_route( app, sqlPool ) {
+function attach_get_cardlist_setid_route( error_log, app, sqlPool ) {
     /*Get a list of cards for the set editor interface.*/
     app.get('/get_cardlist/:set_id', async function(req,res) {
       try {

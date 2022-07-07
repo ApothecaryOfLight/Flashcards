@@ -1,0 +1,25 @@
+body {
+    width: 100vw;
+    margin: 0px;
+}
+
+#menu {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+     user-select: none;
+
+     background-color: rgba(0, 0, 0, .15);
+}
+
+.menu_button {
+    font-size: 2em;
+    margin-right: 1em;
+}
+
+.menu_button:hover {
+    color: blue;
+}

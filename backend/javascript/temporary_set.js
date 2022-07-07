@@ -1,4 +1,4 @@
-function attach_temporary_set_route( app, sqlPool ) {
+function attach_temporary_set_route( error_log, app, sqlPool ) {
     app.post( '/temporary_set', async function(req,res) {
         try {
           let card_search_text_predicate = "";
@@ -87,6 +87,14 @@ function attach_temporary_set_route( app, sqlPool ) {
             "cards": temp_row
           }));
         } catch( error ) {
+
+          error_log.log_error(
+            sqlPool,
+            "temporary_set.js::attach_temporary_set_route::catch",
+            req.ip,
+            error
+          )
+
           console.error( error );
           res.send( JSON.stringify({
             "result": "error"

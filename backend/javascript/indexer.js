@@ -1,4 +1,4 @@
-async function index_search_data( id, topics, text, isCard ) {
+async function index_search_data( sanitizer, id, topics, text, isCard ) {
     try {
       //1) Set variables for either card or set processing.
       let table;

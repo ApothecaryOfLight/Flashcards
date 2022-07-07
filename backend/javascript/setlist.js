@@ -1,4 +1,4 @@
-function attach_setlist_page_num_route( app, sqlPool ) {
+function attach_setlist_page_num_route( error_log, app, sqlPool ) {
     app.get('/setlist/:page_num', async function(req,res) {
         try {
             const page_count_query = "SELECT " +

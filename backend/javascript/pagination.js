@@ -1,4 +1,4 @@
-function attach_page_count_route( app, sqlPool ) {
+function attach_page_count_route( error_log, app, sqlPool ) {
     app.post( '/page_count', async function(req,res) {
         try {
           const page_count_query = "SELECT COUNT(sets.set_id) " +

@@ -37,6 +37,9 @@ var privateKey;
 var certificate;
 var credentials;
 
+/*Error logging*/
+const error_log = require('./javascript/error_log.js');
+
 /*Sanitizer*/
 const sanitizer = require('./javascript/sanitizer.js');
 
@@ -86,38 +89,40 @@ try {
 
 /*Express Routes*/
 function launchRoutes() {
-  setlist.attach_setlist_page_num_route( app, sqlPool );
+  error_log.atttach_get_error_log_route( error_log, app, sqlPool );
+  error_log.atttach_get_event_log_route( error_log, app, sqlPool );
 
-  cardlist.attach_cardlist_page_num_route( app, sqlPool );
+  setlist.attach_setlist_page_num_route( error_log, app, sqlPool );
 
-  sets.attach_new_set_route( app, sqlPool );
+  cardlist.attach_cardlist_page_num_route( error_log, app, sqlPool );
 
-  login.attach_login_route( app, sqlPool );
+  sets.attach_new_set_route( error_log, app, sqlPool, indexer, sanitizer );
 
-  login.attach_create_account_route( app, sqlPool );
+  login.attach_login_route( error_log, app, sqlPool );
 
-  cards.attach_add_card_route( app, sqlPool );
+  login.attach_create_account_route( error_log, app, sqlPool );
 
-  sets.attach_update_sets_route( app );
+  cards.attach_add_card_route( error_log, app, sqlPool, sanitizer );
 
-  cards.attach_update_card_route( app, sqlPool );
+  sets.attach_update_sets_route( error_log, app, indexer, sanitizer );
 
-  sets.attach_delete_set_route( app, sqlPool );
+  cards.attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer );
 
-  cards.attach_delete_card_route( app, sqlPool );
+  sets.attach_delete_set_route( error_log, app, sqlPool );
 
-  cardlist.attach_get_cardlist_setid_route( app, sqlPool );
+  cards.attach_delete_card_route( error_log, app, sqlPool );
 
-  cards.atttach_get_card_card_id_route( app, sqlPool );
+  cardlist.attach_get_cardlist_setid_route( error_log, app, sqlPool );
 
-  search.attach_searchlist_route( app, sqlPool );
+  cards.atttach_get_card_card_id_route( error_log, app, sqlPool );
 
-  cards.attach_card_result_route( app, sqlPool );
+  search.attach_searchlist_route( error_log, app, sqlPool );
 
-  temporary_set.attach_temporary_set_route( app, sqlPool );
+  cards.attach_card_result_route( error_log, app, sqlPool );
 
-  pagination.attach_page_count_route( app, sqlPool );
+  temporary_set.attach_temporary_set_route( error_log, app, sqlPool );
 
+  pagination.attach_page_count_route( error_log, app, sqlPool );
 
   if( process.argv[2] == "https" ) {
     var server = https.createServer( credentials, app );

@@ -12,6 +12,10 @@ echo "CREATE TABLE card_search_topics( name VARCHAR(150), card_id INT, FOREIGN K
 echo "CREATE TABLE cardset_search_text( name VARCHAR(150), set_id INT, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE );" >> "create_schema.sql"
 echo "CREATE TABLE cardset_search_topics( name VARCHAR(150), set_id INT, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE );" >> "create_schema.sql"
 
+echo "CREATE TABLE error_log( error_id INT NOT NULL, PRIMARY KEY(error_id), timestamp DATETIME(6) NOT NULL, ip TINYTEXT, source VARCHAR(256), details TEXT );" >> "create_schema.sql"
+echo "CREATE TABLE event_log( event_id INT NOT NULL, PRIMARY KEY(event_id), timestamp DATETIME(6) NOT NULL, ip TINYTEXT, code_source VARCHAR(256), details TEXT );" >> "create_schema.sql"
+
+
 #echo "CREATE TABLE score( user_id INT, FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE, card_id INT, FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE, session_id INT, PRIMARY KEY( user_id, card_id, session_id ), passed TINYINT );" >> "create_schema.sql"
 echo "CREATE USER IF NOT EXISTS 'Flashcards_User'@'localhost' IDENTIFIED BY 'Flashcards_Password';" >> "create_schema.sql"
 echo "GRANT ALL ON Flashcards.* TO 'Flashcards_User'@'localhost';" >> "create_schema.sql"

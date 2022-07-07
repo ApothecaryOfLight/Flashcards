@@ -1,8 +1,7 @@
-const indexer = require('./indexer.js');
-
-function attach_add_card_route( app, sqlPool ) {
+function attach_add_card_route( error_log, app, sqlPool, sanitizer ) {
   /*Add a new card*/
   app.post('/add_card', async function(req,res) {
+    console.log( "add card" );
     try {
       const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
       const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
@@ -16,12 +15,14 @@ function attach_add_card_route( app, sqlPool ) {
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
 
       indexer.index_search_data(
+        sanitizer,
         new_card_id,
         null,
         req.body.question + " " + req.body.answer,
         true
       );
       indexer.index_search_data(
+        sanitizer,
         new_card_id,
         req.body.tags,
         null,
@@ -32,6 +33,14 @@ function attach_add_card_route( app, sqlPool ) {
         "result": "success"
       }));
     } catch( error ) {
+
+      error_log.log_error(
+        sqlPool,
+        "cards.js::attach_add_card_route()",
+        req.ip,
+        error
+      )
+
       console.log( error );
       res.send( JSON.stringify({
         "result": "error",
@@ -42,7 +51,7 @@ function attach_add_card_route( app, sqlPool ) {
 }
 exports.attach_add_card_route = attach_add_card_route;
 
-function attach_update_card_route( app, sqlPool ) {
+function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer ) {
       /*Update card*/
   app.post( '/update_card', async function(req,res) {
     try {
@@ -54,12 +63,14 @@ function attach_update_card_route( app, sqlPool ) {
       const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
 
       indexer.index_search_data(
+        sanitizer,
         req.body.card_id,
         null,
         req.body.question + " " + req.body.answer,
         true
       );
       indexer.index_search_data(
+        sanitizer,
         req.body.card_id,
         req.body.tags,
         null,
@@ -80,7 +91,7 @@ function attach_update_card_route( app, sqlPool ) {
 }
 exports.attach_update_card_route = attach_update_card_route;
 
-function attach_delete_card_route( app, sqlPool ) {
+function attach_delete_card_route( error_log, app, sqlPool ) {
     /*Delete Card*/
   app.post('/delete_card/:card_id', async function(req,res) {
     try {
@@ -105,7 +116,7 @@ function attach_delete_card_route( app, sqlPool ) {
 }
 exports.attach_delete_card_route = attach_delete_card_route;
 
-function atttach_get_card_card_id_route( app, sqlPool ) {
+function atttach_get_card_card_id_route( error_log, app, sqlPool ) {
   /*Get card by ID*/
   app.get('/get_card/:card_id', async function(req,res) {
     try {
@@ -142,7 +153,7 @@ function atttach_get_card_card_id_route( app, sqlPool ) {
 exports.atttach_get_card_card_id_route = atttach_get_card_card_id_route;
 
 
-function attach_card_result_route( app, sqlPool ) {
+function attach_card_result_route( error_log, app, sqlPool ) {
   app.post( '/card_result', async function(req,res) {
     try {
       const result_query = "INSERT INTO card_record " +

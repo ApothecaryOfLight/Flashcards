@@ -1,4 +1,4 @@
-function attach_login_route( app, sqlPool ) {
+function attach_login_route( error_log, app, sqlPool ) {
   /*Login*/
   app.post('/login', async function(req,res ) {
     try {
@@ -28,7 +28,7 @@ function attach_login_route( app, sqlPool ) {
 }
 exports.attach_login_route = attach_login_route;
 
-function attach_create_account_route( app, sqlPool ) {
+function attach_create_account_route( error_log, app, sqlPool ) {
     /*Create Account*/
     app.post('/create_account', async function(req,res) {
       try {
