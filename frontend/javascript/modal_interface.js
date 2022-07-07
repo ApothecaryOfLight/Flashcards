@@ -3,6 +3,7 @@ Function to connect a modal button press to the appropriate function.
 */
 function modal_button( button_name ) {
   modal_buttons_storage[button_name]();
+  close_modal();
 }
 
 
@@ -63,6 +64,17 @@ function close_modal() {
 
   //Hide the modal.
   modal_handle.style.display = "none";
+
+  
+  const modal_prompts = document.getElementById( "modal_interface_prompts" );
+  while( modal_prompts.firstChild ) {
+    modal_prompts.firstChild.remove();
+  }
+
+  const modal_buttons = document.getElementById( "modal_interface_button_container" );
+  while( modal_buttons.firstChild ) {
+    modal_buttons.firstChild.remove();
+  }
 }
 
 
