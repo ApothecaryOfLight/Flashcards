@@ -28,9 +28,8 @@ This function fetches the error log from the server, calls the function that wil
 the information into an HTML table, and appends that to the DOM.
 */
 function get_error_log() {
-  const non_ws_ip = get_ip();
   const get_error_log_request = new Request(
-      non_ws_ip + 'get_error_log'
+      ip + 'get_error_log'
   );
   fetch( get_error_log_request )
   .then( json => json.json() )
@@ -49,9 +48,8 @@ This function fetches the event log from the server, calls the function that wil
 the information into an HTML table, and appends that to the DOM.
 */
 function get_event_log() {
-  const non_ws_ip = get_ip();
   const get_event_log_request = new Request(
-      non_ws_ip + 'get_event_log'
+      ip + 'get_event_log'
   );
   fetch( get_event_log_request )
   .then( json => json.json() )
