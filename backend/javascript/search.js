@@ -155,6 +155,13 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
         "search_type": req.body.search_type
       }));
     } catch(error) {
+      error_log.log_error(
+        sqlPool,
+        "search.js::attach_searchlist_route()",
+        req.ip,
+        error
+      );
+
       console.log( error );
       res.send( JSON.stringify({
         "result": "error",

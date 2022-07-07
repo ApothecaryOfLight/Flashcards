@@ -87,13 +87,12 @@ function attach_temporary_set_route( error_log, app, sqlPool ) {
             "cards": temp_row
           }));
         } catch( error ) {
-
           error_log.log_error(
             sqlPool,
-            "temporary_set.js::attach_temporary_set_route::catch",
+            "temporary_set.js::attach_temporary_set_route",
             req.ip,
             error
-          )
+          );
 
           console.error( error );
           res.send( JSON.stringify({

@@ -11,6 +11,13 @@ function attach_page_count_route( error_log, app, sqlPool ) {
             "count": count_row[0].count
           }));
         } catch( error_obj ) {
+          error_log.log_error(
+            sqlPool,
+            "pagination.js::attach_page_count_route()",
+            req.ip,
+            error
+          );
+
           console.error( error_obj );
           res.send( JSON.stringify({
             "result": "error",

@@ -27,6 +27,13 @@ function attach_cardlist_page_num_route( error_log, app, sqlPool ) {
             "page_count": count_row[0].page_count/10
           }));
         } catch( error ) {
+          error_log.log_error(
+            sqlPool,
+            "cardlist.js::attach_cardlist_page_num_route()",
+            req.ip,
+            error
+          );
+
           res.send( JSON.stringify({
             "result": "failure",
             "error_message": "Unspecified error attempting to get card list."
@@ -64,6 +71,13 @@ function attach_get_cardlist_setid_route( error_log, app, sqlPool ) {
   
         res.send( JSON.stringify( cardlist_obj ) );
       } catch( error ) {
+        error_log.log_error(
+          sqlPool,
+          "cardlist.js::attach_get_cardlist_setid_route()",
+          req.ip,
+          error
+        );
+
         console.log( error );
         res.send( JSON.stringify({
           "result": "error",

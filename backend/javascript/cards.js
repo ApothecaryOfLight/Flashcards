@@ -1,4 +1,4 @@
-function attach_add_card_route( error_log, app, sqlPool, sanitizer ) {
+function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer ) {
   /*Add a new card*/
   app.post('/add_card', async function(req,res) {
     console.log( "add card" );
@@ -15,6 +15,7 @@ function attach_add_card_route( error_log, app, sqlPool, sanitizer ) {
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
 
       indexer.index_search_data(
+        error_log,
         sanitizer,
         new_card_id,
         null,
@@ -22,6 +23,7 @@ function attach_add_card_route( error_log, app, sqlPool, sanitizer ) {
         true
       );
       indexer.index_search_data(
+        error_log,
         sanitizer,
         new_card_id,
         req.body.tags,
@@ -33,13 +35,12 @@ function attach_add_card_route( error_log, app, sqlPool, sanitizer ) {
         "result": "success"
       }));
     } catch( error ) {
-
       error_log.log_error(
         sqlPool,
         "cards.js::attach_add_card_route()",
         req.ip,
         error
-      )
+      );
 
       console.log( error );
       res.send( JSON.stringify({
@@ -63,6 +64,7 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer )
       const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
 
       indexer.index_search_data(
+        error_log,
         sanitizer,
         req.body.card_id,
         null,
@@ -70,6 +72,7 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer )
         true
       );
       indexer.index_search_data(
+        error_log,
         sanitizer,
         req.body.card_id,
         req.body.tags,
@@ -81,6 +84,13 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer )
         "result": "success"
       }));
     } catch( error ) {
+      error_log.log_error(
+        sqlPool,
+        "cards.js::attach_update_card_route()",
+        req.ip,
+        error
+      );
+
       console.log( error );
       res.send( JSON.stringify({
         "result": "error",
@@ -106,6 +116,13 @@ function attach_delete_card_route( error_log, app, sqlPool ) {
 
       res.send( JSON.stringify( { result: "success" } ) );
     } catch( error ) {
+      error_log.log_error(
+        sqlPool,
+        "cards.js::attach_delete_card_route()",
+        req.ip,
+        error
+      );
+
       console.log( error );
       res.send( JSON.stringify({
         "result": "error",
@@ -142,6 +159,13 @@ function atttach_get_card_card_id_route( error_log, app, sqlPool ) {
       //4) Send data
       res.send( JSON.stringify( card_obj ) );
     } catch( error ) {
+      error_log.log_error(
+        sqlPool,
+        "cards.js::attach_get_card_card_id_route()",
+        req.ip,
+        error
+      );
+
       console.log( error );
       res.send( JSON.stringify({
         "result": "error",
@@ -167,6 +191,13 @@ function attach_card_result_route( error_log, app, sqlPool ) {
         "result": "success"
       }));
     } catch(error) {
+      error_log.log_error(
+        sqlPool,
+        "cards.js::attach_card_result_route()",
+        req.ip,
+        error
+      );
+
       console.error( error );
       res.send( JSON.stringify({
         "result": "error"

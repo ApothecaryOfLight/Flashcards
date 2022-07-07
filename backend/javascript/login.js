@@ -18,6 +18,13 @@ function attach_login_route( error_log, app, sqlPool ) {
         }));
       }
     } catch( error ) {
+      error_log.log_error(
+        sqlPool,
+        "login.js::attach_login_route()",
+        req.ip,
+        error
+      );
+
       console.log( error );
       res.send( JSON.stringify({
         "result": "refused",
@@ -42,6 +49,13 @@ function attach_create_account_route( error_log, app, sqlPool ) {
           "username_hash": req.body.username
         }));
       } catch( error ) {
+        error_log.log_error(
+          sqlPool,
+          "login.js::attach_create_account_route()",
+          req.ip,
+          error
+        );
+
         console.log( error );
         res.send( JSON.stringify({
           "result": "error",

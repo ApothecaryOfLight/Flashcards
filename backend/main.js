@@ -102,7 +102,7 @@ function launchRoutes() {
 
   login.attach_create_account_route( error_log, app, sqlPool );
 
-  cards.attach_add_card_route( error_log, app, sqlPool, sanitizer );
+  cards.attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer );
 
   sets.attach_update_sets_route( error_log, app, indexer, sanitizer );
 

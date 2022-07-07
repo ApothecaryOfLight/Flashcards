@@ -1,4 +1,4 @@
-async function delete_set( set_id ) {
+async function delete_set( error_log, set_id ) {
     try {
         //1) Get list of card ids
         const card_ids_query =
@@ -34,6 +34,13 @@ async function delete_set( set_id ) {
         await sqlPool.query( delete_set_query );
         return "success";
     } catch( error ) {
+        error_log.log_error(
+          sqlPool,
+          "sets.js::delete_set()",
+          req.ip,
+          error
+        );
+
         console.error( error );
         return "failure";
     }
@@ -59,6 +66,7 @@ function attach_new_set_route( error_log, app, sqlPool, indexer, sanitizer ) {
 
       //3) Index search terms (new sets can only have search text).
       indexer.index_search_data(
+        error_log,
         sanitizer,
         new_set_id,
         null,
@@ -73,7 +81,14 @@ function attach_new_set_route( error_log, app, sqlPool, indexer, sanitizer ) {
         "set_id": new_set_id
       }));
     } catch( error ) {
-      console.log( error );
+      error_log.log_error(
+        sqlPool,
+        "sets.js::attach_new_set_route()",
+        req.ip,
+        error
+      );
+
+      console.error( error );
       res.send( JSON.stringify({
         "result": "error",
         "error_message": "Unspecified error attempting to create new set."
@@ -88,6 +103,7 @@ function attach_update_sets_route( error_log, app, indexer, sanitizer ) {
     app.post( '/update_set', async function(req,res) {
       try {
         indexer.index_search_data(
+          error_log,
           sanitizer,
           req.body.set_id,
           req.body.tags,
@@ -99,7 +115,14 @@ function attach_update_sets_route( error_log, app, indexer, sanitizer ) {
           "result": "success"
         }));
       } catch( error ) {
-        console.log( error );
+        error_log.log_error(
+          sqlPool,
+          "sets.js::attach_update_sets_route()",
+          req.ip,
+          error
+        );
+
+        console.error( error );
         res.send( JSON.stringify({
           "result": "error",
           "error_message": "Unspecified error attempting to update card."
@@ -113,7 +136,7 @@ function attach_delete_set_route( error_log, app, sqlPool ) {
   /*Delete Set*/
   app.post('/delete_set/:set_id', async function(req,res) {
     try {
-      const result = await sets.delete_set( req.params.set_id );
+      const result = await sets.delete_set( error_log, req.params.set_id );
       if( result == "success" ) {
         res.send( JSON.stringify({
           "result": "success"
@@ -122,7 +145,14 @@ function attach_delete_set_route( error_log, app, sqlPool ) {
         throw "yep";
       }
     } catch( error ) {
-      console.log( error );
+      error_log.log_error(
+        sqlPool,
+        "sets.js::attach_delete_set_route()",
+        req.ip,
+        error
+      );
+
+      console.error( error );
       res.send( JSON.stringify({
         "result": "error",
         "error_message": "Unspecified error attempting to delete set."

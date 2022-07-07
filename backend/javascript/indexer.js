@@ -1,4 +1,4 @@
-async function index_search_data( sanitizer, id, topics, text, isCard ) {
+async function index_search_data( error_log, sanitizer, id, topics, text, isCard ) {
     try {
       //1) Set variables for either card or set processing.
       let table;
@@ -101,7 +101,14 @@ async function index_search_data( sanitizer, id, topics, text, isCard ) {
         const [delete_rows,delete_fields] = await sqlPool.query( delete_query );
       }
     } catch( error_obj ) {
-      console.log( error_obj.toString() );
+      error_log.log_error(
+        sqlPool,
+        "indexer.js::index_search_data()",
+        req.ip,
+        error
+      );
+
+      console.error( error_obj );
     }
   }
   exports.index_search_data = index_search_data;
