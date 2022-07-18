@@ -443,14 +443,10 @@ function proc_txt_question_runset_interface( inText, inImages, QuestionContainer
   //3) Turn JSONified text string into a JSON object.
   const objectifiedText = JSON.parse( cleanedText );
 
-  console.dir( objectifiedText );
-
   //4) Iterate through every value in the object and append it to the question container.
   objectifiedText.forEach( (object) => {
     if( object.type == "text" ) {
-      //const div_container = document.createElement("div");
       QuestionContainer.textContent = object.content;
-      //QuestionContainer.appendChild( div_container );
     } else if( object.type == "image" ) {
       const image_container = document.createElement("img");
       image_container.src = inImages[inCardID][object.images_array_location];
@@ -468,50 +464,45 @@ Render the card, whether it is in question or answer mode.
 card_sets_obj: Object containing information about this current run.
 */
 function runset_render_qa( card_sets_obj ) {
-  //Draw the lined index card.
-  runset_render_index_card();
 
   //Get a reference to the current set.
   const curr_set = card_sets_obj.sets[ card_sets_obj.curr_set ];
 
   //Get the text field DOM element.
-  const qa_field = document.getElementById("runset_interface_qa_text");
+  const q_field = document.getElementById("runset_interface_q_text");
+  const a_field = document.getElementById("runset_interface_a_text");
+
+  //Remove any children of q_field.
+  while( q_field.firstChild ) {
+    q_field.firstChild.remove();
+  }
 
   //If the set is empty, don't attempt to render a card.
   if( !curr_set.cards[ curr_set.curr_card ] ) {
-    qa_field.innerHTML = "";
+    a_field.innerHTML = "";
     return;
   }
 
-  while( qa_field.firstChild ) {
-    qa_field.firstChild.remove();
-  }
+  const flashcard_line_container = document.getElementById("index_card_background");
 
   //Render either the question or the answer.
   if( curr_set.side == 0 ) {
-    //const question_container = document.createElement("div");
+    flashcard_line_container.style["display"] = "none";
     proc_txt_question_runset_interface(
       curr_set.cards[ curr_set.curr_card ].question,
       card_sets_obj.set_images,
-      qa_field,
+      q_field,
       curr_set.cards[ curr_set.curr_card ].card_id
     );
-    //qa_field.appendChild( question_container );
-
-
-    /*const dom = "<span onclick=\"switchSide( 0 )\">" +
-      proc_txt_runset( curr_set.cards[ curr_set.curr_card ].question ) +
-      "</span>";
-    qa_field.innerHTML = dom;*/
+    a_field.style["display"] = "none";
+    q_field.style["display"] = "flex";
   } else if( curr_set.side == 1 ) {
-    const question_container = document.createElement("div");
-    question_container.textContent = proc_txt_runset( curr_set.cards[ curr_set.curr_card ].answer );
-    qa_field.appendChild( question_container );
-
-    /*const dom = "<span onclick=\"switchSide( 0 )\">" +
-      proc_txt_runset( curr_set.cards[ curr_set.curr_card ].answer ) +
-      "</span>";
-    qa_field.innerHTML = dom;*/
+    //Draw the lined index card.
+    flashcard_line_container.style["display"] = "block";
+    runset_render_index_card();
+    a_field.innerHTML = proc_txt_runset( curr_set.cards[ curr_set.curr_card ].answer );
+    a_field.style["display"] = "block";
+    q_field.style["display"] = "none";
   }
 }
 

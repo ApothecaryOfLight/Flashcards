@@ -38,10 +38,23 @@ Runset interface
   width: 100%;
   border-top: 1px solid blue;
 }
-#runset_interface_qa_text {
+#runset_interface_q_text {
   position: absolute;
-  margin-top: 2.15em;
   font-size: 1em;
+  line-height: 1em;
+  margin-left: 0.5em;
+  width: 72%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#runset_interface_a_text {
+  display: none;
+  position: absolute;
+  font-size: 1em;
+  margin-top: 2.15em;
   line-height: 1em;
   margin-left: 0.5em;
   width: 72%;
