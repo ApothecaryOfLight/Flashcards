@@ -19,7 +19,7 @@ function launch_runset_interface( inSetID ) {
     .then( json => {
       if( json.result == "success" ) {
         //Upon success, begin the runset.
-        runset( json.cards );
+        runset( json.cards, json.set_images );
       } else if( json.result == "error" ) {
         //Upon failure, display an error to the user.
         const options = {
@@ -36,11 +36,12 @@ Function to execute a runset.
 
 inSetData: List of the cards in the set.
 */
-function runset( inSetData ) {
+function runset( inSetData, inImages ) {
   //Create an object to track set information.
   let card_sets_obj = {
     curr_set : 0,
-    sets : []
+    sets : [],
+    set_images: inImages
   };
 
   //Create an object inside the cardset object to track this run.
@@ -434,6 +435,33 @@ function runset_render_index_card() {
 }
 
 
+function proc_txt_question_runset_interface( inText, inImages, QuestionContainer, inCardID ) {
+  //2) Replace unicode apostrophe with normal apostrophe.
+  let cleanedText = inText.replaceAll( "&#39", "\"" );
+  cleanedText = cleanedText.replaceAll( "\n", "<br>" );
+
+  //3) Turn JSONified text string into a JSON object.
+  const objectifiedText = JSON.parse( cleanedText );
+
+  console.dir( objectifiedText );
+
+  //4) Iterate through every value in the object and append it to the question container.
+  objectifiedText.forEach( (object) => {
+    if( object.type == "text" ) {
+      //const div_container = document.createElement("div");
+      QuestionContainer.textContent = object.content;
+      //QuestionContainer.appendChild( div_container );
+    } else if( object.type == "image" ) {
+      const image_container = document.createElement("img");
+      image_container.src = inImages[inCardID][object.images_array_location];
+      image_container.classList = "card_editor_interface_picture_question";
+      QuestionContainer.appendChild( image_container );
+    }
+  });
+}
+
+
+
 /*
 Render the card, whether it is in question or answer mode.
 
@@ -455,17 +483,35 @@ function runset_render_qa( card_sets_obj ) {
     return;
   }
 
+  while( qa_field.firstChild ) {
+    qa_field.firstChild.remove();
+  }
+
   //Render either the question or the answer.
   if( curr_set.side == 0 ) {
-    const dom = "<span onclick=\"switchSide( 0 )\">" +
+    //const question_container = document.createElement("div");
+    proc_txt_question_runset_interface(
+      curr_set.cards[ curr_set.curr_card ].question,
+      card_sets_obj.set_images,
+      qa_field,
+      curr_set.cards[ curr_set.curr_card ].card_id
+    );
+    //qa_field.appendChild( question_container );
+
+
+    /*const dom = "<span onclick=\"switchSide( 0 )\">" +
       proc_txt_runset( curr_set.cards[ curr_set.curr_card ].question ) +
       "</span>";
-    qa_field.innerHTML = dom;
+    qa_field.innerHTML = dom;*/
   } else if( curr_set.side == 1 ) {
-    const dom = "<span onclick=\"switchSide( 0 )\">" +
+    const question_container = document.createElement("div");
+    question_container.textContent = proc_txt_runset( curr_set.cards[ curr_set.curr_card ].answer );
+    qa_field.appendChild( question_container );
+
+    /*const dom = "<span onclick=\"switchSide( 0 )\">" +
       proc_txt_runset( curr_set.cards[ curr_set.curr_card ].answer ) +
       "</span>";
-    qa_field.innerHTML = dom;
+    qa_field.innerHTML = dom;*/
   }
 }
 

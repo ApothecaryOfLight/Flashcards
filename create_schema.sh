@@ -12,6 +12,8 @@ echo "CREATE TABLE card_search_topics( name VARCHAR(150), card_id INT, FOREIGN K
 echo "CREATE TABLE cardset_search_text( name VARCHAR(150), set_id INT, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE );" >> "create_schema.sql"
 echo "CREATE TABLE cardset_search_topics( name VARCHAR(150), set_id INT, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE );" >> "create_schema.sql"
 
+echo "CREATE TABLE images_registry( card_id INT NOT NULL, set_id INT NOT NULL, global_image_id INT NOT NULL, image_place INT NOT NULL, file_location TEXT NOT NULL, image_array_location INT NOT NULL, PRIMARY KEY( global_image_id ), INDEX( card_id, image_place ) );" >> "create_schema.sql"
+
 echo "CREATE TABLE error_log( error_id INT NOT NULL, PRIMARY KEY(error_id), timestamp DATETIME(6) NOT NULL, ip TINYTEXT, source VARCHAR(256), details TEXT );" >> "create_schema.sql"
 echo "CREATE TABLE event_log( event_id INT NOT NULL, PRIMARY KEY(event_id), timestamp DATETIME(6) NOT NULL, ip TINYTEXT, code_source VARCHAR(256), details TEXT );" >> "create_schema.sql"
 
@@ -27,6 +29,9 @@ echo "CREATE TABLE sequence_retired( sequence_id TINYINT, retired_id BIGINT NOT 
 echo "INSERT INTO sequence_last (sequence_id,last) VALUES (0,0);" >> create_schema.sql
 echo "INSERT INTO sequence_last (sequence_id,last) VALUES (1,0);" >> create_schema.sql
 echo "INSERT INTO sequence_last (sequence_id,last) VALUES (2,0);" >> create_schema.sql
+echo "INSERT INTO sequence_last (sequence_id,last) VALUES (3,0);" >> create_schema.sql
+echo "INSERT INTO sequence_last (sequence_id,last) VALUES (4,0);" >> create_schema.sql
+echo "INSERT INTO sequence_last (sequence_id,last) VALUES (5,0);" >> create_schema.sql
 
 
 #Card record

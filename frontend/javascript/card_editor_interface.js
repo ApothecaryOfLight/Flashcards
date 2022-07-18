@@ -66,10 +66,38 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
 Process card text data sent from the server, using regex to replace HTML characters
 with ASCII characters.
 */
-function proc_txt_card_editor_interface( inText ) {
+function proc_txt_answer_card_editor_interface( inText ) {
   //1) Replace unicode apostrophe with normal apostrophe.
-  let outText = inText.replaceAll( "&#39", "\'" );
-  return outText;
+  const cleanedText = inText.replaceAll( "&#39", "\'" );
+
+  return cleanedText;
+}
+
+function proc_txt_question_card_editor_interface( inText, inImages, QuestionContainer ) {
+  //1) Remove any text or images that may have previously been loaded into the container.
+  while( QuestionContainer.firstChild ) {
+    QuestionContainer.firstChild.remove();
+  }
+
+  //2) Replace unicode apostrophe with normal apostrophe.
+  const cleanedText = inText.replaceAll( "&#39", "\"" );
+
+  //3) Turn JSONified text string into a JSON object.
+  const objectifiedText = JSON.parse( cleanedText );
+
+  //4) Iterate through every value in the object and append it to the question container.
+  objectifiedText.forEach( (object) => {
+    if( object.type == "text" ) {
+      const div_container = document.createElement("div");
+      div_container.textContent = object.content;
+      QuestionContainer.appendChild( div_container );
+    } else if( object.type == "image" ) {
+      const image_container = document.createElement("img");
+      image_container.src = inImages[object.images_array_location];
+      image_container.classList = "card_editor_interface_picture_question";
+      QuestionContainer.appendChild( image_container );
+    }
+  });
 }
 
 
@@ -93,9 +121,11 @@ function get_card( inCardID ) {
         const question_text = document.getElementById("card_editor_interface_q_text");
         const answer_text = document.getElementById("card_editor_interface_a_text");
 
-        //Upon success, set the question and answer text values to the card data.
-        question_text.value = proc_txt_card_editor_interface( json.card.question );
-        answer_text.value = proc_txt_card_editor_interface( json.card.answer );
+        //Upon success, set the question text and image values.
+        proc_txt_question_card_editor_interface( json.card.question, json.card.images, question_text );
+
+        //Upon success, set the answer text value to the card data.
+        answer_text.textContent = proc_txt_answer_card_editor_interface( json.card.answer );
 
         for( index in json.tags ) {
           card_tags.push( json.tags[index].name );
@@ -112,6 +142,47 @@ function get_card( inCardID ) {
 }
 
 
+function recursively_traverse_tree( node, objectified_post, images_array ) {
+  if( node.firstChild ) {
+      for( const key in node.childNodes ) {
+          recursively_traverse_tree( node.childNodes[key], objectified_post, images_array );
+      }
+  } else {
+      const type = node.nodeName;
+
+      if( type == "#text" || type == "DIV" ) {
+        if( node.textContent ) {
+          let node_type = "text";
+          if( node.parentElement.nodeName == "PRE" ) {
+            node_type = "code";
+          }
+          objectified_post.push({
+              type: node_type,
+              content: node.textContent
+          });
+        }
+        return;
+      } else if( type == "IMG" ) {
+        const image_position = objectified_post.length;
+        const image_array_location = images_array.length;
+        objectified_post.push({
+            type: "image",
+            image_position: image_position,
+            images_array_location: image_array_location
+        });
+
+        images_array[image_array_location] = {
+          image_data: node.src,
+          image_position: image_position,
+          images_array_location: image_array_location
+        }
+        return;
+      }   
+  }
+}
+
+
+
 /*
 This function is used to update an existing card from the card editor interface.
 
@@ -124,17 +195,20 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
 
-  //Get the values of the question and answer text fields.
-  const question_text = card_q_handle.value;
+  const objectified_post = [];
+  const images_array = [];
+  recursively_traverse_tree( card_q_handle, objectified_post, images_array );
+
   const answer_text = card_a_handle.value;
 
   //Compose the message to send to the server.
   const body_content = JSON.stringify({
-    "set_id": inSetID,
-    "card_id": inCardID,
-    "question": question_text,
-    "answer": answer_text,
-    "tags": card_tags
+    set_id: inSetID,
+    card_id: inCardID,
+    question: objectified_post,
+    question_images: images_array,
+    answer: answer_text,
+    tags: card_tags
   });
 
   //Send the request to update the card to the server.
@@ -179,17 +253,20 @@ function card_editor_interface_set_card( inCardData ) {
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
 
-  //Get the text value stored in the question and answer text fields.
-  const question_text = card_q_handle.value;
+  const objectified_post = [];
+  const images_array = [];
+  recursively_traverse_tree( card_q_handle, objectified_post, images_array );
+
   const answer_text = card_a_handle.value;
 
   //Compose the message to send to the sever.
   const body_content = JSON.stringify({
-    "question": question_text,
-    "answer": answer_text,
-    "set_id": inCardData.set_id,
-    "card_id": inCardData.card_id,
-    "tags": card_tags
+    question: objectified_post,
+    question_images: images_array,
+    answer: answer_text,
+    set_id: inCardData.set_id,
+    card_id: inCardData.card_id,
+    tags: card_tags
   });
 
   //Send the request to the server.
@@ -315,4 +392,30 @@ function delete_card_tag( inTag ) {
 
   //Render the array that has the targeted tag removed.
   card_editor_interface_render_tags();
+}
+
+
+
+function card_editor_interface_pictoral_question_add_button() {
+  const temp_input = document.createElement("input");
+  temp_input.type = "file";
+  temp_input.accept = "image/*";
+
+  temp_input.onchange = e => {
+    const reader = new FileReader();
+    reader.readAsDataURL( e.target.files[0] );
+
+    reader.onload = readerEvent => {
+      const ref = document.getElementById("card_editor_interface_q_text");
+      const new_image = document.createElement("img");
+      new_image.classList = "card_editor_interface_picture_question";
+
+      const content = readerEvent.target.result;
+
+      new_image.src = content;
+
+      ref.appendChild( new_image );
+    }
+  }
+  temp_input.click();
 }

@@ -33,9 +33,9 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
       if( json.result == "success" ) {
         //Upon success, set the HTML set name element to the name of the set.
         set_name_element.innerHTML = json.set_name.name;
-
+        
         //Populate the interface with the cards.
-        set_editor_interface_populate_list( inSetID, json.cards );
+        set_editor_interface_populate_list( inSetID, json.cards, json.set_images );
 
         //Iterate through the topics and add them to the list of topics locally stored.
         for( index in json.topics ) {
@@ -73,6 +73,29 @@ function set_editor_interface_scroll_to_bottom() {
 }
 
 
+function proc_txt_question_set_editor_interface( inText, inImages, QuestionContainer, inCardID ) {
+  //2) Replace unicode apostrophe with normal apostrophe.
+  const cleanedText = inText.replaceAll( "&#39", "\"" );
+
+  //3) Turn JSONified text string into a JSON object.
+  const objectifiedText = JSON.parse( cleanedText );
+
+  //4) Iterate through every value in the object and append it to the question container.
+  objectifiedText.forEach( (object) => {
+    if( object.type == "text" ) {
+      const div_container = document.createElement("div");
+      div_container.textContent = object.content;
+      QuestionContainer.appendChild( div_container );
+    } else if( object.type == "image" ) {
+      const image_container = document.createElement("img");
+      image_container.src = inImages[inCardID][object.images_array_location];
+      image_container.classList = "card_editor_interface_picture_question";
+      QuestionContainer.appendChild( image_container );
+    }
+  });
+}
+
+
 /*
 Populate the list of cards.
 
@@ -80,13 +103,49 @@ inSetID: Unique identifier of the card set.
 
 inCards: List of the cards in the set.
 */
-function set_editor_interface_populate_list( inSetID, inCards ) {
+function set_editor_interface_populate_list( inSetID, inCards, inImages ) {
   //Get a reference to the card list container.
   const set_editor_interface_card_list = document.getElementById("set_editor_interface_card_list" );
+
+  while( set_editor_interface_card_list.firstChild ) {
+    set_editor_interface_card_list.firstChild.remove();
+  }
 
   //Transform the JSON data into HTML elements for each card.
   let dom = "";
   inCards.forEach( card => {
+    const card_element_container = document.createElement("div");
+    card_element_container.classList = "card_element";
+    card_element_container.onclick = launch_card_editor_interface.bind(
+      null,
+      card.card_id,
+      inSetID,
+      false,
+      'set_editor'
+    );
+
+    const card_element_q = document.createElement("div");
+    card_element_q.classList = "card_element_q";
+    proc_txt_question_set_editor_interface( card.question, inImages, card_element_q, card.card_id );
+    card_element_container.appendChild( card_element_q );
+
+    const card_element_a = document.createElement("div");
+    card_element_a.classList = "card_element_a";
+    card_element_a.textContent = card.answer;
+    card_element_container.appendChild( card_element_a );
+
+    const delete_button = document.createElement("button");
+    delete_button.classList = "card_element_delete_button";
+    delete_button.onclick = prompt_delete_card.bind(
+      null,
+      card.card_id,
+      inSetID
+    );
+    delete_button.textContent = "X";
+    card_element_container.appendChild( delete_button );
+
+    set_editor_interface_card_list.appendChild( card_element_container );
+
     dom +=
       "<div class=\"card_element\"> " +
       "<div class=\"card_element_q\" " +
@@ -113,7 +172,7 @@ function set_editor_interface_populate_list( inSetID, inCards ) {
   });
 
   //Display the HTML elements of each card.
-  set_editor_interface_card_list.innerHTML = dom;
+  //set_editor_interface_card_list.innerHTML = dom;
 }
 
 

@@ -1,15 +1,49 @@
-function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer ) {
+function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs ) {
   /*Add a new card*/
   app.post('/add_card', async function(req,res) {
-    console.log( "add card" );
     try {
       const new_card_id_query = "SELECT Flashcards.generate_new_id(1) AS new_card_id;";
       const [new_card_id_row,new_card_id_field] = await sqlPool.query( new_card_id_query );
       const new_card_id = new_card_id_row[0].new_card_id;
 
+      let new_images_query = "INSERT INTO images_registry (card_id, set_id, global_image_id, image_place, file_location, image_array_location ) VALUES ";
+      for( let i=0; i<req.body.question_images.length; i++ ) {
+        const new_global_image_id_query = "SELECT Flashcards.generate_new_id(5) AS new_global_image_id;";
+        const [new_image_id_row,new_image_id_field] = await sqlPool.query( new_global_image_id_query );
+        req.body.question_images[i].global_image_id = new_image_id_row[0].new_global_image_id;
+        req.body.question_images[i].file_location = new_card_id + "_" + new_image_id_row[0].new_global_image_id;
+        new_images_query += "( " + new_card_id + ", " +
+          req.body.set_id + ", " +
+          new_image_id_row[0].new_global_image_id + ", " +
+          req.body.question_images[i].image_position + ", " +
+          "\'" + req.body.question_images[i].file_location + "\', " +
+          req.body.question_images[i].image_array_location +
+          "), ";
+
+
+        fs.writeFileSync(
+          './images/' + req.body.question_images[i].file_location,
+          req.body.question_images[i].image_data,
+          error => {
+            error_log.log_error(
+              sqlPool,
+              "cards.js::attach_add_card_route():: Saving Images Loop",
+              req.ip,
+              error
+            );
+            console.log("error");
+            console.error( error );
+          }
+        )
+      }
+      new_images_query = new_images_query.substring( 0, new_images_query.length-2 );
+      new_images_query += ";";
+
+      const [add_image_row, add_image_field] = await sqlPool.query( new_images_query );
+
       const new_card_query = "INSERT INTO cards (card_id,question,answer,set_id) " +
         "VALUES ( " + new_card_id + ", " +
-        "\'" + sanitizer.process_input(req.body.question) + "\', " +
+        "\'" + sanitizer.process_input(JSON.stringify(req.body.question)) + "\', " +
         "\'" + sanitizer.process_input(req.body.answer) + "\', " +
         req.body.set_id + ");"
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
@@ -53,11 +87,33 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer ) {
 exports.attach_add_card_route = attach_add_card_route;
 
 function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer ) {
-      /*Update card*/
+  /*Update card*/
   app.post( '/update_card', async function(req,res) {
     try {
+      //Get a list of images already attached to the card, if any.
+      const get_images_list = "SELECT global_image_id " +
+        "FROM images_registry " +
+        "WHERE card_id = CARD_ID; ";
+      const [existing_images_row, existing_images_field] = await sqlPool.query( get_images_list );
+
+
+      //If there are, delete them.
+      //if( existing_images_row )
+      console.dir( existing_images_row );
+      console.log( existing_images_row.length );
+
+
+      //Add any images that have been uploaded this time.
+
+
+      //Break placeholder
+      res.send( JSON.stringify({
+        "result": "success"
+      }));
+      return;
+
       const update_card_query = "UPDATE cards SET " +
-        "question = " + "\'" + sanitizer.process_input(req.body.question) + "\', " +
+        "question = " + "\'" + sanitizer.process_input(JSON.stringify(req.body.question)) + "\', " +
         "answer = " + "\'" + sanitizer.process_input(req.body.answer) + "\'" +
         "WHERE set_id = " + req.body.set_id +
         " AND card_id = " + req.body.card_id + ";";
@@ -133,7 +189,7 @@ function attach_delete_card_route( error_log, app, sqlPool ) {
 }
 exports.attach_delete_card_route = attach_delete_card_route;
 
-function atttach_get_card_card_id_route( error_log, app, sqlPool ) {
+function atttach_get_card_card_id_route( error_log, app, sqlPool, fs ) {
   /*Get card by ID*/
   app.get('/get_card/:card_id', async function(req,res) {
     try {
@@ -148,6 +204,36 @@ function atttach_get_card_card_id_route( error_log, app, sqlPool ) {
         req.params.card_id + ";";
       const [topics_row,topics_field] =
         await sqlPool.query( card_search_topics_query );
+
+      //3) Get a list of images attached to the card, if any.
+      const images_query = "SELECT image_place, file_location, image_array_location " +
+        "FROM images_registry " +
+        "WHERE card_id = " + req.params.card_id + ";";
+      const [images_row,images_field] = await sqlPool.query( images_query );
+
+      card_row[0].images = [];
+      images_row.forEach( (image_row) => {
+        card_row[0].images[ image_row.image_array_location ] = fs.readFileSync(
+          './images/' + image_row.file_location,
+          {
+            encoding: 'utf8',
+            flag: 'r'
+          },
+          error => {
+            error_log.log_error(
+              sqlPool,
+              "cards.js::atttach_get_card_card_id_route():: Loading Images Loop",
+              req.ip,
+              error
+            );
+            console.log("error");
+            console.error( error );
+          }
+        );
+      });
+
+      console.log( card_row[0].images );
+
 
       //3) Combine results.
       const card_obj = {

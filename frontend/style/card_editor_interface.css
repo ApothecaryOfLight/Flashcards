@@ -13,13 +13,15 @@ Card editor interface
   resize: none;
   border-radius: 8px;
   outline: none;
+  border: solid black 1px;
 }
 #card_editor_interface_a_text {
   height: 46%;
   margin: 2%;
   resize: none;
-  borer-radius: 8px;
+  border-radius: 8px;
   outline: none;
+  border: solid black 1px;
 }
 #card_editor_interface_buttons {
   display: flex;
@@ -83,3 +85,17 @@ Card editor interface
   margin-left: .25rem;
 }
 
+#card_editor_interface_pictoral_question_container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#card_editor_interface_pictoral_question_add_button {
+  margin-top: 1rem;
+}
+
+.card_editor_interface_picture_question {
+  height: 10vh;
+}

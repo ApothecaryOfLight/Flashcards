@@ -25,7 +25,8 @@ const functions = {
   "card_editor": {
     "set_card": card_editor_interface_set_card,
     "go_back": card_editor_interface_go_back,
-    "add_tag_button": card_editor_interface_add_tag_button
+    "add_tag_button": card_editor_interface_add_tag_button,
+    "pictoral_question_add_button": card_editor_interface_pictoral_question_add_button
   },
   "runset": {
     "go_back": runset_interface_go_back,
@@ -53,7 +54,8 @@ const bound_functions = {
   "card_editor": {
     "set_card": [],
     "go_back": [],
-    "add_tag_button": []
+    "add_tag_button": [],
+    "pictoral_question_add_button": []
   },
   "runset": {
     "go_back": [],

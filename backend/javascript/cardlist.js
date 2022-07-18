@@ -43,7 +43,7 @@ function attach_cardlist_page_num_route( error_log, app, sqlPool ) {
 }
 exports.attach_cardlist_page_num_route = attach_cardlist_page_num_route;
 
-function attach_get_cardlist_setid_route( error_log, app, sqlPool ) {
+function attach_get_cardlist_setid_route( error_log, app, sqlPool, fs ) {
     /*Get a list of cards for the set editor interface.*/
     app.get('/get_cardlist/:set_id', async function(req,res) {
       try {
@@ -56,6 +56,36 @@ function attach_get_cardlist_setid_route( error_log, app, sqlPool ) {
           "WHERE set_id = "  + req.params.set_id + ";";
         const [cardlist_row,cardlist_field] =
           await sqlPool.query( get_cardlist_cards );
+
+        //Get a list of images for each card
+        const images_query = "SELECT card_id, image_place, file_location, image_array_location " +
+          "FROM images_registry " +
+          "WHERE set_id = " + req.params.set_id + ";";
+        const [images_row,images_field] = await sqlPool.query( images_query );
+
+  
+        const set_images = {};
+        images_row.forEach( (image_row) => {
+          set_images[image_row.card_id] = [];
+          set_images[ image_row.card_id ][ image_row.image_array_location ] = fs.readFileSync(
+            './images/' + image_row.file_location,
+            {
+              encoding: 'utf8',
+              flag: 'r'
+            },
+            error => {
+              error_log.log_error(
+                sqlPool,
+                "cardlist.js::attach_get_cardlist_setid_route():: Loading Images Loop",
+                req.ip,
+                error
+              );
+              console.log("error");
+              console.error( error );
+            }
+          );
+        });
+
   
         const get_cardlist_topics = "SELECT name FROM cardset_search_topics " +
           "WHERE set_id = " + req.params.set_id + ";";
@@ -66,7 +96,8 @@ function attach_get_cardlist_setid_route( error_log, app, sqlPool ) {
           result: "success",
           set_name: set_name_row[0],
           cards: cardlist_row,
-          topics: topics_rows
+          topics: topics_rows,
+          set_images: set_images
         };
   
         res.send( JSON.stringify( cardlist_obj ) );

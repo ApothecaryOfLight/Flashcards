@@ -102,7 +102,7 @@ function launchRoutes() {
 
   login.attach_create_account_route( error_log, app, sqlPool );
 
-  cards.attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer );
+  cards.attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs );
 
   sets.attach_update_sets_route( error_log, app, indexer, sanitizer );
 
@@ -112,9 +112,9 @@ function launchRoutes() {
 
   cards.attach_delete_card_route( error_log, app, sqlPool );
 
-  cardlist.attach_get_cardlist_setid_route( error_log, app, sqlPool );
+  cardlist.attach_get_cardlist_setid_route( error_log, app, sqlPool, fs );
 
-  cards.atttach_get_card_card_id_route( error_log, app, sqlPool );
+  cards.atttach_get_card_card_id_route( error_log, app, sqlPool, fs );
 
   search.attach_searchlist_route( error_log, app, sqlPool );
 
