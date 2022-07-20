@@ -48,7 +48,6 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
         "\'" + sanitizer.process_input(JSON.stringify(req.body.question)) + "\', " +
         "\'" + sanitizer.process_input(req.body.answer) + "\', " +
         req.body.set_id + ");"
-        console.log( new_card_query );
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
 
       indexer.index_search_data(
@@ -95,7 +94,6 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer, 
   /*Update card*/
   app.post( '/update_card', async function(req,res) {
     try {
-      console.log(" update card")
       //Get a list of images already attached to the card, if any.
       const get_images_list = "SELECT global_image_id, file_location " +
         "FROM images_registry " +
@@ -156,7 +154,6 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer, 
         "answer = " + "\'" + sanitizer.process_input(req.body.answer) + "\'" +
         "WHERE set_id = " + req.body.set_id +
         " AND card_id = " + req.body.card_id + ";";
-      console.log( update_card_query );
       const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
 
       indexer.index_search_data(
