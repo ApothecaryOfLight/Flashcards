@@ -43,7 +43,7 @@ set_editor interface
   background-color: #6699FF;
   border: 0px;
   font-weight: bold;
-  color; white;
+  color: white;
 }
 .set_editor_interface_button:hover {
   background: #0066FF;

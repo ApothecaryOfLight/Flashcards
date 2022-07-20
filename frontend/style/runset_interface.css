@@ -169,3 +169,7 @@ Card
 .card_element_delete_button:active {
   background: #003399;
 }
+
+.runset_interface_picture_question {
+  height: 70%;
+}
