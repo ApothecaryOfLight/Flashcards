@@ -110,7 +110,7 @@ function launchRoutes() {
 
   sets.attach_delete_set_route( error_log, app, sqlPool );
 
-  cards.attach_delete_card_route( error_log, app, sqlPool );
+  cards.attach_delete_card_route( error_log, app, sqlPool, fs );
 
   cardlist.attach_get_cardlist_setid_route( error_log, app, sqlPool, fs );
 

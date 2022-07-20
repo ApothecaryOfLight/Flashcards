@@ -198,23 +198,25 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer, 
 }
 exports.attach_update_card_route = attach_update_card_route;
 
-function attach_delete_card_route( error_log, app, sqlPool ) {
+function attach_delete_card_route( error_log, app, sqlPool, fs ) {
     /*Delete Card*/
   app.post('/delete_card/:card_id', async function(req,res) {
     try {
       //Get a list of images already attached to the card, if any, and delete them.
       const get_images_list = "SELECT global_image_id, file_location " +
         "FROM images_registry " +
-        "WHERE card_id =  " + req.body.card_id;
+        "WHERE card_id =  " + req.params.card_id;
       const [existing_images_row, existing_images_field] = await sqlPool.query( get_images_list );
 
-      let remove_images_query = "DELETE FROM images_registry WHERE file_location IN (\'"
-      existing_images_row.forEach( (image_record) => {
-        remove_images_query += image_record.file_location + "\',\'";
-        fs.unlinkSync( './images/' + image_record.file_location );
-      });
-      remove_images_query = remove_images_query.substring( 0, remove_images_query.length - 2 ) + ");";
-      const [remove_image_row,remove_image_field] = await sqlPool.query( remove_images_query );
+      if( existing_images_row.length > 0 ) {
+        let remove_images_query = "DELETE FROM images_registry WHERE file_location IN (\'"
+        existing_images_row.forEach( (image_record) => {
+          remove_images_query += image_record.file_location + "\',\'";
+          fs.unlinkSync( './images/' + image_record.file_location );
+        });
+        remove_images_query = remove_images_query.substring( 0, remove_images_query.length - 2 ) + ");";
+        const [remove_image_row,remove_image_field] = await sqlPool.query( remove_images_query );
+      }
 
       const delete_card_query = "DELETE FROM cards WHERE card_id = " + req.params.card_id + ";";
       const [delete_row,delete_field] = await sqlPool.query( delete_card_query );

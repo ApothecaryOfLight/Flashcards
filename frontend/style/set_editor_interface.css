@@ -14,15 +14,11 @@ set_editor interface
 }
 #set_editor_interface_card_list {
   flex-grow: 1;
-
-/*  overflow-y: scroll;*/
   overflow-x: hidden;
-
   width: 100vw;
-
-  border-bottom: 1px solid;
 }
 #set_editor_interface_lower_container {
+  overflow-x: hidden;
   overflow-y: scroll;
 }
 #set_editor_interface_buttons {

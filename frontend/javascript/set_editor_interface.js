@@ -114,6 +114,9 @@ function set_editor_interface_populate_list( inSetID, inCards, inImages ) {
   //Transform the JSON data into HTML elements for each card.
   let dom = "";
   inCards.forEach( card => {
+    const card_row_container = document.createElement("div");
+    card_row_container.classList = "card_row_container";
+
     const card_element_container = document.createElement("div");
     card_element_container.classList = "card_element";
     card_element_container.onclick = launch_card_editor_interface.bind(
@@ -142,37 +145,11 @@ function set_editor_interface_populate_list( inSetID, inCards, inImages ) {
       inSetID
     );
     delete_button.textContent = "X";
-    card_element_container.appendChild( delete_button );
 
-    set_editor_interface_card_list.appendChild( card_element_container );
-
-    dom +=
-      "<div class=\"card_element\"> " +
-      "<div class=\"card_element_q\" " +
-      "onclick=\"launch_card_editor_interface(" +
-      card.card_id + ", " +
-      inSetID + ", " +
-      "false ," +
-      "\'set_editor\', " +
-      ")\"" +
-      ">" + card.question + "</div>" +
-      "<div class=\"card_element_a\" " +
-      "onclick=\"launch_card_editor_interface(" +
-      card.card_id + ", " +
-      inSetID + ", " +
-      "false, " +
-      "\'set_editor\', " +
-      ")\"" +
-      ">" + card.answer + "</div>" +
-      "<button class=\"card_element_delete_button\" " +
-      "onclick=\"prompt_delete_card(" +
-      card.card_id + ", " +
-      inSetID + ")\">X</button>" +
-      "</div>";
+    card_row_container.appendChild(card_element_container);
+    card_row_container.appendChild( delete_button );
+    set_editor_interface_card_list.appendChild( card_row_container );
   });
-
-  //Display the HTML elements of each card.
-  //set_editor_interface_card_list.innerHTML = dom;
 }
 
 
