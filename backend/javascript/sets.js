@@ -71,7 +71,8 @@ function attach_new_set_route( error_log, app, sqlPool, indexer, sanitizer ) {
         new_set_id,
         null,
         req.body.set_name,
-        false
+        false,
+        sqlPool
       );
 
       //4) Notify client of success.
@@ -108,7 +109,8 @@ function attach_update_sets_route( error_log, app, indexer, sanitizer ) {
           req.body.set_id,
           req.body.tags,
           null,
-          false
+          false,
+          sqlPool
         );
   
         res.send( JSON.stringify({

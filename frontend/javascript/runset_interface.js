@@ -449,7 +449,7 @@ function proc_txt_question_runset_interface( inText, inImages, QuestionContainer
       QuestionContainer.textContent = object.content;
     } else if( object.type == "image" ) {
       const image_container = document.createElement("img");
-      image_container.src = inImages[inCardID][object.images_array_location];
+      image_container.src = inImages[inCardID][object.image_array_location];
       image_container.classList = "card_editor_interface_picture_question";
       QuestionContainer.appendChild( image_container );
     }

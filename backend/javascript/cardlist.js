@@ -66,7 +66,9 @@ function attach_get_cardlist_setid_route( error_log, app, sqlPool, fs ) {
   
         const set_images = {};
         images_row.forEach( (image_row) => {
-          set_images[image_row.card_id] = [];
+          if( set_images[image_row.card_id] == undefined ) {
+            set_images[image_row.card_id] = [];
+          }
           set_images[ image_row.card_id ][ image_row.image_array_location ] = fs.readFileSync(
             './images/' + image_row.file_location,
             {

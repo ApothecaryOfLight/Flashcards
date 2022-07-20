@@ -1,5 +1,6 @@
-async function index_search_data( error_log, sanitizer, id, topics, text, isCard ) {
+async function index_search_data( error_log, sanitizer, id, topics, text, isCard, sqlPool ) {
     try {
+      return;
       //1) Set variables for either card or set processing.
       let table;
       let where_predicate;
@@ -104,8 +105,8 @@ async function index_search_data( error_log, sanitizer, id, topics, text, isCard
       error_log.log_error(
         sqlPool,
         "indexer.js::index_search_data()",
-        req.ip,
-        error
+        "User",
+        error_obj
       );
 
       console.error( error_obj );

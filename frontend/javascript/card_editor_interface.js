@@ -56,8 +56,8 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
     //3b) If the card doesn't exist, don't bother.
     const question_text = document.getElementById("card_editor_interface_q_text");
     const answer_text = document.getElementById("card_editor_interface_a_text");
-    question_text.value = "";
-    answer_text.value = "";
+    question_text.innerHTML = "";
+    answer_text.innerHTML = "";
   }
 }
 
@@ -93,7 +93,7 @@ function proc_txt_question_card_editor_interface( inText, inImages, QuestionCont
       QuestionContainer.appendChild( div_container );
     } else if( object.type == "image" ) {
       const image_container = document.createElement("img");
-      image_container.src = inImages[object.images_array_location];
+      image_container.src = inImages[object.image_array_location];
       image_container.classList = "card_editor_interface_picture_question";
       QuestionContainer.appendChild( image_container );
     }
@@ -168,13 +168,13 @@ function recursively_traverse_tree( node, objectified_post, images_array ) {
         objectified_post.push({
             type: "image",
             image_position: image_position,
-            images_array_location: image_array_location
+            image_array_location: image_array_location
         });
 
         images_array[image_array_location] = {
           image_data: node.src,
           image_position: image_position,
-          images_array_location: image_array_location
+          image_array_location: image_array_location
         }
         return;
       }   
@@ -199,7 +199,7 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
   const images_array = [];
   recursively_traverse_tree( card_q_handle, objectified_post, images_array );
 
-  const answer_text = card_a_handle.value;
+  const answer_text = card_a_handle.innerText;
 
   //Compose the message to send to the server.
   const body_content = JSON.stringify({
@@ -210,6 +210,8 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
     answer: answer_text,
     tags: card_tags
   });
+
+  console.dir( JSON.parse(body_content) );
 
   //Send the request to update the card to the server.
   const update_card = new Request(
@@ -257,7 +259,7 @@ function card_editor_interface_set_card( inCardData ) {
   const images_array = [];
   recursively_traverse_tree( card_q_handle, objectified_post, images_array );
 
-  const answer_text = card_a_handle.value;
+  const answer_text = card_a_handle.innerText;
 
   //Compose the message to send to the sever.
   const body_content = JSON.stringify({
@@ -268,6 +270,8 @@ function card_editor_interface_set_card( inCardData ) {
     card_id: inCardData.card_id,
     tags: card_tags
   });
+
+  console.dir( JSON.parse(body_content) );
 
   //Send the request to the server.
   const new_card = new Request(
