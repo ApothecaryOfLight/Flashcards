@@ -144,11 +144,6 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer, 
         const [add_image_row, add_image_field] = await sqlPool.query( new_images_query );
       }
 
-      //Break placeholder
-      res.send( JSON.stringify({
-        "result": "success"
-      }));
-
       const update_card_query = "UPDATE cards SET " +
         "question = " + "\'" + sanitizer.process_input(JSON.stringify(req.body.question)) + "\', " +
         "answer = " + "\'" + sanitizer.process_input(req.body.answer) + "\'" +
