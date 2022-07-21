@@ -22,9 +22,6 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
             req.body.question_images[i].image_array_location +
             "), ";
 
-            console.log( new_images_query );
-
-
           fs.writeFileSync(
             './images/' + req.body.question_images[i].file_location,
             req.body.question_images[i].image_data,

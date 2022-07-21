@@ -264,8 +264,6 @@ function card_editor_interface_set_card( inCardData ) {
 
   const answer_text = regexp_text(card_a_handle.innerHTML);
 
-  console.dir( images_array );
-
   //Compose the message to send to the sever.
   const body_content = JSON.stringify({
     question: objectified_post,

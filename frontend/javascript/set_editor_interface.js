@@ -35,7 +35,6 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
         set_name_element.innerHTML = json.set_name.name;
         
         //Populate the interface with the cards.
-        console.dir( json );
         set_editor_interface_populate_list( inSetID, json.cards, json.set_images );
 
         //Iterate through the topics and add them to the list of topics locally stored.
@@ -75,15 +74,7 @@ function set_editor_interface_scroll_to_bottom() {
 
 
 function proc_txt_question_set_editor_interface( inText, inImages, QuestionContainer, inCardID ) {
-  console.log( "proc_txt" );
-  console.log( inText );
-  //2) Replace unicode apostrophe with normal apostrophe.
-  //const cleanedText = inText.replaceAll( "&#39", "\"" );
-
-  //3) Turn JSONified text string into a JSON object.
   const objectifiedText = JSON.parse( inText );
-  console.dir( objectifiedText );
-  console.dir( inImages );
 
   //4) Iterate through every value in the object and append it to the question container.
   objectifiedText.forEach( (object) => {
