@@ -317,7 +317,6 @@ Delete a search term from the search.
 inTerm: Term to remove from the search.
 */
 function delete_search_term( inTerm ) {
-  console.log( "deleting: " + inTerm );
   //Iterate through each tag.
   for( index in search_terms ) {
     //Once you find the targeted tag:
@@ -532,7 +531,6 @@ function render_search_sets( inSetListObj, inPage ) {
   //Get a reference to the DOM element that will contain the set list.
   const search_dom_obj = document.getElementById("search_interface_set_list");
 
-
   //Iterate through each set, transforming the JSON data into HTML elements.
   let dom_string = "";
   setList.forEach( set => {
@@ -561,7 +559,6 @@ function render_search_sets( inSetListObj, inPage ) {
   //Set the container's contents to the DOM string containing the HTML elements.
   search_dom_obj.innerHTML = dom_string;
 
-  
   //Draw the page lines as would appear on a standard 8 1/2x11 piece of lined paper.
   draw_paper();
 }
