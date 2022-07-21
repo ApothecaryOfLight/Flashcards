@@ -39,6 +39,8 @@ then
   #==Ports==
   sudo ufw allow 3001
   sudo ufw allow 8001
+
+  cd backend && mkdir images
 else
   echo "Command line argument:";
   echo "  install.sh standalone";

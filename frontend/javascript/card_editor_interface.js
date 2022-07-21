@@ -262,7 +262,7 @@ function card_editor_interface_set_card( inCardData ) {
   const images_array = [];
   recursively_traverse_tree( card_q_handle, objectified_post, images_array );
 
-  const answer_text = card_a_handle.innerHTML;
+  const answer_text = regexp_text(card_a_handle.innerHTML);
 
   console.dir( images_array );
 
