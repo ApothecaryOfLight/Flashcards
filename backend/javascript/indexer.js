@@ -1,18 +1,15 @@
 async function index_search_data( error_log, sanitizer, id, topics, text, isCard, sqlPool ) {
     try {
-      if( typeof(text) === 'object' && text != null ) {
-        text = "";
-
-        for( const key in text ) {
-          console.log( key + ":" + text[key] );
-          if( text[key].type == "text" ) {
-            console.log( text[key].content );
-            text += text[key].content;
+      if( Array.isArray(text) && isCard ) {
+        let texts = "";
+        text.forEach( (object) => {
+          if( object.type == "text" ) {
+            texts += object.content;
           }
-        }
+        });
+        text = texts.replace( /\s+/g, ' ' );
       }
-      console.log( text );
-      return;
+      
       //1) Set variables for either card or set processing.
       let table;
       let where_predicate;
@@ -38,14 +35,14 @@ async function index_search_data( error_log, sanitizer, id, topics, text, isCard
       //2a) If topics
       if( topics ) {
         for( index in topics ) {
-          in_terms.push(  sanitizer.process_tag( topics[index], "" ) );
+          in_terms.push(  sanitizer.process_input( topics[index] ) );
         }
         table += "topics ";
       }
   
       //2b) If text
       if( text ) {
-        in_terms = sanitizer.process_tag(text).split("&nbsp;");
+        in_terms = text.split(" ");
         table += "text ";
       }
   
@@ -87,9 +84,7 @@ async function index_search_data( error_log, sanitizer, id, topics, text, isCard
   
       //8) If there are new tags, compose insert query to add them.
       if( new_tags.length > 0 ) {
-        let insert_query = "INSERT INTO " +
-          table +
-          insert_fields;
+        let insert_query = "INSERT INTO " + table + insert_fields;
         for( index in new_tags ) {
           insert_query += "(\"" + new_tags[index];
           insert_query += "\", " + id + "), ";

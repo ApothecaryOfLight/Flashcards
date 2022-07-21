@@ -50,21 +50,14 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
         req.body.set_id + ");"
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
 
+      const outText = req.body.question;
+      outText.push({type:'text',content:" " + req.body.answer});
       indexer.index_search_data(
         error_log,
         sanitizer,
         new_card_id,
         null,
-        req.body.question,
-        true,
-        sqlPool
-      );
-      indexer.index_search_data(
-        error_log,
-        sanitizer,
-        new_card_id,
-        null,
-        req.body.answer,
+        outText,
         true,
         sqlPool
       );
@@ -160,21 +153,14 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer, 
         " AND card_id = " + req.body.card_id + ";";
       const [update_card_row,update_card_field] = await sqlPool.query( update_card_query );
 
+      const outText = req.body.question;
+      outText.push({type:'text',content:" " + req.body.answer});
       indexer.index_search_data(
         error_log,
         sanitizer,
         req.body.card_id,
         null,
-        req.body.question,
-        true,
-        sqlPool
-      );
-      indexer.index_search_data(
-        error_log,
-        sanitizer,
-        req.body.card_id,
-        null,
-        req.body.answer,
+        outText,
         true,
         sqlPool
       );

@@ -61,23 +61,11 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
   }
 }
 
-
-
-function proc_txt_answer_card_editor_interface( inText ) {
-  //1) Replace unicode apostrophe with normal apostrophe.
-  const cleanedText = inText.replaceAll( "&#39", "\'" );
-
-  return cleanedText;
-}
-
 function proc_txt_question_card_editor_interface( inText, inImages, QuestionContainer ) {
   //1) Remove any text or images that may have previously been loaded into the container.
   while( QuestionContainer.firstChild ) {
     QuestionContainer.firstChild.remove();
   }
-
-  //2) Replace unicode apostrophe with normal apostrophe.
-  //const cleanedText = inText.replaceAll( "&#39", "\"" );
 
   //3) Turn JSONified text string into a JSON object.
   const objectifiedText = JSON.parse( inText );
@@ -138,16 +126,6 @@ function get_card( inCardID ) {
     });
 }
 
-function regexp_text( inText ) {
-  inText = inText.replaceAll( ";", "&#59;" );
-  inText = inText.replaceAll( "\"", "&#34;" );
-  inText = inText.replaceAll( "\'", "&#39;" );
-  inText = inText.replaceAll( "`", "&#96;" );
-  inText = inText.replaceAll( ":", "&#58;" );
-  inText = inText.replaceAll( "\\", "&#92;" );
-  inText = inText.replaceAll( "/", "&#47;" );
-  return inText;
-}
 
 
 function recursively_traverse_tree( node, objectified_post, images_array ) {
