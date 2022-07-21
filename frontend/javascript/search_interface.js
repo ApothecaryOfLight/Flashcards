@@ -32,7 +32,7 @@ function add_search_term() {
   const search_bar = document.getElementById("search_interface_set_name");
   let search_bar_text = search_bar.value;
   if( search_bar_text == "" ) { return; }
-  search_bar_text = search_bar_text.replace( /\s/g, "&nbsp;" );
+  search_bar_text = regexp_text(search_bar_text);
 
   //Ensure that search term doesn't already exist.
   for( index in search_terms ) {
@@ -180,6 +180,22 @@ function process_page_buttons( inPages, inCurrPage ) {
   return page_buttons;
 }
 
+function proc_txt_question_search_interface( inText ) {
+  //1) Turn JSONified text string into a JSON object.
+  const objectifiedText = JSON.parse( inText );
+
+  //2) Iterate through every value in the object and append it to the string to return.
+  let returned_text = "";
+  objectifiedText.forEach( (object) => {
+    if( object.type == "text" ) {
+      returned_text += object.content;
+    } else if( object.type == "image" ) {
+      returned_text += "Image Question.";
+    }
+  });
+
+  return returned_text;
+}
 
 /*
 Render the cards that are the result of a serach.
@@ -200,37 +216,42 @@ function render_search_cards( inSearch_set_editor, inCurrPage ) {
   const cards = inSearch_set_editor.data;
 
   //Get a reference to the container that will be used to display the result.
-  const search_dom_obj =
-    document.getElementById("search_interface_set_list");
+  const search_dom_obj = document.getElementById("search_interface_set_list");
 
   //Render the 'lines,' as they would appear on a piece of lined paper.
   draw_paper( cards.length );
 
-  //Compose the dom string.
-  let dom = "";
   //Iterate through each card and convert the JSON object data into HTML elements.
   cards.forEach( card => {
-    const creator_username =
-      String.fromCharCode.apply( null, card.set_creator.data );
-    dom += "<div class=\"search_item\">";
-    if( creator_username == logged_obj.username_hash ) {
-      if( logged_obj.isLogged == true ) {
-        dom += "<div class=\"button search_item_edit_button\" " +
-          "onclick=\"getCard(" +
-          card.card_id + ", " + card.set_id +
-          ")\">Edit</div>";
-      }
-    }
-    dom += "<div class=\"search_item_text_container\">";
-    dom += "<span class=\"search_item_text\">";
-    dom += "Q) " + card.question;
-    dom += "A) " + card.answer;
-    dom += "</span></div>";
-    dom += "</div>";
-  });
+    const creator_username = String.fromCharCode.apply( null, card.set_creator.data );
 
-  //Assign the string to the DOM.
-  search_dom_obj.innerHTML = dom;
+    const search_item = document.createElement("div");
+    search_item.classList = "search_item";
+
+    if( creator_username == logged_obj.username_hash ) {
+      const edit_button = document.createElement("div");
+      edit_button.classList = "button search_item_edit_button";
+      edit_button.onclick = getCard.bind( null, card.card_id, card.set_id );
+      edit_button.innerText = "Edit";
+      search_item.appendChild( edit_button );
+    }
+    const search_item_text_container = document.createElement("div");
+    search_item_text_container.classList = "search_item_text_container";
+
+    const search_item_question = document.createElement("span");
+    search_item_question.classList = "search_item_text";
+    search_item_question.innerHTML = "Q)" + proc_txt_question_search_interface(card.question);
+
+    const search_item_answer = document.createElement("span");
+    search_item_answer.classList = "search_item_text";
+    search_item_answer.innerHTML = "A)" + card.answer;
+
+    search_item_text_container.appendChild( search_item_question );
+    search_item_text_container.appendChild( search_item_answer );
+    search_item.appendChild( search_item_text_container );
+
+    search_dom_obj.appendChild( search_item );
+  });
 }
 
 
@@ -295,9 +316,7 @@ Delete a search term from the search.
 inTerm: Term to remove from the search.
 */
 function delete_search_term( inTerm ) {
-  //Use regex to standardize the text to search.
-  inTerm = inTerm.replace( /\s/g, "&nbsp;" );
-
+  console.log( "deleting: " + inTerm );
   //Iterate through each tag.
   for( index in search_terms ) {
     //Once you find the targeted tag:
@@ -319,22 +338,26 @@ function delete_search_term( inTerm ) {
 Function to render the search terms.
 */
 function render_search_terms() {
-  //Compose a dom string out of each term.
-  let dom = "";
-  for( index in search_terms ) {
-    dom += "<div class=\"search_tag_unit\">" +
-      search_terms[index] +
-      "<div class=\"search_tag_delete\"" +
-      " onclick=delete_search_term(\'" + search_terms[index] + "\');" +
-      ">X</div>" +
-      "</div>";
-  }
-
-  //Get a reference to the search tag container.
   const search_term_container = document.getElementById("search_tag_container");
 
-  //Assign the dom string to the search tag container.
-  search_term_container.innerHTML = dom;
+  while( search_term_container.firstChild ) {
+    search_term_container.firstChild.remove();
+  }
+
+  for( index in search_terms ) {
+    const search_tag_unit = document.createElement("div");
+    search_tag_unit.classList = "search_tag_unit";
+    search_tag_unit.innerHTML = search_terms[index];
+
+    const search_tag_delete = document.createElement("div");
+    search_tag_delete.classList = "search_tag_delete";
+    search_tag_delete.onclick = delete_search_term.bind( null, search_terms[index] );
+    search_tag_delete.innerText = "X";
+
+    search_tag_unit.appendChild( search_tag_delete );
+
+    search_term_container.appendChild( search_tag_unit );
+  }
 }
 
 
