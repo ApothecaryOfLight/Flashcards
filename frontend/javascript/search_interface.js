@@ -218,8 +218,6 @@ function render_search_cards( inSearch_set_editor, inCurrPage ) {
   //Get a reference to the container that will be used to display the result.
   const search_dom_obj = document.getElementById("search_interface_set_list");
 
-  //Render the 'lines,' as they would appear on a piece of lined paper.
-  draw_paper( cards.length );
 
   //Iterate through each card and convert the JSON object data into HTML elements.
   cards.forEach( card => {
@@ -252,6 +250,9 @@ function render_search_cards( inSearch_set_editor, inCurrPage ) {
 
     search_dom_obj.appendChild( search_item );
   });
+  
+  //Render the 'lines,' as they would appear on a piece of lined paper.
+  draw_paper();
 }
 
 
@@ -401,23 +402,53 @@ function create_temp_set_button() {
 
 
 /*
-Function to draw the lines that mimic a tradition 8 1/2x11 piece of lined paper.
+Function to draw lines that mimic a tradition 8 1/2x11 piece of lined paper.
 
-inLength: Number of lines to draw.
+Will draw as many lines as there is space to fill with them.
 */
-function draw_paper( inLength ) {
-  //Get a reference to the lines container.
+function draw_paper() {
+  //1) Get a reference to the area where we need to draw the lines.
+  const list_area = document.getElementById("search_interface_set_list");
+
+  //2) Get the properties of the to-be-lined area after CSS has been applied.
+  const list_area_properties = window.getComputedStyle(search_interface_set_list);
+
+  //3) Get the height of the to-be-lined area.
+  list_area_height_px = list_area_properties.getPropertyValue('height');
+
+  //4) Remove the trailing "px" so we can calculate with it.
+  const list_area_height = list_area_height_px.substring( 0, list_area_height_px.length-2 );
+
+  //5) Create an example element, set it's height to 1 line.
+  const em_test_div = document.createElement("div");
+  em_test_div.style.height = "2em";
+
+  //6) Attach it to the document so the height will be set according to CSS.
+  search_interface_set_list.appendChild( em_test_div );
+
+  //7) Get the height value of a single line.
+  const em_height = em_test_div.offsetHeight;
+
+  //8) Remove the example element so it doesn't clutter the screen.
+  em_test_div.remove();
+
+  //9) Calculate how many lines we need to draw.
+  const number_of_lines_needed = list_area_height / em_height;
+
+  //10) Get a reference to the lines container.
   const blue_lines_container = document.getElementById("blue_line_container");
 
-  //Create as many lines as are needed.
-  let dom = "";
-  for( i=0; i<inLength*3; i++ ) {
-    dom += "<div class=\"blue_line\"></div>";
+  //11) Ensure that any existing lines are removed.
+  while( blue_lines_container.firstChild ) {
+    blue_lines_container.firstChild.remove();
   }
 
-  //Assign these lines to the DOM.
-  blue_lines_container.innerHTML = "";
-  blue_lines_container.innerHTML = dom;
+  //12) Create as many lines as are needed.
+  for( i=0; i<number_of_lines_needed+1; i++ ) {
+    const new_line = document.createElement("div");
+    new_line.classList = "blue_line";
+    blue_lines_container.appendChild( new_line );
+  }
 }
 
 
@@ -501,8 +532,6 @@ function render_search_sets( inSetListObj, inPage ) {
   //Get a reference to the DOM element that will contain the set list.
   const search_dom_obj = document.getElementById("search_interface_set_list");
 
-  //Draw the page lines as would appear on a standard 8 1/2x11 piece of lined paper.
-  draw_paper( setList.length );
 
   //Iterate through each set, transforming the JSON data into HTML elements.
   let dom_string = "";
@@ -531,6 +560,10 @@ function render_search_sets( inSetListObj, inPage ) {
 
   //Set the container's contents to the DOM string containing the HTML elements.
   search_dom_obj.innerHTML = dom_string;
+
+  
+  //Draw the page lines as would appear on a standard 8 1/2x11 piece of lined paper.
+  draw_paper();
 }
 
 
