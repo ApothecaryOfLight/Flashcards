@@ -436,17 +436,13 @@ function runset_render_index_card() {
 
 
 function proc_txt_question_runset_interface( inText, inImages, QuestionContainer, inCardID ) {
-  //2) Replace unicode apostrophe with normal apostrophe.
-  let cleanedText = inText.replaceAll( "&#39", "\"" );
-  cleanedText = cleanedText.replaceAll( "\n", "<br>" );
-
   //3) Turn JSONified text string into a JSON object.
-  const objectifiedText = JSON.parse( cleanedText );
+  const objectifiedText = JSON.parse( inText );
 
   //4) Iterate through every value in the object and append it to the question container.
   objectifiedText.forEach( (object) => {
     if( object.type == "text" ) {
-      QuestionContainer.textContent = object.content;
+      QuestionContainer.innerHTML = object.content;
     } else if( object.type == "image" ) {
       const image_container = document.createElement("img");
       image_container.src = inImages[inCardID][object.image_array_location];

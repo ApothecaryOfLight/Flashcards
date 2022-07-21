@@ -11,6 +11,7 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
         for( let i=0; i<req.body.question_images.length; i++ ) {
           const new_global_image_id_query = "SELECT Flashcards.generate_new_id(5) AS new_global_image_id;";
           const [new_image_id_row,new_image_id_field] = await sqlPool.query( new_global_image_id_query );
+
           req.body.question_images[i].global_image_id = new_image_id_row[0].new_global_image_id;
           req.body.question_images[i].file_location = new_card_id + "_" + new_image_id_row[0].new_global_image_id;
           new_images_query += "( " + new_card_id + ", " +
@@ -20,6 +21,8 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
             "\'" + req.body.question_images[i].file_location + "\', " +
             req.body.question_images[i].image_array_location +
             "), ";
+
+            console.log( new_images_query );
 
 
           fs.writeFileSync(
@@ -55,7 +58,16 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
         sanitizer,
         new_card_id,
         null,
-        req.body.question + " " + req.body.answer,
+        req.body.question,
+        true,
+        sqlPool
+      );
+      indexer.index_search_data(
+        error_log,
+        sanitizer,
+        new_card_id,
+        null,
+        req.body.answer,
         true,
         sqlPool
       );
@@ -156,7 +168,16 @@ function attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer, 
         sanitizer,
         req.body.card_id,
         null,
-        req.body.question + " " + req.body.answer,
+        req.body.question,
+        true,
+        sqlPool
+      );
+      indexer.index_search_data(
+        error_log,
+        sanitizer,
+        req.body.card_id,
+        null,
+        req.body.answer,
         true,
         sqlPool
       );

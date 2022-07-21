@@ -35,6 +35,7 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
         set_name_element.innerHTML = json.set_name.name;
         
         //Populate the interface with the cards.
+        console.dir( json );
         set_editor_interface_populate_list( inSetID, json.cards, json.set_images );
 
         //Iterate through the topics and add them to the list of topics locally stored.
@@ -74,17 +75,21 @@ function set_editor_interface_scroll_to_bottom() {
 
 
 function proc_txt_question_set_editor_interface( inText, inImages, QuestionContainer, inCardID ) {
+  console.log( "proc_txt" );
+  console.log( inText );
   //2) Replace unicode apostrophe with normal apostrophe.
-  const cleanedText = inText.replaceAll( "&#39", "\"" );
+  //const cleanedText = inText.replaceAll( "&#39", "\"" );
 
   //3) Turn JSONified text string into a JSON object.
-  const objectifiedText = JSON.parse( cleanedText );
+  const objectifiedText = JSON.parse( inText );
+  console.dir( objectifiedText );
+  console.dir( inImages );
 
   //4) Iterate through every value in the object and append it to the question container.
   objectifiedText.forEach( (object) => {
     if( object.type == "text" ) {
       const div_container = document.createElement("div");
-      div_container.textContent = object.content;
+      div_container.innerHTML = object.content;
       QuestionContainer.appendChild( div_container );
     } else if( object.type == "image" ) {
       const image_container = document.createElement("img");
@@ -134,7 +139,7 @@ function set_editor_interface_populate_list( inSetID, inCards, inImages ) {
 
     const card_element_a = document.createElement("div");
     card_element_a.classList = "card_element_a";
-    card_element_a.textContent = card.answer;
+    card_element_a.innerHTML = card.answer;
     card_element_container.appendChild( card_element_a );
 
     const delete_button = document.createElement("button");

@@ -1,5 +1,17 @@
 async function index_search_data( error_log, sanitizer, id, topics, text, isCard, sqlPool ) {
     try {
+      if( typeof(text) === 'object' && text != null ) {
+        text = "";
+
+        for( const key in text ) {
+          console.log( key + ":" + text[key] );
+          if( text[key].type == "text" ) {
+            console.log( text[key].content );
+            text += text[key].content;
+          }
+        }
+      }
+      console.log( text );
       return;
       //1) Set variables for either card or set processing.
       let table;

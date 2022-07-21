@@ -8,8 +8,8 @@ const replacement = {
 }
 
 function process_input( inText ) {
-    let processed_text = "";
-    processed_text = inText.replace(/['"]+/g,'&#39' );
+    let processed_text = inText.replace(/"+/g,'\"' );
+    processed_text = inText.replace(/'+/g,'\'' );
     return processed_text;
 }
 exports.process_input = process_input;

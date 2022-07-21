@@ -62,10 +62,7 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
 }
 
 
-/*
-Process card text data sent from the server, using regex to replace HTML characters
-with ASCII characters.
-*/
+
 function proc_txt_answer_card_editor_interface( inText ) {
   //1) Replace unicode apostrophe with normal apostrophe.
   const cleanedText = inText.replaceAll( "&#39", "\'" );
@@ -80,16 +77,16 @@ function proc_txt_question_card_editor_interface( inText, inImages, QuestionCont
   }
 
   //2) Replace unicode apostrophe with normal apostrophe.
-  const cleanedText = inText.replaceAll( "&#39", "\"" );
+  //const cleanedText = inText.replaceAll( "&#39", "\"" );
 
   //3) Turn JSONified text string into a JSON object.
-  const objectifiedText = JSON.parse( cleanedText );
+  const objectifiedText = JSON.parse( inText );
 
   //4) Iterate through every value in the object and append it to the question container.
   objectifiedText.forEach( (object) => {
     if( object.type == "text" ) {
       const div_container = document.createElement("div");
-      div_container.textContent = object.content;
+      div_container.innerHTML = object.content;
       QuestionContainer.appendChild( div_container );
     } else if( object.type == "image" ) {
       const image_container = document.createElement("img");
@@ -125,7 +122,7 @@ function get_card( inCardID ) {
         proc_txt_question_card_editor_interface( json.card.question, json.card.images, question_text );
 
         //Upon success, set the answer text value to the card data.
-        answer_text.textContent = proc_txt_answer_card_editor_interface( json.card.answer );
+        answer_text.innerHTML = json.card.answer;
 
         for( index in json.tags ) {
           card_tags.push( json.tags[index].name );
@@ -141,6 +138,17 @@ function get_card( inCardID ) {
     });
 }
 
+function regexp_text( inText ) {
+  inText = inText.replaceAll( ";", "&#59;" );
+  inText = inText.replaceAll( "\"", "&#34;" );
+  inText = inText.replaceAll( "\'", "&#39;" );
+  inText = inText.replaceAll( "`", "&#96;" );
+  inText = inText.replaceAll( ":", "&#58;" );
+  inText = inText.replaceAll( "\\", "&#92;" );
+  inText = inText.replaceAll( "/", "&#47;" );
+  return inText;
+}
+
 
 function recursively_traverse_tree( node, objectified_post, images_array ) {
   if( node.firstChild ) {
@@ -153,12 +161,9 @@ function recursively_traverse_tree( node, objectified_post, images_array ) {
       if( type == "#text" || type == "DIV" ) {
         if( node.textContent ) {
           let node_type = "text";
-          if( node.parentElement.nodeName == "PRE" ) {
-            node_type = "code";
-          }
           objectified_post.push({
               type: node_type,
-              content: node.textContent
+              content: regexp_text( node.textContent )
           });
         }
         return;
@@ -199,7 +204,7 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
   const images_array = [];
   recursively_traverse_tree( card_q_handle, objectified_post, images_array );
 
-  const answer_text = card_a_handle.innerText;
+  const answer_text = regexp_text(card_a_handle.innerHTML);
 
   //Compose the message to send to the server.
   const body_content = JSON.stringify({
@@ -210,8 +215,6 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
     answer: answer_text,
     tags: card_tags
   });
-
-  console.dir( JSON.parse(body_content) );
 
   //Send the request to update the card to the server.
   const update_card = new Request(
@@ -229,8 +232,8 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
     .then( json => {
       if( json.result == "success" ) {
         //Upon success, blank the text values.
-        card_q_handle.value = "";
-        card_a_handle.value = "";
+        card_q_handle.innerHTML = "";
+        card_a_handle.innerHTML = "";
 
         //Return to the set editor interface.
         launch_set_editor_interface( inSetID );
@@ -259,7 +262,9 @@ function card_editor_interface_set_card( inCardData ) {
   const images_array = [];
   recursively_traverse_tree( card_q_handle, objectified_post, images_array );
 
-  const answer_text = card_a_handle.innerText;
+  const answer_text = card_a_handle.innerHTML;
+
+  console.dir( images_array );
 
   //Compose the message to send to the sever.
   const body_content = JSON.stringify({
@@ -270,8 +275,6 @@ function card_editor_interface_set_card( inCardData ) {
     card_id: inCardData.card_id,
     tags: card_tags
   });
-
-  console.dir( JSON.parse(body_content) );
 
   //Send the request to the server.
   const new_card = new Request(
