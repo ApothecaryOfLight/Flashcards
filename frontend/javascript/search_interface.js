@@ -106,6 +106,8 @@ function search_interface_run_search( inPage ) {
     page_num: (inPage ?? 0)
   });
 
+  console.dir( search_request_object );
+
   //Send search
   const search_request = new Request(
     ip + 'searchlist',
@@ -124,6 +126,7 @@ function search_interface_run_search( inPage ) {
     .then( json => {
     if( json.result == "success" ) {
       if( json.search_type == "card" ) {
+        console.dir( json );
         render_search_cards({
           data:json.set_rows,
           "page_count": json.page_count,
@@ -131,6 +134,7 @@ function search_interface_run_search( inPage ) {
         },
         inPage );
       } else if( json.search_type == "set" ) {
+        console.dir( json );
         render_search_sets({
           "set_rows": json.set_rows,
           "page_count": json.page_count,
@@ -217,6 +221,9 @@ function render_search_cards( inSearch_set_editor, inCurrPage ) {
 
   //Get a reference to the container that will be used to display the result.
   const search_dom_obj = document.getElementById("search_interface_set_list");
+  while( search_dom_obj.firstChild ) {
+    search_dom_obj.firstChild.remove();
+  }
 
 
   //Iterate through each card and convert the JSON object data into HTML elements.

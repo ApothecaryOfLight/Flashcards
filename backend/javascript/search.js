@@ -61,8 +61,7 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           card_search_text_predicate +
           " OR " +
           cardset_search_text_predicate.substr(6) +
-          "LIMIT 10 OFFSET " + page_offset + ") " +
-          "UNION " +
+          ") UNION " +
 
           "(SELECT cards.card_id, cards.answer, cards.question, " +
           "sets.set_creator, cards.set_id " +
@@ -76,12 +75,13 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           card_search_topics_predicate +
           " OR " +
           cardset_search_topics_predicate.substr(6) +
-          "LIMIT 10 OFFSET " + page_offset +
-          ")";
+          ")" +
+          " LIMIT 10 OFFSET " + page_offset + ";"
+
+          console.log( card_search_query );
 
         page_query =
-          "SELECT SUM(tempTable.page_count) as page_count FROM " +
-          "((SELECT COUNT(cards.card_id) AS page_count " +
+          "SELECT COUNT(cards.card_id) AS page_count " +
           "FROM cards " +
           "LEFT JOIN card_search_text " +
           "ON cards.card_id = card_search_text.card_id " +
@@ -89,24 +89,20 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           "ON cards.set_id = sets.set_id " +
           "LEFT JOIN cardset_search_text " +
           "ON cards.set_id = cardset_search_text.set_id " +
+          "LEFT JOIN card_search_topics " +
+          "ON cards.card_id = card_search_topics.card_id " +
+          "LEFT JOIN cardset_search_topics " +
+          "ON cards.set_id = cardset_search_topics.set_id " +
           card_search_text_predicate +
           " OR " +
           cardset_search_text_predicate.substr(6) +
-          ") " +
-          "UNION " +
-
-          "(SELECT COUNT(cards.card_id) AS page_count " +
-          "FROM cards " +
-          "LEFT JOIN card_search_topics " +
-          "ON cards.card_id = card_search_topics.card_id " +
-          "INNER JOIN sets " +
-          "ON cards.set_id = sets.set_id " +
-          "LEFT JOIN cardset_search_topics " +
-          "ON cards.set_id = cardset_search_topics.set_id " +
-          card_search_topics_predicate +
+          " OR " +
+          card_search_topics_predicate.substring(5,card_search_topics_predicate.length) +
           " OR " +
           cardset_search_topics_predicate.substr(6) +
-          ")) as tempTable";
+          "GROUP BY cards.card_id;";
+
+          console.log( page_query );
       } else if( req.body.search_type == "set" ) {
         card_search_query =
           "(SELECT sets.set_id, sets.name, sets.set_creator " +

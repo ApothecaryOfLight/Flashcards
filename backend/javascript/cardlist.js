@@ -4,8 +4,7 @@ function attach_cardlist_page_num_route( error_log, app, sqlPool ) {
           const page_count_query = "SELECT " +
             "COUNT(cards.card_id) AS page_count " +
             "FROM cards;"
-          const [count_row,count_field] =
-            await sqlPool.query( page_count_query );
+          const [count_row,count_field] = await sqlPool.query( page_count_query );
     
           const offset = req.params.page_num * 10;
           const cardlist_query = "SELECT " +
@@ -18,6 +17,8 @@ function attach_cardlist_page_num_route( error_log, app, sqlPool ) {
             "LIMIT 10 " +
             "OFFSET " + offset +
             ";"
+
+            console.log( cardlist_query );
     
           const [cardlist_rows,cardlist_fields] =
             await sqlPool.query( cardlist_query );
