@@ -62,7 +62,6 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           " OR " +
           cardset_search_text_predicate.substr(6) +
           ") UNION " +
-
           "(SELECT cards.card_id, cards.answer, cards.question, " +
           "sets.set_creator, cards.set_id " +
           "FROM cards " +
@@ -77,8 +76,6 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           cardset_search_topics_predicate.substr(6) +
           ")" +
           " LIMIT 10 OFFSET " + page_offset + ";"
-
-          console.log( card_search_query );
 
         page_query =
           "SELECT COUNT(cards.card_id) AS page_count " +
@@ -101,8 +98,6 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           " OR " +
           cardset_search_topics_predicate.substr(6) +
           "GROUP BY cards.card_id;";
-
-          console.log( page_query );
       } else if( req.body.search_type == "set" ) {
         card_search_query =
           "(SELECT sets.set_id, sets.name, sets.set_creator " +
