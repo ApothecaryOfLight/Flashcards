@@ -32,8 +32,7 @@ const functions = {
     "go_back": runset_interface_go_back,
     "missed": runset_interface_missed,
     "correct": runset_interface_correct,
-    "flip_card": runset_interface_flip_card/*,
-    "split_set": runset_interface_split_set*/
+    "flip_card": runset_interface_flip_card
   }
 };
 

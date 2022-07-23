@@ -6,8 +6,6 @@ const set_data = {};
 const card_tags = [];
 const set_editor_tags = [];
 
-let list_type = "set";
-
 const search_terms = [];
 
 let modal_buttons_storage = {};

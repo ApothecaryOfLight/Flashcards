@@ -61,20 +61,15 @@ Function to swtich between listing sets or instead listing cards.
 function switch_list_type() {
   //Get a reference to the switch button.
   const button = document.getElementById("search_interface_switch_list_type");
+  const current_list_type = button.textContent;
 
   //If the list type is of card, then:
-  if( list_type == "card" ) {
+  if( current_list_type == "List Sets" ) {
     //Set the button text to List Cards.
     button.textContent = "List Cards";
-
-    //Set the list type to displaying sets.
-    list_type = "set";
-  } else if( list_type == "set" ) {
+  } else if( current_list_type == "List Cards" ) {
     //Otherwise, set the button to List Sets.
     button.textContent = "List Sets";
-
-    //And set the list type to displaying cards.
-    list_type = "card";
   }
 
   //Run a search with the new list type.
@@ -88,12 +83,18 @@ Run a search.
 inPage: Current page of the search interface.
 */
 function search_interface_run_search( inPage ) {
+  const button = document.getElementById("search_interface_switch_list_type");
+  const current_list_type = button.textContent;
+  let list_type_shorthand = "";
+
   //If there are no serach terms, use default search or set_editor
   if( search_terms.length == 0 ) {
-    if( list_type == "set" ) {
+    if( current_list_type == "List Cards" ) {
+      list_type_shorthand = "sets";
       getSetList( inPage );
       return;
-    } else if( list_type == "card" ) {
+    } else if( current_list_type == "List Sets" ) {
+      list_type_shorthand = "cards";
       getCardList( inPage );
       return;
     }
@@ -102,7 +103,7 @@ function search_interface_run_search( inPage ) {
   //Compose the message.
   const search_request_object = JSON.stringify({
     topics: search_terms,
-    search_type: list_type,
+    search_type: list_type_shorthand,
     page_num: (inPage ?? 0)
   });
 
