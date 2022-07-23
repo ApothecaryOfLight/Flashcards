@@ -62,7 +62,7 @@ function runset( inSetData, inImages ) {
   runset_render_qa( card_sets_obj );
 
   //Display the card set menu.
-  runset_render_split_sets( card_sets_obj );
+  runset_render_side_menu( card_sets_obj );
 
   //Set the interface to the runset interface.
   set_interface( "runset", card_sets_obj );
@@ -100,7 +100,7 @@ function remove_empty_subset( card_sets_obj, target ) {
   card_sets_obj.curr_set = Math.max( Number(target)-1, 0 );
 
   //Render the side menu with the updated data.
-  runset_render_split_sets( card_sets_obj );
+  runset_render_side_menu( card_sets_obj );
 }
 
 
@@ -275,7 +275,7 @@ function runset_interface_correct( card_sets_obj ) {
     curr_subset_ref.cards.splice( curr_subset_ref.curr_card, 1 );
 
     //Update the side menu.
-    runset_render_split_sets( card_sets_obj );
+    runset_render_side_menu( card_sets_obj );
   }
 
   //Display the next card.
@@ -348,7 +348,7 @@ function runset_interface_split_set( card_sets_obj, index ) {
   }
 
   //Render split sets.
-  runset_render_split_sets( card_sets_obj );
+  runset_render_side_menu( card_sets_obj );
 
   //Go to the next card.
   next_card( card_sets_obj );
@@ -382,6 +382,8 @@ function runset_interface_merge_set( card_sets_obj, index ) {
     card_sets_obj,
     Number(index)+1
   );
+
+  next_card( card_sets_obj );
 }
 
 
@@ -508,55 +510,58 @@ Render the side menu, listing all available subsets and buttons.
 
 card_sets_obj: Object containing information about this current run.
 */
-function runset_render_split_sets( card_sets_obj ) {
+function runset_render_side_menu( card_sets_obj ) {
   //Get DOM element reference to split set button container.
-  const split_buttons_container =
-    document.getElementById("runset_interface_split_set_buttons");
+  const split_buttons_container = document.getElementById("runset_interface_split_set_buttons");
 
-  //Compose HTMl.
-  let html_string = "";
+  while( split_buttons_container.firstChild ) {
+    split_buttons_container.firstChild.remove();
+  }
+
   //Iterate through each subset.
   for( index in card_sets_obj.sets ) {
-    //Create the bound function to display each set.
-    const bound_split_func = runset_interface_split_set.bind(
+    const split_set_button_group = document.createElement("div");
+    split_set_button_group.classList = "runset_interface_split_set_button_group";
+    split_set_button_group.innerText = card_sets_obj.sets[index].cards.length;
+
+    const split_set_button_clickable = document.createElement("div");
+    split_set_button_clickable.onclick = runset_interface_split_set.bind(
       null,
       card_sets_obj,
       index
     );
-    split_buttons[index] = bound_split_func;
+    split_set_button_group.appendChild( split_set_button_clickable );
 
-    const bound_go_to_set_func = go_to_set.bind(
+    const split_set_button_icon = document.createElement("span");
+    split_set_button_icon.classList = "button material-icons md-32";
+    split_set_button_icon.innerText = "swap_horiz";
+    split_set_button_clickable.appendChild( split_set_button_icon );
+
+    const split_set_use = document.createElement("div");
+    split_set_use.onclick = go_to_set.bind(
       null,
       card_sets_obj,
       index
-    );
-    go_to_set_buttons[index] = bound_go_to_set_func;
+    );;
+    split_set_use.innerText = "Use";
+    split_set_button_group.appendChild( split_set_use );
 
-    //Compose the HTML for each button.
-    html_string +=
-      "<div class=\'runset_interface_split_set_button_group\'> " +
-      "<div " +
-      "onclick=\"split_buttons[" + index + "]()\" " +
-      ">" +
-      "<span class=\"button material-icons md-32\">swap_horiz</span>" +
-      card_sets_obj.sets[index].cards.length +
-      "</div>" +
-      "<div " +
-      "onclick=\"go_to_set_buttons[" + index + "]()\">Use" +
-      "</div></div>";
+    split_buttons_container.appendChild( split_set_button_group );
+
     if( index < card_sets_obj.sets.length-1 ) {
-      const bound_merge_func = runset_interface_merge_set.bind(
+      const split_set_merge_button = document.createElement("div");
+      split_set_merge_button.onclick = runset_interface_merge_set.bind(
         null,
         card_sets_obj,
         index
       );
-      merge_buttons[index] = bound_merge_func;
-      html_string +=
-        "<div " +
-        "onclick=\"merge_buttons[" + index + "]()\" " +
-        ">" +
-        "<span class=\"button material-icons md-32\">swap_vert</span></div>";
+      
+      const split_set_merge_icon = document.createElement("span");
+      split_set_merge_icon.classList = "button material-icons md-32";
+      split_set_merge_icon.innerText = "swap_vert";
+
+      split_set_merge_button.appendChild( split_set_merge_icon );
+      split_buttons_container.appendChild( split_set_merge_button );
     }
   }
-  split_buttons_container.innerHTML = html_string;
 }

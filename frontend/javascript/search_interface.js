@@ -106,8 +106,6 @@ function search_interface_run_search( inPage ) {
     page_num: (inPage ?? 0)
   });
 
-  console.dir( search_request_object );
-
   //Send search
   const search_request = new Request(
     ip + 'searchlist',
@@ -126,7 +124,6 @@ function search_interface_run_search( inPage ) {
     .then( json => {
     if( json.result == "success" ) {
       if( json.search_type == "card" ) {
-        console.dir( json );
         render_search_cards({
           data:json.set_rows,
           "page_count": json.page_count,
@@ -134,7 +131,6 @@ function search_interface_run_search( inPage ) {
         },
         inPage );
       } else if( json.search_type == "set" ) {
-        console.dir( json );
         render_search_sets({
           "set_rows": json.set_rows,
           "page_count": json.page_count,
