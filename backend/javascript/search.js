@@ -139,10 +139,15 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
       const [page_row,page_field] =
         await sqlPool.query( page_query );
 
+      let page_count = 0;
+      if( page_row.length != 0 ) {
+        page_count = page_row[0].page_count/10;
+      }
+
       res.send( JSON.stringify({
         "result": "success",
         "set_rows": out_row,
-        "page_count": page_row[0].page_count/10,
+        "page_count": page_count,
         "search_type": req.body.search_type
       }));
     } catch(error) {
