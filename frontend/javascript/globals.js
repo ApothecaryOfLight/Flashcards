@@ -1,4 +1,3 @@
-const card_tags = [];
 const search_terms = [];
 const set_editor_tags = [];
 

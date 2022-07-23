@@ -24,10 +24,6 @@ function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
     }
   );
 
-  //2) Empty the card tags and repopulate them.
-  card_tags.splice(0);
-  card_editor_interface_render_tags();
-
   //3) Check to see if the card already exists.
   if( isNew == false ) {
     //4a) If the card exsists, get the card data.
@@ -112,10 +108,7 @@ function get_card( inCardID ) {
         //Upon success, set the answer text value to the card data.
         answer_text.innerHTML = json.card.answer;
 
-        for( index in json.tags ) {
-          card_tags.push( json.tags[index].name );
-        }
-        card_editor_interface_render_tags();
+        card_editor_interface_render_tags( json.tags );
       } else if( json.result == "error" ) {
         //Upon failure, notify the user of an error.
         const options = {
@@ -184,6 +177,13 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
 
   const answer_text = regexp_text(card_a_handle.innerHTML);
 
+  const card_tags = [];
+  let tag_iterator = document.getElementById("card_editor_interface_tags_list").firstChild;
+  while( tag_iterator ) {
+    card_tags.push(tag_iterator.firstChild.data);
+    tag_iterator = tag_iterator.nextSibling;
+  }
+
   //Compose the message to send to the server.
   const body_content = JSON.stringify({
     set_id: inSetID,
@@ -241,6 +241,13 @@ function card_editor_interface_set_card( inCardData ) {
   recursively_traverse_tree( card_q_handle, objectified_post, images_array );
 
   const answer_text = regexp_text(card_a_handle.innerHTML);
+
+  const card_tags = [];
+  let tag_iterator = document.getElementById("card_editor_interface_tags_list").firstChild;
+  while( tag_iterator ) {
+    card_tags.push(tag_iterator.firstChild.data);
+    tag_iterator = tag_iterator.nextSibling;
+  }
 
   //Compose the message to send to the sever.
   const body_content = JSON.stringify({
@@ -303,57 +310,50 @@ function card_editor_interface_go_back( inCardData ) {
 }
 
 
+function card_editor_interface_add_tag( inTag ) {
+  const tags_field = document.getElementById("card_editor_interface_tags_list");
+
+  const new_tag_container = document.createElement("div");
+  new_tag_container.classList = "card_editor_interface_tag_container";
+  new_tag_container.innerText = inTag;
+
+  const new_tag_delete_button = document.createElement("div");
+  new_tag_delete_button.classList = "card_editor_interface_tag_delete_button";
+  new_tag_delete_button.onclick = delete_card_tag.bind( null, inTag );
+  new_tag_delete_button.innerText = "X";
+  new_tag_container.appendChild( new_tag_delete_button );
+
+  tags_field.appendChild( new_tag_container );
+}
+
 /*
 Function to be used to add a subject tag to a card.
-
-inCardData: Object containing the unique identifiers of the card and set.
 */
-function card_editor_interface_add_tag_button( inCardData ) {
-  //1) Get tag
-  const tag_field = document.getElementById("card_editor_interface_tags_field");
-  let tag_text = tag_field.value;
+function card_editor_interface_add_tag_button() {
+  const tag_text_field = document.getElementById("card_editor_interface_tags_field");
+  let tag_text = tag_text_field.value;
+  tag_text_field.value = "";
+
   if( tag_text == "" ) { return; }
   tag_text = tag_text.replace( /\s/g, "&nbsp;" );
 
-  //2) Ensure that search term doesn't already exist.
-  for( index in card_tags ) {
-    if( card_tags[index] == tag_text ) {
-      return;
-    }
-  }
-
-  //3) Add search term to search_terms
-  card_tags.push( tag_text );
-
-  //4) Render updated search terms.
-  card_editor_interface_render_tags();
-
-  //5) Blank out search term.
-  tag_field.value = "";
+  card_editor_interface_add_tag( tag_text );
 }
 
 
 /*
 Function to convert card topic tags into HTML elements.
 */
-function card_editor_interface_render_tags() {
-  let dom = "";
+function card_editor_interface_render_tags( card_tags ) {
   //Iterate through each card tag.
-  for( index in card_tags ) {
-    //Create an element for this tag, concatenate it onto the dom string.
-    dom += "<div class=\"card_editor_interface_tag_container\">" +
-      card_tags[index] +
-      "<div class=\"card_editor_interface_tag_delete_button\"" +
-      " onclick=delete_card_tag(\'" + card_tags[index] + "\');" +
-      ">X</div>" +
-      "</div>";
+  const tag_list = document.getElementById("card_editor_interface_tags_list");
+  while( tag_list.firstChild ) {
+    tag_list.firstChild.remove();
   }
 
-  //Get a reference to the tags container.
-  const tag_container = document.getElementById("card_editor_interface_tags_list");
-
-  //Assign the dom string to the container.
-  tag_container.innerHTML = dom;
+  for( index in card_tags ) {
+      card_editor_interface_add_tag( card_tags[index].name );
+  }
 }
 
 
@@ -362,19 +362,14 @@ Function to delete a card search tag.
 
 inTag: The tag being deleted.
 */
-function delete_card_tag( inTag ) {
-  inTag = inTag.replace( /\s/g, "&nbsp;" );
-
-  //Iterate through the card tags.
-  for( index in card_tags ) {
-    if( card_tags[index] == inTag ) {
-      //Remove the tag from the array.
-      card_tags.splice( index, 1 );
+function delete_card_tag( inTagText ) {
+  let tag_iterator = document.getElementById("card_editor_interface_tags_list").firstChild;
+  while( tag_iterator ) {
+    if( tag_iterator.firstChild.data == inTagText ) {
+      tag_iterator.remove();
     }
+    tag_iterator = tag_iterator.nextSibling;
   }
-
-  //Render the array that has the targeted tag removed.
-  card_editor_interface_render_tags();
 }
 
 
