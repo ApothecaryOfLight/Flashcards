@@ -11,9 +11,6 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
   //Set the interface to the set editor.
   set_interface( "set_editor", inSetID );
 
-  //Set the global variable for the set.
-  set_data.set_id = inSetID;
-
   //Get a reference to the set editor set name.
   const set_name_element = document.getElementById("set_editor_interface_set_name");
 

@@ -85,26 +85,27 @@ inPage: Current page of the search interface.
 function search_interface_run_search( inPage ) {
   const button = document.getElementById("search_interface_switch_list_type");
   const current_list_type = button.textContent;
-  console.log( current_list_type );
   let list_type_shorthand = "";
 
-  //If there are no serach terms, use default search or set_editor
   if( current_list_type == "List Cards" ) {
     if( search_terms.length == 0 ) {
+      //Run set search without search terms.
       getSetList( inPage );
       return;
     }
+    //Set the search type to sets.
     list_type_shorthand = "set";
   } else if( current_list_type == "List Sets" ) {
     if( search_terms.length == 0 ) {
+      //Run card search without search terms.
       getCardList( inPage );
       return;
     }
+    //Set the search type to cards.
     list_type_shorthand = "card";
   }
-  console.log( "Search type: " + list_type_shorthand );
 
-  //Compose the message.
+  //Compose the search message.
   const search_request_object = JSON.stringify({
     topics: search_terms,
     search_type: list_type_shorthand,

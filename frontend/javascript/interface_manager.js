@@ -112,7 +112,6 @@ interface: Target interface to display.
 value: Value to bind to all the interface's functions.
 */
 function set_interface( interface, value ) {
-  curr_interface = interface;
   const body = document.body;
   interfaces.forEach( interface_base_name => {
     const interface_name = interface_base_name + "_interface";

@@ -1,16 +1,10 @@
-
-//Runset data
-const set_data = {};
-
 //
 const card_tags = [];
-const set_editor_tags = [];
-
 const search_terms = [];
+const set_editor_tags = [];
 
 let modal_buttons_storage = {};
 
-let curr_interface = "";
 let isLogged = false;
 const logged_obj = {
   isLogged: false,

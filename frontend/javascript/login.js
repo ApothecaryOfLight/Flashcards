@@ -22,9 +22,7 @@ function login( inUsernameHash ) {
   logout_element.style.display = "flex";
 
   //Relaunch interface.
-  if( curr_interface == "search" ) {
-    launch_search_interface( true );
-  }
+  launch_search_interface( true );
 }
 
 
@@ -89,9 +87,7 @@ function logout() {
   logged_obj.isLogged = false;
 
   //Relaunch interface.
-  if( curr_interface == "search" ) {
-    launch_search_interface( true );
-  }
+  launch_search_interface( true );
 }
 
 
