@@ -1,5 +1,4 @@
 const search_terms = [];
-const set_editor_tags = [];
 
 let modal_buttons_storage = {};
 

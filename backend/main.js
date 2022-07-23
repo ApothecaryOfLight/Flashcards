@@ -104,7 +104,7 @@ function launchRoutes() {
 
   cards.attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs );
 
-  sets.attach_update_sets_route( error_log, app, indexer, sanitizer );
+  sets.attach_update_sets_route( error_log, app, indexer, sanitizer, sqlPool );
 
   cards.attach_update_card_route( error_log, app, sqlPool, indexer, sanitizer, fs );
 

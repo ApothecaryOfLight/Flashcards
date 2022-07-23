@@ -14,9 +14,6 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
   //Get a reference to the set editor set name.
   const set_name_element = document.getElementById("set_editor_interface_set_name");
 
-  //Empty the set editor tags.
-  set_editor_tags.splice(0);
-
   //Render the search topic tags of the set.
   set_editor_interface_render_tags( inSetID );
 
@@ -33,14 +30,9 @@ function launch_set_editor_interface( inSetID, go_to_end ) {
         
         //Populate the interface with the cards.
         set_editor_interface_populate_list( inSetID, json.cards, json.set_images );
-
-        //Iterate through the topics and add them to the list of topics locally stored.
-        for( index in json.topics ) {
-          set_editor_tags.push( json.topics[index].name );
-        }
         
         //Render the search topics.
-        set_editor_interface_render_tags( inSetID );
+        set_editor_interface_render_tags( json.topics, inSetID );
 
         //If already being edited, scroll to bottom of set.
         if( go_to_end ) {
@@ -164,6 +156,21 @@ function set_editor_interface_go_back() {
   launch_search_interface( false );
 }
 
+function set_editor_interface_add_tag( inTag, inSetID ) {
+  const tags_container = document.getElementById("set_editor_interface_tags_list");
+
+  const tag_container = document.createElement("div");
+  tag_container.classList = "set_editor_interface_tag_container";
+  tag_container.innerText = inTag;
+
+  const tag_delete_button = document.createElement("div");
+  tag_delete_button.classList = "set_editor_interface_tag_delete_button";
+  tag_delete_button.onclick = delete_set_editor_tag.bind( null, inTag, inSetID );
+  tag_delete_button.innerText = "X";
+
+  tag_container.appendChild( tag_delete_button );
+  tags_container.appendChild( tag_container );
+}
 
 /*
 Function to add a search topic tag to this set.
@@ -172,27 +179,25 @@ inSetID: Unique identifier of this card set.
 */
 function set_editor_interface_add_tag_button( inSetID ) {
   //Get tag
-  const tag_field =
-    document.getElementById("set_editor_interface_tags_field");
+  const tag_field = document.getElementById("set_editor_interface_tags_field");
   let tag_text = tag_field.value;
+  tag_field.value = "";
   if( tag_text == "" ) { return; }
 
-  //Ensure that search term doesn't already exist.
-  for( index in set_editor_tags ) {
-    if( set_editor_tags[index] == tag_text ) {
+  //Ensure that tag doesn't already exist.
+  let iterator = document.getElementById("set_editor_interface_tags_list").firstChild;
+  while( iterator ) {
+    if( iterator.firstChild.data == tag_text ) {
       return;
     }
+    iterator = iterator.nextSibling;
   }
 
-  //Add search term to search_terms
-  set_editor_tags.push( tag_text );
+  //Add the tag to the interface
+  set_editor_interface_add_tag( tag_text, inSetID );
 
-  //Render updated search terms.
-  set_editor_interface_render_tags( inSetID );
+  //Send updated tags to server.
   set_editor_interface_update_tags( inSetID );
-
-  //Blank out search term.
-  tag_field.value = "";
 }
 
 
@@ -203,12 +208,11 @@ inSetID: Unique identifier of the set.
 */
 function set_editor_interface_update_tags( inSetID ) {
   //Iterate through each tag and preform regex on it to make it server compatible.
-  for( index in set_editor_tags ) {
-    set_editor_tags[index] =
-      set_editor_tags[index].replace(
-        /&nbsp;/g,
-        " "
-      );
+  const set_editor_tags = [];
+  let iterator = document.getElementById("set_editor_interface_tags_list").firstChild;
+  while( iterator ) {
+    set_editor_tags.push( iterator.firstChild.data );
+    iterator = iterator.nextSibling;
   }
 
   //Compose the message to send to the server.
@@ -248,32 +252,14 @@ Render the search topic tags of the set.
 
 inSetID: Unique identifier of this set of cards.
 */
-function set_editor_interface_render_tags( inSetID ) {
-  let dom = "";
-
-  //Regex the tag text values converting it from server compatible to HTML readable.
-  for( index in set_editor_tags ) {
-    set_editor_tags[index] =
-      set_editor_tags[index].replace(
-        /&nbsp;/g,
-        " "
-      );
-
-    //Concatenate the HTML for this tag onto the DOM string that will be rendered.
-    dom += "<div class=\"set_editor_interface_tag_container\">" +
-      set_editor_tags[index] +
-      "<div class=\"set_editor_interface_tag_delete_button\"" +
-      " onclick=\"delete_set_editor_tag(\'" +
-      set_editor_tags[index] + "\', " + inSetID + ");\"" +
-      ">X</div>" +
-      "</div>";
+function set_editor_interface_render_tags( inTags, inSetID ) {
+  const tags_container = document.getElementById("set_editor_interface_tags_list");
+  while( tags_container.firstChild ) {
+    tags_container.firstChild.remove();
   }
-
-  //Get a reference to the tag container.
-  const tag_container = document.getElementById("set_editor_interface_tags_list");
-
-  //Set the content of the tag container to the DOM string.
-  tag_container.innerHTML = dom;
+  for( index in inTags ) {
+    set_editor_interface_add_tag( inTags[index].name, inSetID );
+  }
 }
 
 
@@ -286,16 +272,13 @@ inSetID: Unique identifier of the set from which the tag should be deleted.
 */
 function delete_set_editor_tag( inTag, inSetID ) {
   //Iterate through each tag.
-  for( index in set_editor_tags ) {
-    //If this is the tag to delete, splice it out.
-    if( set_editor_tags[index] == inTag ) {
-      set_editor_tags.splice( index, 1 );
+  let iterator = document.getElementById("set_editor_interface_tags_list").firstChild;
+  while( iterator ) {
+    if( iterator.firstChild.data == inTag ) {
+      iterator.remove();
+      set_editor_interface_update_tags( inSetID );
+      return;
     }
+    iterator = iterator.nextSibling;
   }
-
-  //Render the new list of tags.
-  set_editor_interface_render_tags( inSetID );
-
-  //Send a notification to the server that this tag has been deleted.
-  set_editor_interface_update_tags( inSetID );
 }

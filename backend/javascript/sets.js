@@ -99,7 +99,7 @@ function attach_new_set_route( error_log, app, sqlPool, indexer, sanitizer ) {
 }
 exports.attach_new_set_route = attach_new_set_route;
 
-function attach_update_sets_route( error_log, app, indexer, sanitizer ) {
+function attach_update_sets_route( error_log, app, indexer, sanitizer, sqlPool ) {
     /*Update set*/
     app.post( '/update_set', async function(req,res) {
       try {
