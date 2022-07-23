@@ -89,6 +89,9 @@ Card editor interface
   align-self: center;
   margin-left: .25rem;
 }
+.card_editor_interface_tag_delete_button:hover {
+  background: #0066FF;
+}
 
 #card_editor_interface_pictoral_question_container {
   width: 100%;
