@@ -46,12 +46,17 @@ Card editor interface
   background: #003399;
 }
 #card_editor_interface_tags_container {
+  display: flex;
+  flex-direction: row;
+  width: 80%;
   border-top: 1px solid;
   padding-top: 2rem;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 #card_editor_interface_tags_field {
-  width: 70%;
-  margin-left: 10%;
+  width: 100%;
+  margin-right: 2em;
 }
 #card_editor_interface_add_tags_button {
   margin-right: 10%;
