@@ -1,13 +1,4 @@
 /*
-Function to connect a modal button press to the appropriate function.
-*/
-function modal_button( button_name ) {
-  modal_buttons_storage[button_name]();
-  close_modal();
-}
-
-
-/*
 Function to launch a modal popup.
 */
 function launch_modal( isPrompt, inMessage, inButtons ) {
@@ -38,20 +29,21 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
     modal_prompts.innerHTML = prompt_dom;
   }
 
-  //Compose the buttons for the modal.
-  let dom = "";
-  for( button_name in inButtons ) {
-    modal_buttons_storage[button_name] = inButtons[button_name];
-    dom += "<button class=\"modal_button\" " +
-      "onclick=\"modal_button(\'" + button_name + "\')\">" +
-      button_name + "</button>"
-  }
-
   //Get a reference to the button container in the modal.
   const modal_buttons = document.getElementById( "modal_interface_button_container" );
 
-  //Set the contents of the button container in the modal to the desired buttons.
-  modal_buttons.innerHTML = dom;
+  //Compose the buttons for the modal.
+  while( modal_buttons.firstChild ) {
+    modal_buttons.firstChild.remove();
+  }
+  for( button_name in inButtons ) {
+    const modal_button = document.createElement("button");
+    modal_button.onclick = inButtons[button_name];
+    modal_button.innerText = button_name;
+    modal_button.classList = "modal_button";
+
+    modal_buttons.appendChild( modal_button );
+  }
 }
 
 
@@ -64,7 +56,6 @@ function close_modal() {
 
   //Hide the modal.
   modal_handle.style.display = "none";
-
   
   const modal_prompts = document.getElementById( "modal_interface_prompts" );
   while( modal_prompts.firstChild ) {

@@ -1,5 +1,3 @@
-let modal_buttons_storage = {};
-
 let isLogged = false;
 const logged_obj = {
   isLogged: false,
