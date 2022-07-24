@@ -13,7 +13,7 @@ const interfaces = [
 const functions = {
   "search" : {
     "set_name_create": search_interface_set_create,
-    "add_search_tag_button": add_search_term,
+    "add_search_tag_button": add_search_term_button,
     "switch_list_type": switch_list_type,
     "create_temp_set_button": create_temp_set_button
   },

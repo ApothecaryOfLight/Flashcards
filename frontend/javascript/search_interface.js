@@ -24,31 +24,44 @@ function launch_search_interface( doSearch ) {
 }
 
 
+function add_search_term( search_term ) {
+  const search_term_container = document.getElementById("search_tag_container");
+  const search_tag_unit = document.createElement("div");
+  search_tag_unit.classList = "search_tag_unit";
+  search_tag_unit.innerHTML = search_term;
+
+  const search_tag_delete = document.createElement("div");
+  search_tag_delete.classList = "search_tag_delete";
+  search_tag_delete.onclick = delete_search_term.bind( null, search_term );
+  search_tag_delete.innerText = "X";
+
+  search_tag_unit.appendChild( search_tag_delete );
+
+  search_term_container.appendChild( search_tag_unit );
+}
+
 /*
 Add a search term to the search.
 */
-function add_search_term() {
+function add_search_term_button() {
   //Get search term
   const search_bar = document.getElementById("search_interface_set_name");
   let search_bar_text = search_bar.value;
+  search_bar.value = "";
   if( search_bar_text == "" ) { return; }
   search_bar_text = regexp_text(search_bar_text);
 
   //Ensure that search term doesn't already exist.
-  for( index in search_terms ) {
-    if( search_terms[index] == search_bar_text ) {
+  let iterator = document.getElementById("search_tag_container").firstChild;
+  while( iterator ) {
+    if( iterator.firstChild.data == search_bar_text ) {
       return;
     }
+    iterator = iterator.nextSibling;
   }
 
   //Add search term to search_terms
-  search_terms.push( search_bar_text );
-
-  //Render updated search terms.
-  render_search_terms();
-
-  //Blank out search term.
-  search_bar.value = "";
+  add_search_term( search_bar_text );
 
   //Send updated search term list
   search_interface_run_search();
@@ -86,6 +99,14 @@ function search_interface_run_search( inPage ) {
   const button = document.getElementById("search_interface_switch_list_type");
   const current_list_type = button.textContent;
   let list_type_shorthand = "";
+
+  search_terms = [];
+  let iterator = document.getElementById("search_tag_container").firstChild;
+  while( iterator ) {
+    search_terms.push( iterator.firstChild.data );
+    iterator = iterator.nextSibling;
+  }
+
 
   if( current_list_type == "List Cards" ) {
     if( search_terms.length == 0 ) {
@@ -327,46 +348,16 @@ inTerm: Term to remove from the search.
 */
 function delete_search_term( inTerm ) {
   //Iterate through each tag.
-  for( index in search_terms ) {
-    //Once you find the targeted tag:
-    if( search_terms[index] == inTerm ) {
-      //Remove it.
-      search_terms.splice( index, 1 );
+  let iterator = document.getElementById("search_tag_container").firstChild;
+  while( iterator ) {
+    if( iterator.firstChild.data == inTerm ) {
+      iterator.remove();
     }
+    iterator = iterator.nextSibling;
   }
-
-  //Render the updated search tags.
-  render_search_terms();
 
   //Run a new search based based on the remaining tags.
   search_interface_run_search();
-}
-
-
-/*
-Function to render the search terms.
-*/
-function render_search_terms() {
-  const search_term_container = document.getElementById("search_tag_container");
-
-  while( search_term_container.firstChild ) {
-    search_term_container.firstChild.remove();
-  }
-
-  for( index in search_terms ) {
-    const search_tag_unit = document.createElement("div");
-    search_tag_unit.classList = "search_tag_unit";
-    search_tag_unit.innerHTML = search_terms[index];
-
-    const search_tag_delete = document.createElement("div");
-    search_tag_delete.classList = "search_tag_delete";
-    search_tag_delete.onclick = delete_search_term.bind( null, search_terms[index] );
-    search_tag_delete.innerText = "X";
-
-    search_tag_unit.appendChild( search_tag_delete );
-
-    search_term_container.appendChild( search_tag_unit );
-  }
 }
 
 

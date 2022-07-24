@@ -1,5 +1,3 @@
-const search_terms = [];
-
 let modal_buttons_storage = {};
 
 let isLogged = false;
