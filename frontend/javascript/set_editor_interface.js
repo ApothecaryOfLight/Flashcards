@@ -88,7 +88,6 @@ function set_editor_interface_populate_list( interface_state, inCards, inImages 
   }
 
   //Transform the JSON data into HTML elements for each card.
-  let dom = "";
   inCards.forEach( card => {
     const card_row_container = document.createElement("div");
     card_row_container.classList = "card_row_container";

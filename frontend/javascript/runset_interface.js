@@ -435,14 +435,11 @@ function runset_render_index_card() {
   const blue_lines_container = document.getElementById("index_card_blue_line_container");
 
   //Compose the blue lines.
-  let dom = "";
   for( i=0; i<36; i++ ) {
-    dom += "<div class=\"index_card_blue_line\"></div>";
+    const index_card_blue_line = document.createElement("div");
+    index_card_blue_line.classList = "index_card_blue_line";
+    blue_lines_container.appendChild( index_card_blue_line );
   }
-
-  //Set the DOM to contain the blue lines.
-  blue_lines_container.innerHTML = "";
-  blue_lines_container.innerHTML = dom;
 }
 
 

@@ -18,15 +18,15 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
     const modal_prompts = document.getElementById( "modal_interface_prompts" );
 
     //Compose a string to dispaly the prompts.
-    let prompt_dom = "";
     for( prompt_name in isPrompt ) {
-      prompt_dom += "<input type=\"text\" id=\"" + prompt_name + "\"" +
-        " class=\"prompt_input_field\" autocomplete=\"off\"" +
-        " placeholder=\"" + isPrompt[prompt_name] + "\"></input>";
+      const prompt_input_field = document.createElement("input");
+      prompt_input_field.type = "text";
+      prompt_input_field.id = prompt_name;
+      prompt_input_field.classList = "prompt_input_field";
+      prompt_input_field.autocomplete = "off";
+      prompt_input_field.placeholder = isPrompt[prompt_name];
+      modal_prompts.appendChild( prompt_input_field );
     }
-
-    //Assign the prompts to the DOM.
-    modal_prompts.innerHTML = prompt_dom;
   }
 
   //Get a reference to the button container in the modal.
