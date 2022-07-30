@@ -15,7 +15,9 @@ const functions = {
     "set_name_create": search_interface_set_create,
     "add_search_tag_button": add_search_term_button,
     "switch_list_type": switch_list_type,
-    "create_temp_set_button": create_temp_set_button
+    "create_temp_set_button": create_temp_set_button,
+    "login_element": prompt_login,
+    "logout_element": logout
   },
   "set_editor" : {
     "new": set_editor_interface_new_button,
@@ -43,7 +45,9 @@ const bound_functions = {
     "set_name_create": [],
     "add_search_tag_button": [],
     "switch_list_type": [],
-    "create_temp_set_button": []
+    "create_temp_set_button": [],
+    "login_element": [],
+    "logout_element": []
   },
   "set_editor" : {
     "new": [],
@@ -116,6 +120,7 @@ function set_interface( interface, value ) {
   interfaces.forEach( interface_base_name => {
     const interface_name = interface_base_name + "_interface";
     const interface_handle = document.getElementById( interface_name );
+    detach_functions( interface_base_name );
     if( interface == interface_base_name ) {
       if( interface_base_name == "search" ) {
         interface_handle.style.display = "grid";
@@ -127,7 +132,6 @@ function set_interface( interface, value ) {
       attach_functions( interface, value );
     } else {
       interface_handle.style.display = "none";
-      detach_functions( interface_base_name );
     }
   });
 }

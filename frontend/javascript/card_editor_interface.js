@@ -13,29 +13,23 @@ isNew: Boolean indicating whether the card has just been created or already exis
 inPrevInt: Previous interface displayed. Used to return to that interface after
 exiting the card editor interface.
 */
-function launch_card_editor_interface( inCardID, inSetID, isNew, inPrevInt ) {
+function launch_card_editor_interface( interface_state ) {//inCardID, inSetID, isNew, inPrevInt ) {
   //1) Set the current interface and variables.
-  set_interface(
-    "card_editor",
-    {
-      set_id:inSetID,
-      card_id:inCardID,
-      previous_interface: inPrevInt
-    }
-  );
+  set_interface( "card_editor", interface_state );
 
   //3) Check to see if the card already exists.
-  if( isNew == false ) {
+  if( !interface_state.card_editor_interface_state.isNew ) {
     //4a) If the card exsists, get the card data.
-    get_card( inCardID );
+    get_card( interface_state.card_editor_interface_state.card_id );
 
     //5) Get the card update button.
-    const set_card =
-      document.getElementById("card_editor_interface_set_card");
+    const set_card = document.getElementById("card_editor_interface_set_card");
 
     //6) Create a bound function with the card's identifying data.
-    const func_ref =
-      card_editor_interface_update_card.bind( this, inSetID, inCardID );
+    const func_ref = card_editor_interface_update_card.bind(
+      null,
+      interface_state
+    );
 
     //7) Remove the existing bound function, if it exists.
     if( bound_functions["card_editor"]["set_card"] ) {
@@ -166,7 +160,7 @@ inSetID: Unique indetifier of the set to which the card belongs.
 
 inCardID: Unique identifier of the card to update.
 */
-function card_editor_interface_update_card( inSetID, inCardID ) {
+function card_editor_interface_update_card( interface_state ) {
   //Get refernces to the question and answer text fields of the card.
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
@@ -186,8 +180,8 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
 
   //Compose the message to send to the server.
   const body_content = JSON.stringify({
-    set_id: inSetID,
-    card_id: inCardID,
+    set_id: interface_state.card_editor_interface_state.set_id,
+    card_id: interface_state.card_editor_interface_state.card_id,
     question: objectified_post,
     question_images: images_array,
     answer: answer_text,
@@ -214,7 +208,7 @@ function card_editor_interface_update_card( inSetID, inCardID ) {
         card_a_handle.innerHTML = "";
 
         //Return to the set editor interface.
-        launch_set_editor_interface( inSetID );
+        launch_set_editor_interface( interface_state );
       } else if( json.result == "error" ) {
         //Upon failure, notify the user of an error.
         const options = {
@@ -231,7 +225,7 @@ Function to be called upon creating a new card in the card editor interface.
 
 inCardData: Object containing the unique identifiers of the card and set.
 */
-function card_editor_interface_set_card( inCardData ) {
+function card_editor_interface_set_card( interface_state ) {
   //Get references to the question and answer text fields.
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
@@ -254,8 +248,8 @@ function card_editor_interface_set_card( inCardData ) {
     question: objectified_post,
     question_images: images_array,
     answer: answer_text,
-    set_id: inCardData.set_id,
-    card_id: inCardData.card_id,
+    set_id: interface_state.card_editor_interface_state.set_id,
+    card_id:  interface_state.card_editor_interface_state.card_id,
     tags: card_tags
   });
 
@@ -277,7 +271,7 @@ function card_editor_interface_set_card( inCardData ) {
         //Upon success, blank the text fields and return to the set editor interface.
         card_q_handle.value = "";
         card_a_handle.value = "";
-        launch_set_editor_interface( inCardData.set_id, true );
+        launch_set_editor_interface(  interface_state, true );
       } else if( json.result == "error" ) {
         //Upon failure, notify the user of an error.
         const options = {
@@ -292,7 +286,7 @@ function card_editor_interface_set_card( inCardData ) {
 /*
 Function to return to the previous interface.
 */
-function card_editor_interface_go_back( inCardData ) {
+function card_editor_interface_go_back( interface_state ) {
   //Get references to the question and answer text fields.
   const card_q_handle = document.getElementById("card_editor_interface_q_text");
   const card_a_handle = document.getElementById("card_editor_interface_a_text");
@@ -302,10 +296,10 @@ function card_editor_interface_go_back( inCardData ) {
   card_a_handle.value = "";
 
   //Return to the interface the user was in before the card editor interface.
-  if( inCardData.previous_interface == "set_editor" ) {
-    launch_set_editor_interface( inCardData.set_id );
-  } else if( inCardData.previous_interface == "search" ) {
-    launch_search_interface();
+  if( interface_state.card_editor_interface_state.prev_interface == "set_editor" ) {
+    launch_set_editor_interface( interface_state );
+  } else if( interface_state.card_editor_interface_state.prev_interface == "search" ) {
+    launch_search_interface( interface_state );
   }
 }
 

@@ -2,29 +2,19 @@
 Function to launch the search interface.
 
 This is the primary intreface through which you can see all sets or all cards.
-
-doSearch: Boolean indicating whether the interface should just display all sets
-or all cards without filtering, or whether it should filter them through a serach.
 */
-function launch_search_interface( doSearch ) {
+function launch_search_interface( interface_state ) {
   //Set the interface to the search interface.
-  set_interface( "search" );
+  set_interface( "search", interface_state );
 
   //Show or hide login/logout buttons as is appropraite.
-  set_logged_elements();
+  set_logged_elements( interface_state );
 
-  //If the user is running a search:
-  if( doSearch ) {
-    //Run the search.
-    search_interface_run_search();
-  } else {
-    //Otherwise, scroll to top.
-    window.scrollTo({top:scrollY,behavior:"auto"});
-  }
+  search_interface_run_search( interface_state );
 }
 
 
-function add_search_term( search_term ) {
+function add_search_term( interface_state, search_term ) {
   const search_term_container = document.getElementById("search_tag_container");
   const search_tag_unit = document.createElement("div");
   search_tag_unit.classList = "search_tag_unit";
@@ -32,7 +22,7 @@ function add_search_term( search_term ) {
 
   const search_tag_delete = document.createElement("div");
   search_tag_delete.classList = "search_tag_delete";
-  search_tag_delete.onclick = delete_search_term.bind( null, search_term );
+  search_tag_delete.onclick = delete_search_term.bind( null, interface_state, search_term );
   search_tag_delete.innerText = "X";
 
   search_tag_unit.appendChild( search_tag_delete );
@@ -43,7 +33,7 @@ function add_search_term( search_term ) {
 /*
 Add a search term to the search.
 */
-function add_search_term_button() {
+function add_search_term_button( interface_state ) {
   //Get search term
   const search_bar = document.getElementById("search_interface_set_name");
   let search_bar_text = search_bar.value;
@@ -61,32 +51,33 @@ function add_search_term_button() {
   }
 
   //Add search term to search_terms
-  add_search_term( search_bar_text );
+  add_search_term( interface_state, search_bar_text );
 
   //Send updated search term list
-  search_interface_run_search();
+  search_interface_run_search( interface_state );
 }
 
 
 /*
 Function to swtich between listing sets or instead listing cards.
 */
-function switch_list_type() {
+function switch_list_type( interface_state ) {
   //Get a reference to the switch button.
   const button = document.getElementById("search_interface_switch_list_type");
-  const current_list_type = button.textContent;
 
-  //If the list type is of card, then:
-  if( current_list_type == "List Sets" ) {
-    //Set the button text to List Cards.
+  interface_state.search_interface_state.scrollY = 0;
+  if( interface_state.search_interface_state.search_type == "card" ) {
+    interface_state.search_interface_state.search_type = "set";
+    interface_state.search_interface_state.curr_page = "0";
     button.textContent = "List Cards";
-  } else if( current_list_type == "List Cards" ) {
-    //Otherwise, set the button to List Sets.
+  } else if( interface_state.search_interface_state.search_type == "set" ) {
+    interface_state.search_interface_state.search_type = "card";
+    interface_state.search_interface_state.curr_page = "0";
     button.textContent = "List Sets";
   }
 
   //Run a search with the new list type.
-  search_interface_run_search();
+  search_interface_run_search( interface_state );
 }
 
 
@@ -95,42 +86,32 @@ Run a search.
 
 inPage: Current page of the search interface.
 */
-function search_interface_run_search( inPage ) {
-  const button = document.getElementById("search_interface_switch_list_type");
-  const current_list_type = button.textContent;
-  let list_type_shorthand = "";
-
+function search_interface_run_search( interface_state ) {
   search_terms = [];
   let iterator = document.getElementById("search_tag_container").firstChild;
   while( iterator ) {
     search_terms.push( iterator.firstChild.data );
     iterator = iterator.nextSibling;
   }
-
-
-  if( current_list_type == "List Cards" ) {
+  if( interface_state.search_interface_state.search_type == "set" ) {
     if( search_terms.length == 0 ) {
       //Run set search without search terms.
-      getSetList( inPage );
+      getSetList( interface_state );
       return;
     }
-    //Set the search type to sets.
-    list_type_shorthand = "set";
-  } else if( current_list_type == "List Sets" ) {
+  } else if( interface_state.search_interface_state.search_type == "card" ) {
     if( search_terms.length == 0 ) {
       //Run card search without search terms.
-      getCardList( inPage );
+      getCardList( interface_state );
       return;
     }
-    //Set the search type to cards.
-    list_type_shorthand = "card";
   }
 
   //Compose the search message.
   const search_request_object = JSON.stringify({
     topics: search_terms,
-    search_type: list_type_shorthand,
-    page_num: (inPage ?? 0)
+    search_type: interface_state.search_interface_state.search_type,
+    page_num: (interface_state.search_interface_state.curr_page ?? 0)
   });
 
   //Send search
@@ -156,14 +137,14 @@ function search_interface_run_search( inPage ) {
           "page_count": json.page_count,
           "search_type": json.search_type
         },
-        inPage );
+        interface_state );
       } else if( json.search_type == "set" ) {
         render_search_sets({
           "set_rows": json.set_rows,
           "page_count": json.page_count,
           "search_type": json.search_type
         },
-        inPage );
+        interface_state );
       }
     } else if( json.result == "error" ) {
       const options = {
@@ -228,15 +209,12 @@ function proc_txt_question_search_interface( inText ) {
 Render the cards that are the result of a serach.
 
 inSearch_set_editor: Object containing the search result details.
-
-inCurrPage: Current page of the results the user is in.
 */
-function render_search_cards( inSearch_set_editor, inCurrPage ) {
+function render_search_cards( inSearch_set_editor, interface_state ) {
   //Render the page buttons.
   render_search_cards_pagination(
     Math.ceil( inSearch_set_editor.page_count ),
-    inSearch_set_editor.search_type,
-    inCurrPage
+    interface_state
   );
 
   //Get a reference to the cards that resulted from the search.
@@ -248,7 +226,6 @@ function render_search_cards( inSearch_set_editor, inCurrPage ) {
     search_dom_obj.firstChild.remove();
   }
 
-
   //Iterate through each card and convert the JSON object data into HTML elements.
   cards.forEach( card => {
     const creator_username = String.fromCharCode.apply( null, card.set_creator.data );
@@ -256,10 +233,17 @@ function render_search_cards( inSearch_set_editor, inCurrPage ) {
     const search_item = document.createElement("div");
     search_item.classList = "search_item";
 
-    if( creator_username == logged_obj.username_hash ) {
+    if( interface_state.isLogged && interface_state.username_hash == creator_username ) {
       const edit_button = document.createElement("div");
       edit_button.classList = "button search_item_edit_button";
-      edit_button.onclick = getCard.bind( null, card.card_id, card.set_id );
+      edit_button.addEventListener( "click", (click) => {
+        interface_state.search_interface_state.scrollY = window.scrollY;
+        interface_state.card_editor_interface_state.prev_interface = "search";
+        interface_state.card_editor_interface_state.card_id = card.card_id;
+        interface_state.card_editor_interface_state.set_id = card.set_id;
+        interface_state.card_editor_interface_state.isNew = false;
+        launch_card_editor_interface( interface_state );
+      });
       edit_button.innerText = "Edit";
       search_item.appendChild( edit_button );
     }
@@ -280,6 +264,9 @@ function render_search_cards( inSearch_set_editor, inCurrPage ) {
 
     search_dom_obj.appendChild( search_item );
   });
+
+  
+  window.scrollTo({top:interface_state.search_interface_state.scrollY,behavior:"smooth"});
   
   //Render the 'lines,' as they would appear on a piece of lined paper.
   draw_paper();
@@ -292,52 +279,34 @@ Render the pagination buttons for a card list search result.
 inPages: Total number of pages in the search result.
 
 search_type: Value determining whether the search result is sets or cards.
-
-inCurrPage: Current page the user is on.
 */
-function render_search_cards_pagination( inPages, search_type, inCurrPage ) {
+function render_search_cards_pagination( inPages, interface_state ) {
   //Create an object containing information about the desired page buttons.
-  const pages_obj = process_page_buttons( inPages, inCurrPage ?? 1 );
+  const pages_obj = process_page_buttons( inPages, interface_state.search_interface_state.curr_page ?? 1 );
 
   //Get a reference to the page button container.
-  const container =
-    document.getElementById("search_interface_pagination_container" );
+  const container = document.getElementById("search_interface_pagination_container" );
+
+  while( container.firstChild ) {
+    container.firstChild.remove();
+  }
   
   //Interate through each page and create an HTML button element for it.
-  let dom = "";
   for( page_key in pages_obj ) {
     const real_page_number = Number( pages_obj[page_key]-1 );
-    dom += "<div class=\'setlist_interface_page_button";
-    if( Number(pages_obj[page_key]-1) == Number(inCurrPage??0) ) {
-      dom += " setlist_interface_current_page_button";
+    const setlist_interface_page_button = document.createElement("div");
+    setlist_interface_page_button.classList = "setlist_interface_page_button";
+    if( Number(pages_obj[page_key]-1) == Number(interface_state.search_interface_state.curr_page) ) {
+      setlist_interface_page_button.classList += " setlist_interface_current_page_button";
     }
-    dom += "\' ";
-    if( search_type ) {
-      dom += "onclick=\'search_interface_run_search(" +
-        real_page_number + "); ";
-    } else {
-      dom += "onclick=\'getCardList(" + real_page_number + "); ";
-    }
-    dom += "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
-      ">" +
-      pages_obj[page_key] +
-      "</div>";
+    setlist_interface_page_button.addEventListener("click", (event) => {
+      interface_state.search_interface_state.curr_page = real_page_number;
+      interface_state.search_interface_state.scrollY = 0;
+      search_interface_run_search( interface_state );
+    });
+    setlist_interface_page_button.innerText = pages_obj[page_key];
+    container.appendChild( setlist_interface_page_button );
   }
-
-  //Assign the page buttons to the DOM.
-  container.innerHTML = dom;
-}
-
-
-/*
-Function to edit a card from the search interface.
-
-inCardID: Unique identifier of this card.
-
-inSetID: Unique identifier of this card set.
-*/
-function getCard( inCardID, inSetID ) {
-  launch_card_editor_interface( inCardID, inSetID, false, "search" );
 }
 
 
@@ -346,7 +315,7 @@ Delete a search term from the search.
 
 inTerm: Term to remove from the search.
 */
-function delete_search_term( inTerm ) {
+function delete_search_term( interface_state, inTerm ) {
   //Iterate through each tag.
   let iterator = document.getElementById("search_tag_container").firstChild;
   while( iterator ) {
@@ -357,19 +326,19 @@ function delete_search_term( inTerm ) {
   }
 
   //Run a new search based based on the remaining tags.
-  search_interface_run_search();
+  search_interface_run_search( interface_state );
 }
 
 
 /*
 Function to be called upon the creation of a temporary set.
 */
-function create_temp_set_button() {
+function create_temp_set_button( interface_state ) {
   //Store a placeholder for the username.
   let user = "unlogged";
-  if( logged_obj.isLogged == true ) {
+  if( interface_state.isLogged == true ) {
     //If the user is logged in, use their correct username.
-    user = logged_obj.username_hash;
+    user = interface_state.username_hash;
   }
 
   //Create a request to send to the server for the temporary set.
@@ -454,17 +423,16 @@ function draw_paper() {
 /*
 Function to display or hide the login/logout elements as is appropriate.
 */
-function set_logged_elements() {
+function set_logged_elements( interface_state ) {
   //Get a reference to the create set button, which should only be visible to
   //logged in users.
-  const create_set_button =
-    document.getElementById("search_interface_set_name_create");
+  const create_set_button = document.getElementById("search_interface_set_name_create");
 
   //Based on whether the user is logged in or not, hide or display the
   //create set button.
-  if( logged_obj.isLogged == false ) {
+  if( interface_state.isLogged == false ) {
     create_set_button.style.display = "none";
-  } else if( logged_obj.isLogged == true ) {
+  } else if( interface_state.isLogged == true ) {
     create_set_button.style.display = "inline-block";
   }
 }
@@ -475,17 +443,17 @@ Get a list of available card sets.
 
 inPage: Current page the user is on.
 */
-function getSetList( inPage ) {
+function getSetList( interface_state ) {
   //Create a request for a list of card sets.
   const getSetListObj = new Request(
-    ip + 'setlist/' + (inPage ?? 0),
+    ip + 'setlist/' + (interface_state.search_interface_state.curr_page ?? 0),
     { method: 'GET' }
   );
   fetch( getSetListObj )
     .then( obj => obj.json())
     .then( obj => {
       //Display the list.
-      render_search_sets( obj, inPage );
+      render_search_sets( obj, interface_state );
     });
 }
 
@@ -495,17 +463,17 @@ Get a list of available card sets.
 
 inPage: Current page the user is on.
 */
-function getCardList( inPage ) {
+function getCardList( interface_state ) {
   //Create a request for a list of cards.
   const getCardListObj = new Request(
-    ip + 'cardlist/' + (inPage ?? 0),
+    ip + 'cardlist/' + (interface_state.search_interface_state.curr_page ?? 0),
     { method: 'GET' }
   );
   fetch( getCardListObj )
     .then( obj => obj.json())
     .then( obj => {
       //Display the list.
-      render_search_cards( obj, inPage );
+      render_search_cards( obj, interface_state );
     });
 }
 
@@ -517,12 +485,11 @@ inSetListObj: Object containing the search sets.
 
 inPage: Current page the user is on.
 */
-function render_search_sets( inSetListObj, inPage ) {
+function render_search_sets( inSetListObj, interface_state ) {
   //Render the page buttons.
   render_search_sets_pagination(
     Math.ceil( inSetListObj.page_count ),
-    inSetListObj.search_type,
-    inPage
+    interface_state
   );
 
   //Get a reference to the  sets.
@@ -532,35 +499,48 @@ function render_search_sets( inSetListObj, inPage ) {
   const search_dom_obj = document.getElementById("search_interface_set_list");
 
   //Iterate through each set, transforming the JSON data into HTML elements.
-  let dom_string = "";
+  //let dom_string = "";
+  while( search_dom_obj.firstChild ) {
+    search_dom_obj.firstChild.remove();
+  }
+
   setList.forEach( set => {
     const set_username_hash = String.fromCharCode.apply(null, set.set_creator.data );
-    dom_string += "<div class=\'search_item\'>";
-    if( set_username_hash == logged_obj.username_hash ) {
-      if( logged_obj.isLogged == true ) {
-        dom_string += "<div class=\"button search_item_edit_button\" " +
-          "onclick=\"getSet(" + set.set_id + ")\">Edit</div>";
-      }
+    const search_item = document.createElement("div");
+    search_item.classList = "search_item";
+    if( interface_state.isLogged && interface_state.username_hash == set_username_hash ) {
+      const search_item_edit_button = document.createElement("div");
+      search_item_edit_button.classList = "button search_item_edit_button";
+      search_item_edit_button.onclick = getSet.bind( null, interface_state, set.set_id );
+      search_item_edit_button.innerText = "Edit";
+      search_item.appendChild( search_item_edit_button );
     }
-    dom_string += "<div class=\"button search_item_text_container\"" +
-      "onclick=\"playSet(" + set.set_id + ")\">" +
-      "<span class=\"search_item_text\">" +
-      set.name + "</span>" + "</div>";
-    //}
-    if( set_username_hash == logged_obj.username_hash ) {
-      if( logged_obj.isLogged == true ) {
-        dom_string += "<div class=\"button search_item_delete_button\" " +
-          "onclick=\"prompt_delete_set(" + set.set_id + ")\">Delete</div>";
-      }
+
+    const button_item_text_container = document.createElement("div");
+    button_item_text_container.classList = "button search_item_text_container";
+    button_item_text_container.onclick = playSet.bind( null, interface_state, set.set_id );
+
+    const search_item_text = document.createElement("span");
+    search_item_text.classList = "search_item_text";
+    search_item_text.innerText = set.name;
+    button_item_text_container.appendChild( search_item_text );
+
+    search_item.appendChild( button_item_text_container );
+
+    if( interface_state.isLogged && interface_state.username_hash == set_username_hash ) {
+      const set_delete_button = document.createElement("div");
+      set_delete_button.classList = "button search_item_delete_button";
+      set_delete_button.onclick = prompt_delete_set.bind( null, set.set_id );
+      set_delete_button.innerText = "Delete";
+      search_item.appendChild( set_delete_button );
     }
-    dom_string +=  "</div>";
+
+    search_dom_obj.appendChild( search_item );
   });
-
-  //Set the container's contents to the DOM string containing the HTML elements.
-  search_dom_obj.innerHTML = dom_string;
-
-  //Draw the page lines as would appear on a standard 8 1/2x11 piece of lined paper.
+  
   draw_paper();
+
+  window.scrollTo({top:interface_state.search_interface_state.scrollY,behavior:"smooth"});
 }
 
 
@@ -570,40 +550,33 @@ Render the page buttons for a search set result.
 inPages: Total list of pages.
 
 search_type: Value determining whether the search result is sets or cards.
-
-inCurrPage: The current page the user is on.
 */
-function render_search_sets_pagination( inPages, search_type, inCurrPage ) {
+function render_search_sets_pagination( inPages, interface_state ) {
   //Create an object containing the necessary page buttons.
-  const pages_obj = process_page_buttons( inPages, inCurrPage ?? 1 );
+  const pages_obj = process_page_buttons( inPages, interface_state.search_interface_state.curr_page );
 
   //Get a reference to the page button container.
-  const container =
-    document.getElementById("search_interface_pagination_container" );
-
-  //Iterate through each page button object, transforming each into an HTML button.
-  let dom = "";
-  for( page_key in pages_obj ) {
-    const real_page_number = Number( pages_obj[page_key] - 1 );
-    dom += "<div class=\'setlist_interface_page_button";
-    if( Number(pages_obj[page_key]-1) == Number(inCurrPage??0) ) {
-      dom += " setlist_interface_current_page_button";
-    }
-    dom += "\' ";
-    if( search_type ) {
-      dom += "onclick=\'search_interface_run_search(" +
-        real_page_number + "); ";
-    } else {
-      dom += "onclick=\'getSetList(" + real_page_number + "); ";
-    }
-    dom += "window.scrollTo({top:0,behavior:\"smooth\"});\' " +
-      ">" +
-      pages_obj[page_key] +
-      "</div>";
+  const container = document.getElementById("search_interface_pagination_container" );
+  while( container.firstChild ) {
+    container.firstChild.remove();
   }
 
-  //Render the page buttons.
-  container.innerHTML = dom;
+  //Iterate through each page button object, transforming each into an HTML button.
+  for( page_key in pages_obj ) {
+    const real_page_number = Number( pages_obj[page_key] - 1 );
+    const setlist_interface_page_button = document.createElement("div");
+    setlist_interface_page_button.classList = "setlist_interface_page_button";
+    if( Number(pages_obj[page_key]-1) == Number(interface_state.search_interface_state.curr_page??0) ) {
+      setlist_interface_page_button.classList += " setlist_interface_current_page_button";
+    }
+    setlist_interface_page_button.innerText = pages_obj[page_key];
+    container.appendChild( setlist_interface_page_button );
+    setlist_interface_page_button.addEventListener( "click", (event) => {
+      interface_state.search_interface_state.curr_page = real_page_number;
+      interface_state.search_interface_state.scrollY = 0;
+      search_interface_run_search( interface_state );
+    });
+  }
 }
 
 
@@ -612,12 +585,14 @@ Function to launch a runset.
 
 inSetID: Unique identifier of the set of cards.
 */
-function playSet( inSetID ) {
+function playSet( interface_state, inSetID ) {
   //Remember the scroll position.
-  scrollY = window.scrollY;
+  interface_state.search_interface_state.scrollY = window.scrollY;
+
+  interface_state.runset_interface_state.set_id = inSetID;
 
   //Launch the runset interface.
-  launch_runset_interface( inSetID );
+  launch_runset_interface( interface_state );
 }
 
 
@@ -626,26 +601,28 @@ Get a cardset to edit it.
 
 inSetID: Unique identifier of the set of cards.
 */
-function getSet( inSetID ) {
+function getSet( interface_state, inSetID ) {
   //Remember the scroll position.
-  scrollY = window.scrollY;
+  interface_state.search_interface_state.scrollY = window.scrollY;
+
+  interface_state.set_editor_interface_state.set_id = inSetID;
 
   //Launch the set editor interface.
-  launch_set_editor_interface( inSetID );
+  launch_set_editor_interface( interface_state );
 }
 
 
 /*
 Function to be called when the button to create a new set of cards is clicked.
 */
-function search_interface_set_create() {
+function search_interface_set_create( interface_state ) {
   //Get the new set name from the input text bar.
   const setname_input = document.getElementById( 'search_interface_set_name' );
   const new_set_name = setname_input.value;
 
   //So long as it has a name, create the new set.
   if( new_set_name != "" ) {
-    create_set( new_set_name );
+    create_set( interface_state, new_set_name );
   }
 }
 
@@ -655,7 +632,7 @@ Function to create a new set of cards.
 
 set_name: Name of the new set.
 */
-function create_set( set_name ) {
+function create_set( interface_state, set_name ) {
   //Create the request to send to the server to ask for the new set to be created.
   const new_set = new Request(
     ip + 'new_set',
@@ -663,7 +640,7 @@ function create_set( set_name ) {
       method: 'POST',
       body: JSON.stringify({
         "set_name":set_name,
-        "username_hash": logged_obj.username_hash
+        "username_hash": interface_state.username_hash
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -675,7 +652,8 @@ function create_set( set_name ) {
     .then( json => {
       if( json.result == "success" ) {
         //Upon success, launch the set editor for this new set.
-        launch_set_editor_interface( json.set_id );
+        interface_state.set_editor_interface.set_id = json.set_id;
+        launch_set_editor_interface( interface_state, false );
       } else if( json.result == "error" ) {
         //Otherwise, on error, notify the user.
         const options = {

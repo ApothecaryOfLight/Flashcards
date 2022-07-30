@@ -9,17 +9,17 @@ use, and combine split sets.
 
 inSetID: Unique identifier of a set of cards.
 */
-function launch_runset_interface( inSetID ) {
+function launch_runset_interface( interface_state ) {
   //Compose a message asking the server for a set of cards.
   const get_cardlist = new Request(
-    ip + 'get_cardlist/' + inSetID
+    ip + 'get_cardlist/' + interface_state.runset_interface_state.set_id
   );
   fetch( get_cardlist )
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
         //Upon success, begin the runset.
-        runset( json.cards, json.set_images );
+        runset( interface_state, json.cards, json.set_images );
       } else if( json.result == "error" ) {
         //Upon failure, display an error to the user.
         const options = {
@@ -36,16 +36,18 @@ Function to execute a runset.
 
 inSetData: List of the cards in the set.
 */
-function runset( inSetData, inImages ) {
+function runset( interface_state, inSetData, inImages ) {
   //Create an object to track set information.
   let card_sets_obj = {
     curr_set : 0,
     sets : [],
     set_images: inImages
   };
+  interface_state.runset_interface_state.card_sets_obj.curr_set = 0;
+  interface_state.runset_interface_state.card_sets_obj.set_images = inImages;
 
   //Create an object inside the cardset object to track this run.
-  card_sets_obj.sets[ card_sets_obj.curr_set ] = {
+  interface_state.runset_interface_state.card_sets_obj.sets[ card_sets_obj.curr_set ] = {
     cards: inSetData,
     curr_card: 0,
     side: 0,
@@ -53,19 +55,19 @@ function runset( inSetData, inImages ) {
   };
 
   //Initialize the cards, setting the number of correct guesses to 0 for each.
-  prepare_cards( card_sets_obj.sets[ card_sets_obj.curr_set ].cards );
+  prepare_cards( interface_state.runset_interface_state.card_sets_obj.sets[ card_sets_obj.curr_set ].cards );
 
   //Display the first card.
-  next_card( card_sets_obj );
+  next_card( interface_state.runset_interface_state.card_sets_obj );
 
   //Display the question.
-  runset_render_qa( card_sets_obj );
+  runset_render_qa( interface_state.runset_interface_state.card_sets_obj );
 
   //Display the card set menu.
-  runset_render_side_menu( card_sets_obj );
+  runset_render_side_menu( interface_state.runset_interface_state.card_sets_obj );
 
   //Set the interface to the runset interface.
-  set_interface( "runset", card_sets_obj );
+  set_interface( "runset", interface_state );
 }
 
 
@@ -156,8 +158,8 @@ function next_card( card_sets_obj ) {
 /*
 Function to call upon clicking the button to go back to the main interface.
 */
-function runset_interface_go_back() {
-  launch_search_interface( false );
+function runset_interface_go_back( interface_state ) {
+  launch_search_interface( interface_state );
 }
 
 
@@ -230,15 +232,18 @@ Function to call upon an incorrect guess.
 
 card_sets_obj: Object containing information about this current run.
 */
-function runset_interface_missed( card_sets_obj ) {
-  //Decrement the number of correct guesses.
+function runset_interface_missed( interface_state ) {
+  //Get references
+  const card_sets_obj = interface_state.runset_interface_state.card_sets_obj;
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
+
+  //Decrement the number of correct guesses.
   curr_subset_ref.cards[ curr_subset_ref.curr_card ].correct--;
 
   //If the user is logged in, send the result of the guess to the server.
-  if( logged_obj.isLogged == true ) {
+  if( interface_state.isLogged == true ) {
     send_card_result(
-      logged_obj.username_hash,
+      interface_state.username_hash,
       curr_subset_ref.cards[ curr_subset_ref.curr_card ].card_id,
       -1
     );
@@ -254,15 +259,17 @@ Function to be called upon a correct guess.
 
 card_sets_obj: Object containing information about this current run.
 */
-function runset_interface_correct( card_sets_obj ) {
+function runset_interface_correct( interface_state ) {
+  const card_sets_obj = interface_state.runset_interface_state.card_sets_obj;
+
   //Increment the number of correct guesses for this card.
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
   curr_subset_ref.cards[curr_subset_ref.curr_card].correct++;
 
   //If the user is logged in, notify the server of the result of the guess.
-  if( logged_obj.isLogged == true ) {
+  if( interface_state.isLogged == true ) {
     send_card_result(
-      logged_obj.username_hash,
+      interface_state.username_hash,
       curr_subset_ref.cards[curr_subset_ref.curr_card].card_id,
       1
    );
@@ -288,7 +295,9 @@ Function to toggle between question and answer of a card.
 
 card_sets_obj: Object containing information about this current run.
 */
-function runset_interface_flip_card( card_sets_obj ) {
+function runset_interface_flip_card( interface_state ) {
+  const card_sets_obj = interface_state.runset_interface_state.card_sets_obj;
+
   //Get the card.
   const curr_subset_ref = card_sets_obj.sets[ card_sets_obj.curr_set ];
 

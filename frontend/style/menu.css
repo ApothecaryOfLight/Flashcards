@@ -6,17 +6,17 @@ Menu
   top: .5em;
   left: .5em;
 }
-#login_element {
+#search_interface_login_element {
   grid-column: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 1rem;
 }
-#login_element:hover {
+#search_interface_login_element:hover {
   color: #6699FF;
 }
-#login_element:active {
+#search_interface_login_element:active {
   color: #003399;
 }
 #login_text {
@@ -24,17 +24,17 @@ Menu
   font-weight: bold;
   margin-right: 0.5em;
 }
-#logout_element {
+#search_interface_logout_element {
+  display: none;
   grid-column: 2;
-  display: flex;
   justify-content: center;
   flex-direction: column;
   padding: 1rem;
 }
-#logout_element:hover {
+#search_interface_logout_element:hover {
   color: #6699FF;
 }
-#logout_element:active {
+#search_interface_logout_element:active {
   color: #003399;
 }
 #logout_text {

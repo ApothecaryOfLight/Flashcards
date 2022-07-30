@@ -3,17 +3,17 @@ Function to login.
 
 inUsernameHash: A hash of the user's username.
 */
-function login( inUsernameHash ) {
+function login( inUsernameHash, interface_state ) {
   //Set the global login variables.
-  logged_obj.isLogged = true;
-  logged_obj.username_hash = inUsernameHash;
+  interface_state.isLogged = true;
+  interface_state.username_hash = inUsernameHash;
 
   //Close the login modal.
   close_modal();
 
   //Get references to the login elements.
-  const login_element = document.getElementById("login_element");
-  const logout_element = document.getElementById("logout_element");
+  const login_element = document.getElementById("search_interface_login_element");
+  const logout_element = document.getElementById("search_interface_logout_element");
 
   //Hide the login element.
   login_element.style.display = "none";
@@ -22,7 +22,7 @@ function login( inUsernameHash ) {
   logout_element.style.display = "flex";
 
   //Relaunch interface.
-  launch_search_interface( true );
+  launch_search_interface( interface_state );
 }
 
 
@@ -72,10 +72,10 @@ function attempt_create_account() {
 /*
 Function to logout.
 */
-function logout() {
+function logout( interface_state ) {
   //Get refernces to the login and logout elements.
-  const login_element = document.getElementById("login_element");
-  const logout_element = document.getElementById("logout_element");
+  const login_element = document.getElementById("search_interface_login_element");
+  const logout_element = document.getElementById("search_interface_logout_element");
 
   //Hide the logout element.
   logout_element.style.display = "none";
@@ -84,17 +84,18 @@ function logout() {
   login_element.style.display = "flex";
 
   //Update the global login variable.
-  logged_obj.isLogged = false;
+  interface_state.isLogged = false;
+  interface_state.username_hash = "";
 
   //Relaunch interface.
-  launch_search_interface( true );
+  launch_search_interface( interface_state );
 }
 
 
 /*
 Function to attempt to login.
 */
-function attempt_login() {
+function attempt_login( interface_state ) {
   //1) Get username and password
   const username_field = document.getElementById("username_field");
   const password_field = document.getElementById("password_field");
@@ -120,7 +121,7 @@ function attempt_login() {
     .then( json => {
       if( json.result == "approve" ) {
         //3) If approved, login.
-        login( json.username_hash );
+        login( json.username_hash, interface_state );
       } else if( json.result == "error" ) {
         const options = {
           "Close" : close_modal
@@ -150,7 +151,7 @@ function prompt_failed_login( inFailureReason ) {
 /*
 Function that launches the login modal.
 */
-function prompt_login() {
+function prompt_login( interface_state ) {
   //Create the modal object.
   const prompts = {
     "username_field" : "Enter Username Here",
@@ -158,7 +159,7 @@ function prompt_login() {
   };
   const options = {
     "Cancel": close_modal,
-    "Login" : attempt_login,
+    "Login" : attempt_login.bind( null, interface_state ),
     "Create Account" : attempt_create_account
   }
 
@@ -172,8 +173,8 @@ Function to attach login/logout events to the login/logout buttons.
 */
 function attach_login() {
   //Get references to the login/logout elements.
-  const login_element = document.getElementById("login_element");
-  const logout_element = document.getElementById("logout_element");
+  const login_element = document.getElementById("search_interface_login_element");
+  const logout_element = document.getElementById("search_interface_logout_element");
 
   //Hide the logout element.
   logout_element.style.display = "none";
