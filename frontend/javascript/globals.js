@@ -46,6 +46,9 @@ window.addEventListener( 'load', (loaded_event) => {
         },
         "logout_element": {
           func: logout, event_type: 'click'
+        },
+        "set_name": {
+          func: add_search_term_on_enter, event_type: 'keydown'
         }
       },
       "set_editor" : {
@@ -57,6 +60,9 @@ window.addEventListener( 'load', (loaded_event) => {
         },
         "add_tag_button": {
           func: set_editor_interface_add_tag_button, event_type: 'click'
+        },
+        "tags_field": {
+          func: set_editor_interface_add_tag_on_enter_keypress, event_type: 'keydown'
         }
       },
       "card_editor": {

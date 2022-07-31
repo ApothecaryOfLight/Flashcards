@@ -59,6 +59,13 @@ function add_search_term_button( interface_state ) {
 }
 
 
+function add_search_term_on_enter( interface_state, keypress_event ) {
+  if( keypress_event.key == "Enter" ) {
+    add_search_term_button( interface_state );
+  }
+}
+
+
 /*
 Function to swtich between listing sets or instead listing cards.
 */

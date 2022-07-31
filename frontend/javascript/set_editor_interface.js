@@ -146,6 +146,7 @@ function set_editor_interface_go_back( interface_state ) {
   launch_search_interface( interface_state );
 }
 
+
 function set_editor_interface_add_tag( inTag, interface_state ) {
   const tags_container = document.getElementById("set_editor_interface_tags_list");
 
@@ -193,6 +194,12 @@ function set_editor_interface_add_tag_button( interface_state ) {
   set_editor_interface_update_tags( interface_state );
 }
 
+
+function set_editor_interface_add_tag_on_enter_keypress( interface_state, keypress_event ) {
+  if( keypress_event.key == "Enter" ) {
+    set_editor_interface_add_tag_button( interface_state );
+  }
+}
 
 /*
 Function to update the search topic tags of a set.
