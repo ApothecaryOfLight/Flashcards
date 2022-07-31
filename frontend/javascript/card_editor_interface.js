@@ -23,16 +23,16 @@ function launch_card_editor_interface( interface_state ) {
     );
 
     //7) Remove the existing bound function, if it exists.
-    if( bound_functions["card_editor"]["set_card"] ) {
-      bound_functions["card_editor"]["set_card"].forEach( (func)=> {
+    if( interface_state.bound_functions["card_editor"]["set_card"] ) {
+      interface_state.bound_functions["card_editor"]["set_card"].forEach( (func)=> {
         set_card.removeEventListener( 'click', func );
       });
     }
-    bound_functions["card_editor"]["set_card"] = [];
+    interface_state.bound_functions["card_editor"]["set_card"] = [];
 
     //8) Add the new bound function as a click event listener.
     set_card.addEventListener( 'click', func_ref );
-    bound_functions["card_editor"]["set_card"].push( func_ref );
+    interface_state.bound_functions["card_editor"]["set_card"].push( func_ref );
   } else {
     //3b) If the card doesn't exist, don't bother.
     const question_text = document.getElementById("card_editor_interface_q_text");
