@@ -30,6 +30,7 @@ function add_search_term( interface_state, search_term ) {
   search_term_container.appendChild( search_tag_unit );
 }
 
+
 /*
 Add a search term to the search.
 */
@@ -83,8 +84,6 @@ function switch_list_type( interface_state ) {
 
 /*
 Run a search.
-
-inPage: Current page of the search interface.
 */
 function search_interface_run_search( interface_state ) {
   search_terms = [];
@@ -204,6 +203,7 @@ function proc_txt_question_search_interface( inText ) {
 
   return returned_text;
 }
+
 
 /*
 Render the cards that are the result of a serach.
@@ -482,8 +482,6 @@ function getCardList( interface_state ) {
 Function to render the cardsets that result from a search.
 
 inSetListObj: Object containing the search sets.
-
-inPage: Current page the user is on.
 */
 function render_search_sets( inSetListObj, interface_state ) {
   //Render the page buttons.
@@ -548,8 +546,6 @@ function render_search_sets( inSetListObj, interface_state ) {
 Render the page buttons for a search set result.
 
 inPages: Total list of pages.
-
-search_type: Value determining whether the search result is sets or cards.
 */
 function render_search_sets_pagination( inPages, interface_state ) {
   //Create an object containing the necessary page buttons.

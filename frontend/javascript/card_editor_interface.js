@@ -3,17 +3,8 @@
 
 /*
 Launch the interface used for editing cards.
-
-inCardID: The unique identifier of the card to edit.
-
-inSetID: The unique identifier of the set to which the card belongs.
-
-isNew: Boolean indicating whether the card has just been created or already exists.
-
-inPrevInt: Previous interface displayed. Used to return to that interface after
-exiting the card editor interface.
 */
-function launch_card_editor_interface( interface_state ) {//inCardID, inSetID, isNew, inPrevInt ) {
+function launch_card_editor_interface( interface_state ) {
   //1) Set the current interface and variables.
   set_interface( "card_editor", interface_state );
 
@@ -50,6 +41,7 @@ function launch_card_editor_interface( interface_state ) {//inCardID, inSetID, i
     answer_text.innerHTML = "";
   }
 }
+
 
 function proc_txt_question_card_editor_interface( inText, inImages, QuestionContainer ) {
   //1) Remove any text or images that may have previously been loaded into the container.
@@ -114,7 +106,6 @@ function get_card( inCardID ) {
 }
 
 
-
 function recursively_traverse_tree( node, objectified_post, images_array ) {
   if( node.firstChild ) {
       for( const key in node.childNodes ) {
@@ -152,13 +143,8 @@ function recursively_traverse_tree( node, objectified_post, images_array ) {
 }
 
 
-
 /*
 This function is used to update an existing card from the card editor interface.
-
-inSetID: Unique indetifier of the set to which the card belongs.
-
-inCardID: Unique identifier of the card to update.
 */
 function card_editor_interface_update_card( interface_state ) {
   //Get refernces to the question and answer text fields of the card.
@@ -222,8 +208,6 @@ function card_editor_interface_update_card( interface_state ) {
 
 /*
 Function to be called upon creating a new card in the card editor interface.
-
-inCardData: Object containing the unique identifiers of the card and set.
 */
 function card_editor_interface_set_card( interface_state ) {
   //Get references to the question and answer text fields.
@@ -320,6 +304,7 @@ function card_editor_interface_add_tag( inTag ) {
   tags_field.appendChild( new_tag_container );
 }
 
+
 /*
 Function to be used to add a subject tag to a card.
 */
@@ -354,7 +339,7 @@ function card_editor_interface_render_tags( card_tags ) {
 /*
 Function to delete a card search tag.
 
-inTag: The tag being deleted.
+inTagTest: Text of the tag to be deleted.
 */
 function delete_card_tag( inTagText ) {
   let tag_iterator = document.getElementById("card_editor_interface_tags_list").firstChild;
@@ -365,7 +350,6 @@ function delete_card_tag( inTagText ) {
     tag_iterator = tag_iterator.nextSibling;
   }
 }
-
 
 
 function card_editor_interface_pictoral_question_add_button() {

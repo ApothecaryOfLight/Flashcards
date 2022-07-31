@@ -6,8 +6,6 @@ displaying the question. The user can flip the card over to see the answer.
 
 Additionally the user can split a set into smaller sets, select which set to
 use, and combine split sets.
-
-inSetID: Unique identifier of a set of cards.
 */
 function launch_runset_interface( interface_state ) {
   //Compose a message asking the server for a set of cards.
@@ -229,8 +227,6 @@ function send_card_result( user_hash, card_id, result ) {
 
 /*
 Function to call upon an incorrect guess.
-
-card_sets_obj: Object containing information about this current run.
 */
 function runset_interface_missed( interface_state ) {
   //Get references
@@ -256,8 +252,6 @@ function runset_interface_missed( interface_state ) {
 
 /*
 Function to be called upon a correct guess.
-
-card_sets_obj: Object containing information about this current run.
 */
 function runset_interface_correct( interface_state ) {
   const card_sets_obj = interface_state.runset_interface_state.card_sets_obj;
@@ -292,8 +286,6 @@ function runset_interface_correct( interface_state ) {
 
 /*
 Function to toggle between question and answer of a card.
-
-card_sets_obj: Object containing information about this current run.
 */
 function runset_interface_flip_card( interface_state ) {
   const card_sets_obj = interface_state.runset_interface_state.card_sets_obj;
@@ -459,7 +451,6 @@ function proc_txt_question_runset_interface( inText, inImages, QuestionContainer
     }
   });
 }
-
 
 
 /*

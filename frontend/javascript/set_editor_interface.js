@@ -166,10 +166,9 @@ function set_editor_interface_add_tag( inTag, interface_state ) {
   tags_container.appendChild( tag_container );
 }
 
+
 /*
 Function to add a search topic tag to this set.
-
-inSetID: Unique identifier of this card set.
 */
 function set_editor_interface_add_tag_button( interface_state ) {
   //Get tag
@@ -197,8 +196,6 @@ function set_editor_interface_add_tag_button( interface_state ) {
 
 /*
 Function to update the search topic tags of a set.
-
-inSetID: Unique identifier of the set.
 */
 function set_editor_interface_update_tags( interface_state ) {
   //Iterate through each tag and preform regex on it to make it server compatible.

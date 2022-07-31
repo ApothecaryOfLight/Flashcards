@@ -151,6 +151,7 @@ function prompt_delete_card( inCardID, inSetID ) {
   launch_modal( null, "Are you sure you want to delete this card?", options );
 }
 
+
 /*
 Function to launch a modal prompting the user to confirm that they want to delete
 a set.
