@@ -320,6 +320,13 @@ function card_editor_interface_add_tag_button() {
 }
 
 
+function card_editor_interface_add_tag_on_enter_keypress( interface_state, keypress_event ) {
+  if( keypress_event.key == "Enter" ) {
+    card_editor_interface_add_tag_button( interface_state );
+  }
+}
+
+
 /*
 Function to convert card topic tags into HTML elements.
 */

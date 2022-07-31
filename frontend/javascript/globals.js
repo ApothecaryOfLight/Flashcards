@@ -76,6 +76,9 @@ window.addEventListener( 'load', (loaded_event) => {
         },
         "pictoral_question_add_button": {
           func: card_editor_interface_pictoral_question_add_button, event_type: 'click'
+        },
+        "tags_field": {
+          func: card_editor_interface_add_tag_on_enter_keypress, event_type: 'keydown'
         }
       },
       "runset": {
