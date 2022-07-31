@@ -32,57 +32,57 @@ window.addEventListener( 'load', (loaded_event) => {
         "set_name_create": {
           func: search_interface_set_create, event_type: 'click'
         },
-        "add_search_tag_button":  {
+        "add_search_tag_button": {
           func: add_search_term_button, event_type: 'click'
         },
-        "switch_list_type":  {
+        "switch_list_type": {
           func: switch_list_type, event_type: 'click'
         },
-        "create_temp_set_button":  {
+        "create_temp_set_button": {
           func: create_temp_set_button, event_type: 'click'
         },
-        "login_element":  {
+        "login_element": {
           func: prompt_login, event_type: 'click'
         },
-        "logout_element":  {
+        "logout_element": {
           func: logout, event_type: 'click'
         }
       },
       "set_editor" : {
-        "new":  {
+        "new": {
           func: set_editor_interface_new_button, event_type: 'click'
         },
-        "go_back":  {
+        "go_back": {
           func: set_editor_interface_go_back, event_type: 'click'
         },
-        "add_tag_button":  {
+        "add_tag_button": {
           func: set_editor_interface_add_tag_button, event_type: 'click'
         }
       },
       "card_editor": {
-        "set_card":  { func: card_editor_interface_set_card, event_type: 'click'
+        "set_card": { func: card_editor_interface_set_card, event_type: 'click'
         },
-        "go_back":  {
+        "go_back": {
           func: card_editor_interface_go_back, event_type: 'click'
         },
-        "add_tag_button":  {
+        "add_tag_button": {
           func: card_editor_interface_add_tag_button, event_type: 'click'
         },
-        "pictoral_question_add_button":  {
+        "pictoral_question_add_button": {
           func: card_editor_interface_pictoral_question_add_button, event_type: 'click'
         }
       },
       "runset": {
-        "go_back":  {
+        "go_back": {
           func: runset_interface_go_back, event_type: 'click'
         },
-        "missed":  {
+        "missed": {
           func: runset_interface_missed, event_type: 'click'
         },
-        "correct":  {
+        "correct": {
           func: runset_interface_correct, event_type: 'click'
         },
-        "flip_card":  {
+        "flip_card": {
           func: runset_interface_flip_card, event_type: 'click'
         }
       }

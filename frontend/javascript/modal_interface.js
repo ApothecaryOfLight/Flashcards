@@ -1,7 +1,7 @@
 /*
 Function to launch a modal popup.
 */
-function launch_modal( isPrompt, inMessage, inButtons ) {
+function launch_modal( inPrompts, inMessage, inButtons ) {
   //Get a reference to the modal.
   const modal_handle = document.getElementById("modal_interface_screen_cover");
 
@@ -13,20 +13,27 @@ function launch_modal( isPrompt, inMessage, inButtons ) {
   modal_message.innerHTML = inMessage;
 
   //If this modal has prompts, then:
-  if( isPrompt ) {
+  if( inPrompts ) {
     //Get a reference to the modal interface prompts.
     const modal_prompts = document.getElementById( "modal_interface_prompts" );
 
     //Compose a string to dispaly the prompts.
-    for( prompt_name in isPrompt ) {
+    for( prompt_name in inPrompts ) {
       const prompt_input_field = document.createElement("input");
       prompt_input_field.type = "text";
       prompt_input_field.id = prompt_name;
       prompt_input_field.classList = "prompt_input_field";
       prompt_input_field.autocomplete = "off";
-      prompt_input_field.placeholder = isPrompt[prompt_name];
+      prompt_input_field.placeholder = inPrompts[prompt_name].hint;
+      if( inPrompts[prompt_name].event ) {
+        prompt_input_field.addEventListener(
+          inPrompts[prompt_name].event_type,
+          inPrompts[prompt_name].func
+        );
+      }
       modal_prompts.appendChild( prompt_input_field );
     }
+    document.getElementById(Object.keys(inPrompts)[0]).focus();
   }
 
   //Get a reference to the button container in the modal.

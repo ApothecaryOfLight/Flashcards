@@ -154,8 +154,18 @@ Function that launches the login modal.
 function prompt_login( interface_state ) {
   //Create the modal object.
   const prompts = {
-    "username_field" : "Enter Username Here",
-    "password_field" : "Enter Password Here"
+    "username_field" : {
+      hint: "Enter Username Here",
+      event: true,
+      event_type: "keypress",
+      func: switch_focus_to_password_field
+    },
+    "password_field" : {
+      hint: "Enter Password Here",
+      event: true,
+      event_type: "keypress",
+      func: submit_login_on_enter_press.bind(null,interface_state)
+    }
   };
   const options = {
     "Cancel": close_modal,
@@ -183,7 +193,21 @@ function attach_login() {
   login_element.addEventListener( 'click', (click_event) => {
     prompt_login();
   });
-  logout_element.addEventListener( 'click', (click_evnet) => {
+  logout_element.addEventListener( 'click', (click_event) => {
     logout();
   });
+}
+
+
+function switch_focus_to_password_field( keydown_event ) {
+  if( keydown_event.key == "Enter" ) {
+    document.getElementById("password_field").focus();
+  }
+}
+
+
+function submit_login_on_enter_press( interface_state, keydown_event ) {
+  if( keydown_event.key == "Enter" ) {
+    attempt_login( interface_state );
+  }
 }
