@@ -2,8 +2,9 @@
 cd "${0%/*}"
 if [[ "$1" = "http" ]];
 then
-  echo "const ip = \"http://${2}:3001\/\";" > ./frontend/ip_file.js
-  cd backend && screen -d -m -S Flashcards bash -c './run.sh http "$2"'
+  ip=$(curl https://api.ipify.org?format=text)
+  echo "const ip = \"http://${ip}:3001\/\";" > ./frontend/ip_file.js
+  cd backend && screen -d -m -S Flashcards bash -c './run.sh http "$ip"'
 elif [[ "$1" = "https" ]];
 then
   echo "const ip = \"https://triviacards.net:3001\/\";" > ./frontend/ip_file.js
