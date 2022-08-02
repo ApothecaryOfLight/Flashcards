@@ -18,13 +18,9 @@ echo "CREATE TABLE error_log( error_id INT NOT NULL, PRIMARY KEY(error_id), time
 echo "CREATE TABLE event_log( event_id INT NOT NULL, PRIMARY KEY(event_id), timestamp DATETIME(6) NOT NULL, ip TINYTEXT, code_source VARCHAR(256), details TEXT );" >> "create_schema.sql"
 
 echo "CREATE TABLE first_level_subjects ( name VARCHAR(150) NOT NULL, first_level_subject_id INT NOT NULL PRIMARY KEY );" >> "create_schema.sql"
-
 echo "CREATE TABLE second_level_subjects ( name VARCHAR(150) NOT NULL, second_level_subject_id INT NOT NULL PRIMARY KEY );" >> "create_schema.sql"
-
 echo "CREATE TABLE third_level_subjects ( name VARCHAR(150) NOT NULL, third_level_subject_id INT NOT NULL PRIMARY KEY );" >> "create_schema.sql"
-
 echo "CREATE TABLE fourth_level_subjects ( name VARCHAR(150) NOT NULL, fourth_level_subject_id INT NOT NULL PRIMARY KEY );" >> "create_schema.sql"
-
 echo "CREATE TABLE subject_set_listing ( set_id INT NOT NULL, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE, first_level_subject_id INT, FOREIGN KEY (first_level_subject_id) REFERENCES first_level_subjects(first_level_subject_id) ON DELETE CASCADE, second_level_subject_id INT, FOREIGN KEY (second_level_subject_id) REFERENCES second_level_subjects(second_level_subject_id) ON DELETE CASCADE, third_level_subject_id INT, FOREIGN KEY (third_level_subject_id) REFERENCES third_level_subjects(third_level_subject_id) ON DELETE CASCADE, fourth_level_subject_id INT, FOREIGN KEY (fourth_level_subject_id) REFERENCES fourth_level_subjects(fourth_level_subject_id) ON DELETE CASCADE, INDEX subject_set_listing_lookup_index( first_level_subject_id, second_level_subject_id, third_level_subject_id, fourth_level_subject_id ) );" >> "create_schema.sql"
 
 echo "CREATE USER IF NOT EXISTS 'Flashcards_User'@'localhost' IDENTIFIED BY 'Flashcards_Password';" >> "create_schema.sql"
