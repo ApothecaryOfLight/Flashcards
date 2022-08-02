@@ -8,7 +8,8 @@ function switch_interface( target_interface_id ) {
     //Create an array of all interface names.
     const interfaces = [
         "error-log-container",
-        "event-log-container"
+        "event-log-container",
+        "subject_editor_container"
     ];
 
     //Iterate through each interface name.
@@ -35,7 +36,6 @@ window.onload = () => {
 
     //Get a reference to the get error log menu button.
     const get_error_log_button = document.getElementById("menu_button_error_log");
-
     //Attach a click event listener to the get error log menu button.
     get_error_log_button.addEventListener( "click", (event) => {
         switch_interface( "error-log-container" );
@@ -52,5 +52,15 @@ window.onload = () => {
         
         //Get the event log from the server.
         get_event_log();
+    });
+    
+    //Get a reference to the get subject editor menu button.
+    const get_subject_editor_button = document.getElementById("menu_button_subject_editor");
+    //Attach a click event listener to the get subject editor menu button.
+    get_subject_editor_button.addEventListener( "click", (event) => {
+        switch_interface( "subject_editor_container" );
+        
+        //Get the subjects from the server.
+        get_initial_subjects();
     });
 }

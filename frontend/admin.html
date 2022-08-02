@@ -3,6 +3,8 @@
 <head>
   <link rel="stylesheet" href="style/admin-interface.css" />
   <link rel="stylesheet" href="style/error-log.css" />
+  <link rel="stylesheet" href="style/subject_editor.css" />
+
 
   <script src="javascript/blueimp.min.js"></script>
   <script src="ip_file.js"></script>
@@ -12,6 +14,7 @@
   <script src="javascript/time_converter.js"></script>
   <script src="javascript/error_element_composer.js"></script>
   <script src="javascript/event_element_composer.js"></script>
+  <script src="javascript/subject_editor.js"></script>
   <script src="javascript/admin-interface.js"></script>
   <script src="javascript/error-log.js"></script>
 </head>
@@ -20,10 +23,29 @@
   <div id="menu">
     <div id="menu_button_error_log" class="menu_button">Error Log</div>
     <div id="menu_button_event_log" class="menu_button">Event Log</div>
+    <div id="menu_button_subject_editor" class="menu_button">Subject Editor</div>
   </div>
 
   <div id="error-log-container"></div>
   <div id="event-log-container"></div>
+  <div id="subject_editor_container">
+    <div id="first_level_subject_container">
+      <select id="first_level_subject_dropdown"></select>
+      <button id="add_first_level_subject_button">Add Subject</button>
+    </div>
+    <div id="second_level_subject_container">
+      <select id="second_level_subject_dropdown"></select>
+      <button id="add_second_level_subject_button">Add Subject</button>
+    </div>
+    <div id="third_level_subject_container">
+      <select id="third_level_subject_dropdown"></select>
+      <button id="add_third_level_subject_button">Add Subject</button>
+    </div>
+    <div id="fourth_level_subject_container">
+      <select id="fourth_level_subject_dropdown"></select>
+      <button id="add_fourth_level_subject_button">Add Subject</button>
+    </div>
+  </div>
 
 </body>
 </html>

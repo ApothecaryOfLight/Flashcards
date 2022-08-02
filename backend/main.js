@@ -70,6 +70,9 @@ const pagination = require('./javascript/pagination.js');
 /*Login*/
 const login = require('./javascript/login.js');
 
+/*Subjects*/
+const subjects = require('./javascript/subjects.js')
+
 if( process.argv[2] == "https" ) {
   privateKey = fs.readFileSync('../privkey.pem');
   certificate = fs.readFileSync('../fullchain.pem');
@@ -123,6 +126,9 @@ function launchRoutes() {
   temporary_set.attach_temporary_set_route( error_log, app, sqlPool );
 
   pagination.attach_page_count_route( error_log, app, sqlPool );
+
+  subjects.attach_get_first_level_subjects( error_log, app, sqlPool );
+  subjects.attach_get_subjects( error_log, app, sqlPool );
 
   if( process.argv[2] == "https" ) {
     var server = https.createServer( credentials, app );
