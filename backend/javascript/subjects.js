@@ -79,7 +79,7 @@ async function attach_get_subjects( error_log, app, sqlPool ) {
                     const [third_rows,third_fields] =
                         await sqlPool.query( third_level_query );
                     response.third_level = third_rows;
-            } else {
+            } else if( Object.keys(response.second_level).length != 0) {
                 const third_level_query = "SELECT " +
                     "third_level_subjects.name as name, " +
                     "third_level_subjects.third_level_subject_id as id " +
@@ -107,7 +107,7 @@ async function attach_get_subjects( error_log, app, sqlPool ) {
                     const [fourth_rows,fourth_fields] =
                         await sqlPool.query( fourth_level_query );
                     response.fourth_level = fourth_rows;
-            } else {
+            } else if( Object.keys(response.third_level).length != 0)  {
                 const fourth_level_query = "SELECT " +
                     "fourth_level_subjects.name as name, " +
                     "fourth_level_subjects.fourth_level_subject_id as id " +
