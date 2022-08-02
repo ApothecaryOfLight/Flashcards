@@ -140,3 +140,32 @@ async function attach_get_subjects( error_log, app, sqlPool ) {
     });
 }
 exports.attach_get_subjects = attach_get_subjects;
+
+
+async function attach_add_subject( error_log, app, sqlPool ) {
+    app.get( '/add_subject/:level/:subject_name/:parent_level/:parent_id', async function (req,res) {
+        try {
+            const insert_query = "INSERT INTO " +
+                req.params.level + "_level_subjects " +
+                "(name,member_of_" + req.params.parent_level + "_level_subject_id) " +
+                "VALUES (\'" +
+                req.params.subject_name + "\'," +
+                req.params.parent_id + ");"
+            const [rows,fields] = await sqlPool.query( insert_query );
+            res.send( JSON.stringify({yay:"yayer"}));
+        } catch( error ) {
+            error_log.log_error(
+              sqlPool,
+              "subjects.js::attach_get_first_level_subjects()",
+              req.ip,
+              error
+            );
+  
+            res.send( JSON.stringify({
+              "result": "failure",
+              "error_message": "Error looking up first level subjects."
+            }));
+        }
+    });
+}
+exports.attach_add_subject = attach_add_subject;

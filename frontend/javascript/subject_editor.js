@@ -44,13 +44,30 @@ function option_change( level ) {
     }
 }
 
+function hide_input_fields_above( level ) {
+    for( let i=level+1; i<5; i++ ) {
+        const input_field_name = i + "_level_subject_input_field";
+        const input_field_ref = document.getElementById(input_field_name);
+        input_field_ref.style["display"] = "none";
+    }
+}
+
+function show_input_field( level ) {
+    const input_field_name = level + "_level_subject_input_field";
+    const input_field_ref = document.getElementById(input_field_name);
+    input_field_ref.style["display"] = "inline-block";
+}
+
 function populate_dropdown( subjects, target_dropdown, level ) {
     const select_element = document.getElementById(target_dropdown);
     while( select_element.firstChild ) {
         select_element.firstChild.remove();
     }
     if( typeof(subjects) === "undefined" ) {
+        hide_input_fields_above( level );
         return;
+    } else {
+        show_input_field( level );
     }
     subjects.forEach( (subject) => {
         const option = document.createElement("option");
@@ -59,4 +76,58 @@ function populate_dropdown( subjects, target_dropdown, level ) {
         select_element.appendChild( option );
     });
     select_element.addEventListener( 'change', option_change.bind(null,level) );
+}
+
+function convert_text_level( inlevel ) {
+    if( inlevel == 1 ) {
+        return "first";
+    } else if( inlevel == 2 ) {
+        return "second";
+    } else if( inlevel == 3 ) {
+        return "third";
+    } else if( inlevel == 4 ) {
+        return "fourth";
+    }
+}
+
+function add_subject( level ) {
+    const input_field_name = level + "_level_subject_input_field";
+    const input_field_ref = document.getElementById(input_field_name);
+    const text_level = convert_text_level( level );
+    let url = "add_subject/" + text_level + "/" + input_field_ref.value + "/";
+
+    if( level > 1 ) {
+        const parent_text_level = convert_text_level( level-1 );
+        const parent_dropdown_name = parent_text_level + "_level_subject_dropdown";
+        const parent_ref = document.getElementById(parent_dropdown_name);
+        const parent_value = parent_ref.value;
+        url += parent_text_level + "/" + parent_value;
+    } else {
+        url += "-1";
+    }
+
+    const add_subject_request = new Request(
+        ip + url
+    );
+    fetch( add_subject_request )
+    .then( json => json.json() )
+    .then( json => {
+        option_change( level );
+    });
+}
+
+function attach_add_subject_events() {
+    for( i=1; i<5; i++ ) {
+        const button_name = "add_" + i + "_level_subject_button";
+        const button_ref = document.getElementById(button_name);
+        button_ref.addEventListener( "click", add_subject.bind(null,i));
+    }
+}
+
+function detach_add_subject_events() {
+    for( i=1; i<5; i++ ) {
+        const button_name = "add_" + i + "_level_subject_button";
+        const button_ref = document.getElementById(button_name);
+        button_ref.replaceWith( button_ref.cloneNode(true) );
+    }
 }

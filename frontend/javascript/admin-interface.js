@@ -12,6 +12,8 @@ function switch_interface( target_interface_id ) {
         "subject_editor_container"
     ];
 
+    detach_add_subject_events();
+
     //Iterate through each interface name.
     interfaces.forEach( (interface_name) => {
         const interface_ref = document.getElementById(interface_name);
@@ -62,5 +64,6 @@ window.onload = () => {
         
         //Get the subjects from the server.
         get_initial_subjects();
+        attach_add_subject_events();
     });
 }
