@@ -3,8 +3,8 @@ Menu
 */
 #menu {
   position: absolute;
-  top: .5em;
-  left: .5em;
+  top: 2rem;
+  left: 1rem;
 }
 #search_interface_login_element {
   grid-column: 2;

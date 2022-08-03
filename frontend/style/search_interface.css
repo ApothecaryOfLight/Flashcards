@@ -3,11 +3,11 @@ search interface
 */
 #search_interface {
   display: grid;
-  grid-template-rows: 4rem 8rem 3rem auto;
+  grid-template-rows: 2rem 4rem 6rem 3rem auto;
   grid-template-columns: 6.2rem auto;
 }
 #search_interface_field_container {
-  grid-row: 1;
+  grid-row: 2;
   grid-column: 2;
   width: 80%;
   margin-left: 1rem;
@@ -46,7 +46,7 @@ search interface
 }
 #search_interface_set_list {
   width: 100%;
-  grid-row: 4;
+  grid-row: 5;
   grid-column-start: 1;
   grid-column-end: 4;
 }
@@ -106,7 +106,7 @@ search interface
 
 /*Pagination*/
 #search_interface_pagination_container {
-  grid-row: 5;
+  grid-row: 6;
   grid-column-start: 2;
   grid-column-end: 4;
   display: flex;
@@ -151,7 +151,7 @@ search interface
 /*Search tags*/
 #search_tag_container {
   font-size: 2rem;
-  grid-row: 3;
+  grid-row: 4;
   grid-column: 2;
   padding-top: 1rem;
   padding-left: .5rem;
@@ -162,7 +162,7 @@ search interface
 }
 #search_buttons_container {
   margin-left: 1rem;
-  grid-row: 2;
+  grid-row: 3;
   grid-column: 2;
 }
 #create_temp_set_button {

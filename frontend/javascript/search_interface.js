@@ -10,6 +10,8 @@ function launch_search_interface( interface_state ) {
   //Show or hide login/logout buttons as is appropraite.
   set_logged_elements( interface_state );
 
+  get_subject_tags( 1 );
+
   search_interface_run_search( interface_state );
 }
 

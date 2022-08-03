@@ -12,7 +12,6 @@ then
   sudo mysql_secure_installation
 
   #==mySQL Schema==
-  ./create_schema.sh
   sudo mysql < create_schema.sql
 
   #==NGINX==
@@ -29,9 +28,7 @@ then
 elif [[ "$1" = "unified" ]];
 then
   #==mySQL Schema==
-  ./create_schema.sh
   sudo mysql < create_schema.sql
-  rm create_schema.sql
 
   #==NPM Packages==
   cd backend && npm i

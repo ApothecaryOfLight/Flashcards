@@ -21,6 +21,7 @@
 <script src="javascript/card_editor_interface.js"></script>
 <script src="javascript/set_editor_interface.js"></script>
 <script src="javascript/search_interface.js"></script>
+<script src="javascript/search_interface_subject_tags.js"></script>
 <script src="javascript/modal_interface.js"></script>
 <script src="javascript/login.js"></script>
 <script src="javascript/interface_manager.js"></script>
@@ -35,6 +36,7 @@
 <link rel="stylesheet" href="style/interface_manager.css">
 <link rel="stylesheet" href="style/buttons.css">
 <link rel="stylesheet" href="style/menu.css">
+<link rel="stylesheet" href="style/search_interface_subject_tags.css">
 
 
 </head>
@@ -42,6 +44,20 @@
 
 <div id="root">
 <div id="search_interface">
+  <div id="subject_tab_bar">
+    <span id="subject_tab_bar_up_button" class="material-icons md-32 button">
+      arrow_upward
+    </span>
+    <span id="subject_tab_scroll_left_button" class="material-icons md-32 button">
+      arrow_back
+    </span>
+    <div id="subject_tab_container">
+      <div class="subject_tab">A Tab</div>
+    </div>
+    <span id="subject_tab_scroll_right_button" class="material-icons md-32 button">
+      arrow_forward
+    </span>
+  </div>
   <div id="paper_background">
     <div class="red_lines"></div>
   </div>
