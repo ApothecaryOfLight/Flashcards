@@ -34,6 +34,9 @@ function get_subjects( first, second, third, level ) {
     .then( json => json.json() )
     .then( levels => {
         level = (level??1);
+        if( level == 1 ) {
+            level = 2;
+        }
         for( i=level; i<=4; i++ ) {
             const key = "level_" + i;
             const element = i + "_level_subject_dropdown";
