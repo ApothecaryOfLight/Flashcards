@@ -11,11 +11,11 @@ function hide_input_fields_above( level ) {
 }
 
 function get_hierarchy_depth( levels ) {
-    if( typeof(levels.second_level) === "undefined" ) {
+    if( typeof(levels.level_2) === "undefined" ) {
         return 1;
-    } else if( typeof(levels.third_level) === "undefined" ) {
+    } else if( typeof(levels.level_3) === "undefined" ) {
         return 2;
-    } else if ( typeof(levels.fourth_level) === "undefined" ) {
+    } else if ( typeof(levels.level_4) === "undefined" ) {
         return 3;
     } else {
         return 4;
@@ -23,20 +23,16 @@ function get_hierarchy_depth( levels ) {
 }
 
 function get_subjects( first, second, third ) {
-    console.log( "Third: " + third );
-    console.log( "Type: " + typeof(third) );
     const URL_params = (first??1) + "/" + (second??-1) + "/" + (third??-1);
-    console.log( "URL params: " + URL_params );
     const get_subjects_request = new Request(
         ip + 'get_subjects/' + URL_params
     );
     fetch( get_subjects_request )
     .then( json => json.json() )
     .then( levels => {
-        console.dir( levels );
-        populate_dropdown( levels.second_level, "second_level_subject_dropdown", 2 );
-        populate_dropdown( levels.third_level, "third_level_subject_dropdown", 3 );
-        populate_dropdown( levels.fourth_level, "fourth_level_subject_dropdown", 4 );
+        populate_dropdown( levels.level_2, "2_level_subject_dropdown", 2 );
+        populate_dropdown( levels.level_3, "3_level_subject_dropdown", 3 );
+        populate_dropdown( levels.level_4, "4_level_subject_dropdown", 4 );
         hide_input_fields_above( get_hierarchy_depth(levels) );
     });
 }
@@ -47,18 +43,18 @@ function get_initial_subjects() {
     fetch( get_subjects_request )
     .then( json => json.json() )
     .then( levels => {
-        populate_dropdown( levels.first_level, "first_level_subject_dropdown", 1 );
-        populate_dropdown( levels.second_level, "second_level_subject_dropdown", 2 );
-        populate_dropdown( levels.third_level, "third_level_subject_dropdown", 3 );
-        populate_dropdown( levels.fourth_level, "fourth_level_subject_dropdown", 4 );
+        populate_dropdown( levels.level_1, "1_level_subject_dropdown", 1 );
+        populate_dropdown( levels.level_2, "2_level_subject_dropdown", 2 );
+        populate_dropdown( levels.level_3, "3_level_subject_dropdown", 3 );
+        populate_dropdown( levels.level_4, "4_level_subject_dropdown", 4 );
         hide_input_fields_above( get_hierarchy_depth(levels) );
     });
 }
 
 function option_change( level ) {
-    const first_dropdown_ref = document.getElementById("first_level_subject_dropdown");
-    const second_dropdown_ref =  document.getElementById("second_level_subject_dropdown");
-    const third_dropdown_ref = document.getElementById("third_level_subject_dropdown");
+    const first_dropdown_ref = document.getElementById("1_level_subject_dropdown");
+    const second_dropdown_ref =  document.getElementById("2_level_subject_dropdown");
+    const third_dropdown_ref = document.getElementById("3_level_subject_dropdown");
     if( level == 1 ) {
         const first_dropdown_val = Number(first_dropdown_ref.value);
         get_subjects( first_dropdown_val, -1, -1 );
@@ -91,32 +87,18 @@ function populate_dropdown( subjects, target_dropdown, level ) {
     select_element.addEventListener( 'change', option_change.bind(null,level) );
 }
 
-function convert_text_level( inlevel ) {
-    if( inlevel == 1 ) {
-        return "first";
-    } else if( inlevel == 2 ) {
-        return "second";
-    } else if( inlevel == 3 ) {
-        return "third";
-    } else if( inlevel == 4 ) {
-        return "fourth";
-    }
-}
-
 function add_subject( level ) {
     const input_field_name = level + "_level_subject_input_field";
     const input_field_ref = document.getElementById(input_field_name);
     const input_field_value = input_field_ref.value;
     input_field_ref.value = "";
-    const text_level = convert_text_level( level );
-    let url = "add_subject/" + text_level + "/" + input_field_value + "/";
+    let url = "add_subject/" + level + "/" + input_field_value + "/";
 
     if( level > 1 ) {
-        const parent_text_level = convert_text_level( level-1 );
-        const parent_dropdown_name = parent_text_level + "_level_subject_dropdown";
+        const parent_dropdown_name = (level-1) + "_level_subject_dropdown";
         const parent_ref = document.getElementById(parent_dropdown_name);
         const parent_value = parent_ref.value;
-        url += parent_text_level + "/" + parent_value;
+        url += parent_id;
     } else {
         url += "-1";
     }
