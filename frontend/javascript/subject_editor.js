@@ -1,14 +1,43 @@
+function hide_input_fields_above( level ) {
+    for( let i=1; i<5; i++ ) {
+        const input_field_name = i + "_level_subject_input_field";
+        const input_field_ref = document.getElementById(input_field_name);
+        if( i <= level ) {
+            input_field_ref.style["display"] = "inline-block";
+        } else {
+            input_field_ref.style["display"] = "none";
+        }
+    }
+}
+
+function get_hierarchy_depth( levels ) {
+    if( typeof(levels.second_level) === "undefined" ) {
+        return 1;
+    } else if( typeof(levels.third_level) === "undefined" ) {
+        return 2;
+    } else if ( typeof(levels.fourth_level) === "undefined" ) {
+        return 3;
+    } else {
+        return 4;
+    }
+}
+
 function get_subjects( first, second, third ) {
+    console.log( "Third: " + third );
+    console.log( "Type: " + typeof(third) );
     const URL_params = (first??1) + "/" + (second??-1) + "/" + (third??-1);
+    console.log( "URL params: " + URL_params );
     const get_subjects_request = new Request(
         ip + 'get_subjects/' + URL_params
     );
     fetch( get_subjects_request )
     .then( json => json.json() )
-    .then( json => {
-        populate_dropdown( json.second_level, "second_level_subject_dropdown", 2 );
-        populate_dropdown( json.third_level, "third_level_subject_dropdown", 3 );
-        populate_dropdown( json.fourth_level, "fourth_level_subject_dropdown", 4 );
+    .then( levels => {
+        console.dir( levels );
+        populate_dropdown( levels.second_level, "second_level_subject_dropdown", 2 );
+        populate_dropdown( levels.third_level, "third_level_subject_dropdown", 3 );
+        populate_dropdown( levels.fourth_level, "fourth_level_subject_dropdown", 4 );
+        hide_input_fields_above( get_hierarchy_depth(levels) );
     });
 }
 function get_initial_subjects() {
@@ -17,11 +46,12 @@ function get_initial_subjects() {
     );
     fetch( get_subjects_request )
     .then( json => json.json() )
-    .then( json => {
-        populate_dropdown( json.first_level, "first_level_subject_dropdown", 1 );
-        populate_dropdown( json.second_level, "second_level_subject_dropdown", 2 );
-        populate_dropdown( json.third_level, "third_level_subject_dropdown", 3 );
-        populate_dropdown( json.fourth_level, "fourth_level_subject_dropdown", 4 );
+    .then( levels => {
+        populate_dropdown( levels.first_level, "first_level_subject_dropdown", 1 );
+        populate_dropdown( levels.second_level, "second_level_subject_dropdown", 2 );
+        populate_dropdown( levels.third_level, "third_level_subject_dropdown", 3 );
+        populate_dropdown( levels.fourth_level, "fourth_level_subject_dropdown", 4 );
+        hide_input_fields_above( get_hierarchy_depth(levels) );
     });
 }
 
@@ -30,32 +60,18 @@ function option_change( level ) {
     const second_dropdown_ref =  document.getElementById("second_level_subject_dropdown");
     const third_dropdown_ref = document.getElementById("third_level_subject_dropdown");
     if( level == 1 ) {
-        const first_dropdown_val = first_dropdown_ref.value;
+        const first_dropdown_val = Number(first_dropdown_ref.value);
         get_subjects( first_dropdown_val, -1, -1 );
     } else if( level == 2 ) {
-        const first_dropdown_val = first_dropdown_ref.value;
-        const second_dropdown_val = second_dropdown_ref.value;
+        const first_dropdown_val = Number(first_dropdown_ref.value);
+        const second_dropdown_val = Number(second_dropdown_ref.value);
         get_subjects( first_dropdown_val, second_dropdown_val, -1 );
     } else if( level == 3 ) {
-        const first_dropdown_val = first_dropdown_ref.value;
-        const second_dropdown_val = second_dropdown_ref.value;
-        const third_dropdown_val = third_dropdown_ref.value;
+        const first_dropdown_val = Number(first_dropdown_ref.value);
+        const second_dropdown_val = Number(second_dropdown_ref.value);
+        const third_dropdown_val = Number(third_dropdown_ref.value);
         get_subjects( first_dropdown_val, second_dropdown_val, third_dropdown_val );
     }
-}
-
-function hide_input_fields_above( level ) {
-    for( let i=level+1; i<5; i++ ) {
-        const input_field_name = i + "_level_subject_input_field";
-        const input_field_ref = document.getElementById(input_field_name);
-        input_field_ref.style["display"] = "none";
-    }
-}
-
-function show_input_field( level ) {
-    const input_field_name = level + "_level_subject_input_field";
-    const input_field_ref = document.getElementById(input_field_name);
-    input_field_ref.style["display"] = "inline-block";
 }
 
 function populate_dropdown( subjects, target_dropdown, level ) {
@@ -64,10 +80,7 @@ function populate_dropdown( subjects, target_dropdown, level ) {
         select_element.firstChild.remove();
     }
     if( typeof(subjects) === "undefined" ) {
-        hide_input_fields_above( level );
         return;
-    } else {
-        show_input_field( level );
     }
     subjects.forEach( (subject) => {
         const option = document.createElement("option");
@@ -93,8 +106,10 @@ function convert_text_level( inlevel ) {
 function add_subject( level ) {
     const input_field_name = level + "_level_subject_input_field";
     const input_field_ref = document.getElementById(input_field_name);
+    const input_field_value = input_field_ref.value;
+    input_field_ref.value = "";
     const text_level = convert_text_level( level );
-    let url = "add_subject/" + text_level + "/" + input_field_ref.value + "/";
+    let url = "add_subject/" + text_level + "/" + input_field_value + "/";
 
     if( level > 1 ) {
         const parent_text_level = convert_text_level( level-1 );
