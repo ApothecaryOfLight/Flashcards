@@ -1,4 +1,5 @@
 function hide_input_fields_above( level ) {
+    console.log( level );
     for( let i=1; i<5; i++ ) {
         const input_field_name = i + "_level_subject_input_field";
         const input_field_ref = document.getElementById(input_field_name);
@@ -11,13 +12,16 @@ function hide_input_fields_above( level ) {
 }
 
 function get_hierarchy_depth( levels ) {
+    for( level in levels ) {
+        if( levels[level].length == 0 ) {
+            levels[level] = undefined;
+        }
+    }
     if( typeof(levels.level_2) === "undefined" ) {
-        return 1;
-    } else if( typeof(levels.level_3) === "undefined" ) {
         return 2;
-    } else if ( typeof(levels.level_4) === "undefined" ) {
+    } else if( typeof(levels.level_3) === "undefined" ) {
         return 3;
-    } else {
+    } else if( typeof(levels.level_4) === "undefined" ) {
         return 4;
     }
 }
@@ -94,14 +98,17 @@ function add_subject( level ) {
     input_field_ref.value = "";
     let url = "add_subject/" + level + "/" + input_field_value + "/";
 
+
     if( level > 1 ) {
         const parent_dropdown_name = (level-1) + "_level_subject_dropdown";
         const parent_ref = document.getElementById(parent_dropdown_name);
         const parent_value = parent_ref.value;
-        url += parent_id;
+        url += parent_value;
     } else {
         url += "-1";
     }
+
+    console.log( url );
 
     const add_subject_request = new Request(
         ip + url
@@ -115,16 +122,43 @@ function add_subject( level ) {
 
 function attach_add_subject_events() {
     for( i=1; i<5; i++ ) {
-        const button_name = "add_" + i + "_level_subject_button";
-        const button_ref = document.getElementById(button_name);
-        button_ref.addEventListener( "click", add_subject.bind(null,i));
+        const add_button_name = "add_" + i + "_level_subject_button";
+        const add_button_ref = document.getElementById(add_button_name);
+        add_button_ref.addEventListener( "click", add_subject.bind(null,i));
+        
+        const delete_button_name = "delete_" + i + "_level_subject_button";
+        const delete_button_ref = document.getElementById(delete_button_name);
+        delete_button_ref.addEventListener( "click", delete_subject.bind(null,i));
     }
 }
 
 function detach_add_subject_events() {
     for( i=1; i<5; i++ ) {
-        const button_name = "add_" + i + "_level_subject_button";
-        const button_ref = document.getElementById(button_name);
-        button_ref.replaceWith( button_ref.cloneNode(true) );
+        const add_button_name = "add_" + i + "_level_subject_button";
+        const add_button_ref = document.getElementById(add_button_name);
+        add_button_ref.replaceWith( add_button_ref.cloneNode(true) );
+
+        const delete_button_name = "delete_" + i + "_level_subject_button";
+        const delete_button_ref = document.getElementById(delete_button_name);
+        delete_button_ref.replaceWith( delete_button_ref.cloneNode(true) );
     }
+}
+
+function delete_subject( level ) {
+    const dropdown_name = level + "_level_subject_dropdown";
+    const dropdown_ref = document.getElementById(dropdown_name);
+    const dropdown_field_value = dropdown_ref.value;
+
+    let url = "delete_subject/" + level + "/" + dropdown_field_value;
+
+    console.log( url );
+
+    const add_subject_request = new Request(
+        ip + url
+    );
+    fetch( add_subject_request )
+    .then( json => json.json() )
+    .then( json => {
+        option_change( level );
+    });
 }

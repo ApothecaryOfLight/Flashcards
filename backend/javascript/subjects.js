@@ -117,9 +117,10 @@ exports.attach_get_subjects = attach_get_subjects;
 async function attach_add_subject( error_log, app, sqlPool ) {
     app.get( '/add_subject/:level/:subject_name/:parent_id', async function (req,res) {
         try {
+            const parent_level = Number(req.params.level) - 1;
             const insert_query = "INSERT INTO " +
                 req.params.level + "_level_subjects " +
-                "(name,member_of_" + req.params.parent_level + "_level_subject_id) " +
+                "(name,member_of_" + parent_level + "_level_subject_id) " +
                 "VALUES (\'" +
                 req.params.subject_name + "\'," +
                 req.params.parent_id + ");"
@@ -141,3 +142,29 @@ async function attach_add_subject( error_log, app, sqlPool ) {
     });
 }
 exports.attach_add_subject = attach_add_subject;
+
+async function attach_delete_subject( error_log, app, sqlPool ) {
+    app.get( '/delete_subject/:level/:subject_id', async function (req,res) {
+        try {
+            const delete_query = "DELETE FROM " +
+                req.params.level + "_level_subjects " +
+                "WHERE " + req.params.level + "_level_subject_id = " +
+                req.params.subject_id + ";"
+            const [rows,fields] = await sqlPool.query( delete_query );
+            res.send( JSON.stringify({yay:"yayer"}));
+        } catch( error ) {
+            error_log.log_error(
+              sqlPool,
+              "subjects.js::attach_delete_subject()",
+              req.ip,
+              error
+            );
+  
+            res.send( JSON.stringify({
+              "result": "failure",
+              "error_message": "Error deleting subject."
+            }));
+        }
+    });
+}
+exports.attach_delete_subject = attach_delete_subject;
