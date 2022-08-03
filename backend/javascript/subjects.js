@@ -1,31 +1,3 @@
-async function attach_get_first_level_subjects( error_log, app, sqlPool ) {
-    app.get( '/get_subjects_first/', async function (req,res) {
-        try {
-            const first_level_query = "SELECT name, first_level_subject_id " +
-                "FROM first_level_subjects;"
-            const [rows,fields] = await sqlPool.query( first_level_query);
-
-            const response = JSON.stringify({
-                first_level_subjects: rows
-            });
-            res.send( response );
-        } catch( error ) {
-            error_log.log_error(
-              sqlPool,
-              "subjects.js::attach_get_first_level_subjects()",
-              req.ip,
-              error
-            );
-  
-            res.send( JSON.stringify({
-              "result": "failure",
-              "error_message": "Error looking up first level subjects."
-            }));
-        }
-    });
-}
-exports.attach_get_first_level_subjects = attach_get_first_level_subjects;
-
 async function attach_get_subjects( error_log, app, sqlPool ) {
     app.get( '/get_subjects/:first/:second/:third', async function (req,res) {
         try {

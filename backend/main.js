@@ -127,7 +127,6 @@ function launchRoutes() {
 
   pagination.attach_page_count_route( error_log, app, sqlPool );
 
-  subjects.attach_get_first_level_subjects( error_log, app, sqlPool );
   subjects.attach_get_subjects( error_log, app, sqlPool );
   subjects.attach_add_subject( error_log, app, sqlPool );
 
