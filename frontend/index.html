@@ -20,6 +20,7 @@
 <script src="javascript/runset_interface.js"></script>
 <script src="javascript/card_editor_interface.js"></script>
 <script src="javascript/set_editor_interface.js"></script>
+<script src="javascript/set_editor_interface_subjects.js"></script>
 <script src="javascript/search_interface.js"></script>
 <script src="javascript/search_interface_subject_tags.js"></script>
 <script src="javascript/modal_interface.js"></script>
@@ -31,6 +32,7 @@
 <link rel="stylesheet" href="style/runset_interface.css">
 <link rel="stylesheet" href="style/card_editor_interface.css">
 <link rel="stylesheet" href="style/set_editor_interface.css">
+<link rel="stylesheet" href="style/set_editor_interface_subjects.css">
 <link rel="stylesheet" href="style/search_interface.css">
 <link rel="stylesheet" href="style/modal_interface.css">
 <link rel="stylesheet" href="style/interface_manager.css">
@@ -114,12 +116,19 @@
       class="set_editor_interface_button half_button">
       Go Back
     </button>
-   </div>
+  </div>
+  <div id="set_editor_subject_bar">
+    <select id="1_subject_dropdown" class="set_editor_subject_dropdown"></select>
+    <select id="2_subject_dropdown" class="set_editor_subject_dropdown"></select>
+    <select id="3_subject_dropdown" class="set_editor_subject_dropdown"></select>
+    <select id="4_subject_dropdown" class="set_editor_subject_dropdown"></select>
+    <button id="set_editor_interface_update_subjects" class="card_editor_interface_button">Set Subjects</button>
+  </div>
   <div id="set_editor_interface_lower_container">
     <div id="set_editor_interface_tags_container">
       <input type="text"  id="set_editor_interface_tags_field"/>
       <button id="set_editor_interface_add_tag_button" class="quarter_button card_editor_interface_button">
-        Add Topic
+        Add Search Term
       </button>
     </div>
     <div id="set_editor_interface_tags_list"></div>
@@ -133,7 +142,7 @@
   <div id="card_editor_interface_tags_container">
     <input type="text"  id="card_editor_interface_tags_field"/>
     <button id="card_editor_interface_add_tag_button" class="quarter_button card_editor_interface_button">
-      Add Topic
+      Add Search Term
     </button>
   </div>
   <div id="card_editor_interface_tags_list"></div>

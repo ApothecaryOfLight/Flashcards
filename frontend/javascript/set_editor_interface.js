@@ -5,6 +5,8 @@ function launch_set_editor_interface( interface_state, go_to_end ) {
   //Set the interface to the set editor.
   set_interface( "set_editor", interface_state );
 
+  set_editor_interface_get_subjects( interface_state );
+
   //Get a reference to the set editor set name.
   const set_name_element = document.getElementById("set_editor_interface_set_name");
 

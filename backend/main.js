@@ -133,6 +133,8 @@ function launchRoutes() {
   subjects.attach_delete_subject( error_log, app, sqlPool );
   subjects.attach_get_subjects_by_level( error_log, app, sqlPool );
   subjects.attach_get_subjects_above( error_log, app, sqlPool );
+  subjects.attach_get_subjects_by_set( error_log, app, sqlPool );
+  subjects.attach_update_subjects( error_log, app, sqlPool );  
 
   if( process.argv[2] == "https" ) {
     var server = https.createServer( credentials, app );

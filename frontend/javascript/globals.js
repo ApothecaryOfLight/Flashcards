@@ -63,6 +63,9 @@ window.addEventListener( 'load', (loaded_event) => {
         },
         "tags_field": {
           func: set_editor_interface_add_tag_on_enter_keypress, event_type: 'keydown'
+        },
+        "update_subjects": {
+          func: set_editor_interface_update_subjects, event_type: 'click'
         }
       },
       "card_editor": {

@@ -1,0 +1,10 @@
+#set_editor_subject_bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.set_editor_subject_dropdown {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
