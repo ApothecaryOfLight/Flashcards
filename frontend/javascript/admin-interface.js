@@ -9,7 +9,8 @@ function switch_interface( target_interface_id ) {
     const interfaces = [
         "error-log-container",
         "event-log-container",
-        "subject_editor_container"
+        "subject_editor_container",
+        "search_index_container"
     ];
 
     detach_add_subject_events();
@@ -65,5 +66,23 @@ window.onload = () => {
         //Get the subjects from the server.
         get_initial_subjects();
         attach_add_subject_events();
+    });
+    
+    //Get a reference to the search interface menu button.
+    const get_search_index_button = document.getElementById("menu_button_search_index");
+    //Attach a click event listener to the get subject editor menu button.
+    get_search_index_button.addEventListener( "click", (event) => {
+        switch_interface( "search_index_container" );
+    });
+    const rebuild_search_index_button_ref = document.getElementById("rebuild_search_index");
+    rebuild_search_index_button_ref.addEventListener( 'click', (click_event) => {
+        const rebuild_search_index = new Request(
+            ip + "rebuild_search_index"
+        );
+        fetch( rebuild_search_index )
+        .then( json => json.json() )
+        .then( parsed_object => {
+            console.dir( parsed_object );
+        });
     });
 }

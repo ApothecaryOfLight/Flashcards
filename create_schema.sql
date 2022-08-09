@@ -15,6 +15,8 @@ CREATE TABLE card_search_topics( name VARCHAR(150), card_id INT, FOREIGN KEY (ca
 CREATE TABLE cardset_search_text( name VARCHAR(150), set_id INT, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE );
 CREATE TABLE cardset_search_topics( name VARCHAR(150), set_id INT, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE );
 
+CREATE TABLE search_table( name VARCHAR(150), INDEX (name), card_id INT, FOREIGN KEY (card_id) REFERENCES cards(card_id) ON DELETE CASCADE, set_id INT, FOREIGN KEY (set_id) REFERENCES sets(set_id) ON DELETE CASCADE );
+
 CREATE TABLE images_registry( card_id INT NOT NULL, set_id INT NOT NULL, global_image_id INT NOT NULL, image_place INT NOT NULL, file_location TEXT NOT NULL, image_array_location INT NOT NULL, PRIMARY KEY( global_image_id ), INDEX( card_id, image_place ) );
 
 CREATE TABLE error_log( error_id INT NOT NULL, PRIMARY KEY(error_id), timestamp DATETIME(6) NOT NULL, ip TINYTEXT, source VARCHAR(256), details TEXT );
