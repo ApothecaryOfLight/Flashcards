@@ -17,8 +17,6 @@ function attach_cardlist_page_num_route( error_log, app, sqlPool ) {
             "LIMIT 10 " +
             "OFFSET " + offset +
             ";"
-
-            console.log( cardlist_query );
     
           const [cardlist_rows,cardlist_fields] =
             await sqlPool.query( cardlist_query );

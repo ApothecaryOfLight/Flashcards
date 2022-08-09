@@ -10,7 +10,7 @@ function launch_search_interface( interface_state ) {
   //Show or hide login/logout buttons as is appropraite.
   set_logged_elements( interface_state );
 
-  get_subject_tags( 1 );
+  get_subject_tags( interface_state, 1 );
 
   search_interface_run_search( interface_state );
 }
@@ -102,7 +102,7 @@ function search_interface_run_search( interface_state ) {
     iterator = iterator.nextSibling;
   }
   if( interface_state.search_interface_state.search_type == "set" ) {
-    if( search_terms.length == 0 ) {
+    if( search_terms.length == 0 && interface_state.search_interface_state.subject_level == 1 ) {
       //Run set search without search terms.
       getSetList( interface_state );
       return;
@@ -119,8 +119,12 @@ function search_interface_run_search( interface_state ) {
   const search_request_object = JSON.stringify({
     topics: search_terms,
     search_type: interface_state.search_interface_state.search_type,
-    page_num: (interface_state.search_interface_state.curr_page ?? 0)
+    page_num: (interface_state.search_interface_state.curr_page ?? 0),
+    subject_level: interface_state.search_interface_state.subject_level,
+    subject_parent_id: interface_state.search_interface_state.subject_parent_id
   });
+
+  console.dir( search_request_object );
 
   //Send search
   const search_request = new Request(
@@ -140,6 +144,7 @@ function search_interface_run_search( interface_state ) {
     .then( json => {
     if( json.result == "success" ) {
       if( json.search_type == "card" ) {
+        console.dir( json );
         render_search_cards({
           data:json.set_rows,
           "page_count": json.page_count,

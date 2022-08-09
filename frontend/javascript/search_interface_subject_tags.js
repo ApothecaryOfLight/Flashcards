@@ -1,4 +1,4 @@
-function render_subject_tags( subject_tags, level, parent_id ) {
+function render_subject_tags( interface_state, subject_tags, level, parent_id ) {
     let up_button = document.getElementById("subject_tab_bar_up_button");
     if( level == 1 ) {
         up_button.style["display"] = "none";
@@ -8,7 +8,7 @@ function render_subject_tags( subject_tags, level, parent_id ) {
         up_button = document.getElementById("subject_tab_bar_up_button");
         up_button.addEventListener(
             'click',
-            get_subject_tags_above.bind( null, level, parent_id )
+            get_subject_tags_above.bind( null, interface_state, level, parent_id )
         );
     }
     const subject_tab_container = document.getElementById("subject_tab_container");
@@ -21,14 +21,14 @@ function render_subject_tags( subject_tags, level, parent_id ) {
         new_subject_tag.innerText = subject_tag.name;
         if( level < 4 ) {
             new_subject_tag.onclick = () => {
-                get_subject_tags( level+1, subject_tag.id );
+                get_subject_tags( interface_state, level+1, subject_tag.id );
             }
         }
         subject_tab_container.appendChild( new_subject_tag );
     });
 }
 
-function get_subject_tags( level, parent_id ) {
+function get_subject_tags( interface_state, level, parent_id ) {
     const URL_params = "get_subjects_by_level/" + level + "/" + (parent_id??-1);
     const get_subjects_tags = new Request(
         ip + URL_params
@@ -36,11 +36,14 @@ function get_subject_tags( level, parent_id ) {
     fetch( get_subjects_tags )
     .then( json => json.json() )
     .then( parsed_object => {
-        render_subject_tags( parsed_object.search_tags, level, parent_id );
+        interface_state.search_interface_state.subject_parent_id = parent_id;
+        interface_state.search_interface_state.subject_level = level;
+        search_interface_run_search( interface_state );
+        render_subject_tags( interface_state, parsed_object.search_tags, level, parent_id );
     });
 }
 
-function get_subject_tags_above( level, child_id ) {
+function get_subject_tags_above( interface_state, level, child_id ) {
     const level_above = Number(level) - 1;
     const URL_params = "get_subjects_above/" + level_above + "/" + (child_id??-1);
     const get_subjects_tags = new Request(
@@ -49,6 +52,7 @@ function get_subject_tags_above( level, child_id ) {
     fetch( get_subjects_tags )
     .then( json => json.json() )
     .then( parsed_object => {
-        render_subject_tags( parsed_object.search_tags, level_above, child_id );
+        //search_interface_run_search( interface_state );
+        render_subject_tags( interface_state, parsed_object.search_tags, level_above, child_id );
     });
 }

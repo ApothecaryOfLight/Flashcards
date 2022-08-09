@@ -23,7 +23,7 @@ function attach_setlist_page_num_route( error_log, app, sqlPool ) {
             });
             res.send( setlist );
         } catch( error ) {
-        console.log( error );
+            console.log( error );
             error_log.log_error(
                 sqlPool,
                 "setlist.js::attach_setlist_page_num_route()",

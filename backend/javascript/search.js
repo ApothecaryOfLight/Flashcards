@@ -1,155 +1,124 @@
 function attach_searchlist_route( error_log, app, sqlPool ) {
-      /*Get a list of either sets or cards for the Serach Interface*/
+  /*Get a list of either sets or cards for the Serach Interface*/
   app.post( '/searchlist', async function(req,res) {
     try {
-      let card_search_text_predicate = "";
-      let card_search_topics_predicate = "";
-      let cardset_search_text_predicate = "";
-      let cardset_search_topics_predicate = "";
-      if( req.body.topics.length > 0 ) {
-        card_search_text_predicate = "WHERE";
-        card_search_topics_predicate = "WHERE";
-        cardset_search_text_predicate = "WHERE";
-        cardset_search_topics_predicate = "WHERE";
-        for( index in req.body.topics ) {
-          card_search_text_predicate += " card_search_text.name = \'" +
-            req.body.topics[index] + "\' OR";
-          card_search_topics_predicate += " card_search_topics.name = \'" +
-            req.body.topics[index] + "\' OR";
-          cardset_search_text_predicate += " cardset_search_text.name = \'" +
-            req.body.topics[index] + "\' OR";
-          cardset_search_topics_predicate += " cardset_search_topics.name = \'" +
-            req.body.topics[index] + "\' OR";
-        }
-        card_search_text_predicate = card_search_text_predicate.slice(
-          0,
-          card_search_text_predicate.length-3
-        );
-        card_search_text_predicate += " ";
-        card_search_topics_predicate = card_search_topics_predicate.slice(
-          0,
-          card_search_topics_predicate.length-3
-        );
-        card_search_topics_predicate += " ";
-        cardset_search_text_predicate = cardset_search_text_predicate.slice(
-          0,
-          cardset_search_text_predicate.length-3
-        );
-        cardset_search_text_predicate += " ";
-        cardset_search_topics_predicate = cardset_search_topics_predicate.slice(
-          0,
-          cardset_search_topics_predicate.length-3
-        );
-        cardset_search_topics_predicate += " ";
-      }
-
-      const page_offset = Number( req.body.page_num*10 );
-      //1) Determine whether search is for sets or for cards.
-      let card_search_query = "";
-      let page_query = "";
       if( req.body.search_type == "card" ) {
-        card_search_query =
-          "(SELECT cards.card_id, cards.answer, cards.question, " +
-          "sets.set_creator, cards.set_id " +
+        let subject_predicate = "";
+        let search_query = "SELECT SQL_CALC_FOUND_ROWS " +
+          "cards.set_id, cards.question, cards.answer, sets.set_creator " +
           "FROM cards " +
-          "LEFT JOIN card_search_text " +
-          "ON cards.card_id = card_search_text.card_id " +
           "INNER JOIN sets " +
-          "ON cards.set_id = sets.set_id " +
-          "LEFT JOIN cardset_search_text " +
-          "ON cards.set_id = cardset_search_text.set_id " +
-          card_search_text_predicate +
-          " OR " +
-          cardset_search_text_predicate.substr(6) +
-          ") UNION " +
-          "(SELECT cards.card_id, cards.answer, cards.question, " +
-          "sets.set_creator, cards.set_id " +
-          "FROM cards " +
-          "LEFT JOIN card_search_topics " +
-          "ON cards.card_id = card_search_topics.card_id " +
-          "INNER JOIN sets " +
-          "ON cards.set_id = sets.set_id " +
-          "LEFT JOIN cardset_search_topics " +
-          "ON cards.set_id = cardset_search_topics.set_id " +
-          card_search_topics_predicate +
-          " OR " +
-          cardset_search_topics_predicate.substr(6) +
-          ")" +
-          " LIMIT 10 OFFSET " + page_offset + ";"
+          "ON cards.set_id = sets.set_id ";
+        if( req.body.subject_level > 1 ) {
+          const subject_parent_level = req.body.subject_level - 1;
+          search_query += "INNER JOIN subject_set_listing " +
+            "ON cards.set_id = subject_set_listing.set_id " +
+            "INNER JOIN " + subject_parent_level + "_level_subjects " +
+            "ON subject_set_listing." + subject_parent_level + "_level_subject_id = " +
+            subject_parent_level + "_level_subjects." + subject_parent_level + "_level_subject_id ";
+          subject_predicate = subject_parent_level + "_level_subjects." + 
+            subject_parent_level + "_level_subject_id = " + req.body.subject_parent_id + " ";
+        }
+        let search_predicate = "";
+        if( req.body.topics.length > 0 ) {
+          search_query += "INNER JOIN search_table " +
+            "ON cards.card_id = search_table.card_id ";
+          search_predicate = "(";
+          for( index in req.body.topics ) {
+            search_predicate += "search_table.name = \'" + req.body.topics[index] + "\' OR "
+          }
+          search_predicate = search_predicate.slice(
+            0,
+            search_predicate.length - 3
+          );
+          search_predicate += ") ";
+        }
+        if( req.body.subject_level > 1 || req.body.topics.length > 0 ) {
+          search_query += "WHERE ";
+          if( req.body.topics.length > 0 ) {
+            search_query += search_predicate;
+          }
+          if( req.body.subject_level > 1 && req.body.topics.length > 0 ) {
+            search_query += " AND ";
+          }
+          if( req.body.subject_level > 1 ) {
+            search_query += subject_predicate;
+          }
+        }
 
-        page_query =
-          "SELECT COUNT(cards.card_id) AS page_count " +
-          "FROM cards " +
-          "LEFT JOIN card_search_text " +
-          "ON cards.card_id = card_search_text.card_id " +
-          "INNER JOIN sets " +
-          "ON cards.set_id = sets.set_id " +
-          "LEFT JOIN cardset_search_text " +
-          "ON cards.set_id = cardset_search_text.set_id " +
-          "LEFT JOIN card_search_topics " +
-          "ON cards.card_id = card_search_topics.card_id " +
-          "LEFT JOIN cardset_search_topics " +
-          "ON cards.set_id = cardset_search_topics.set_id " +
-          card_search_text_predicate +
-          " OR " +
-          cardset_search_text_predicate.substr(6) +
-          " OR " +
-          card_search_topics_predicate.substring(5,card_search_topics_predicate.length) +
-          " OR " +
-          cardset_search_topics_predicate.substr(6) +
-          "GROUP BY cards.card_id;";
-      } else if( req.body.search_type == "set" ) {
-        card_search_query =
-          "(SELECT sets.set_id, sets.name, sets.set_creator " +
-          "FROM sets " +
-          "INNER JOIN cardset_search_text " +
-          "ON sets.set_id = cardset_search_text.set_id " +
-          cardset_search_text_predicate +
-          "LIMIT 10 OFFSET " + page_offset + ") UNION " +
-
-          "(SELECT sets.set_id, sets.name, sets.set_creator FROM sets " +
-          "INNER JOIN cardset_search_topics " +
-          "ON sets.set_id = cardset_search_topics.set_id " +
-          cardset_search_topics_predicate +
+        const page_offset = Number( req.body.page_num ) * 10;
+        search_query += "GROUP BY cards.question, cards.answer, cards.set_id, sets.set_creator " +
           "ORDER BY sets.name " +
-          "LIMIT 10 OFFSET " + page_offset +
-          ")";
+          "LIMIT 10 OFFSET " + page_offset + "; " +
+          "SELECT FOUND_ROWS();"
 
-        page_query =
-          "SELECT SUM(page_count) as page_count FROM (" +
-          "(SELECT COUNT(sets.set_id) AS page_count " +
-          "FROM sets " +
-          "INNER JOIN cardset_search_text " +
-          "ON sets.set_id = cardset_search_text.set_id " +
-          cardset_search_text_predicate +
-          ") UNION " +
+        console.log( search_query );
+        const [search_rows,search_fields] = await sqlPool.query( search_query );
+        res.send( JSON.stringify({
+          "result": "success",
+          "set_rows": search_rows[0],
+          "page_count": search_rows[1][0]["FOUND_ROWS()"]/10,
+          "search_type": req.body.search_type
+        }));
+        return;
+      } else if( req.body.search_type == "set" ) {
+        let subject_predicate = "";
+        let search_query = "SELECT SQL_CALC_FOUND_ROWS " +
+          "sets.set_id, sets.name, sets.set_creator " +
+          "FROM sets ";
+        if( req.body.subject_level > 1 ) {
+          const subject_parent_level = req.body.subject_level - 1;
+          search_query += "INNER JOIN subject_set_listing " +
+            "ON sets.set_id = subject_set_listing.set_id " +
+            "INNER JOIN " + subject_parent_level + "_level_subjects " +
+            "ON subject_set_listing." + subject_parent_level + "_level_subject_id = " +
+            subject_parent_level + "_level_subjects." + subject_parent_level + "_level_subject_id ";
+          subject_predicate = subject_parent_level + "_level_subjects." + 
+            subject_parent_level + "_level_subject_id = " + req.body.subject_parent_id + " ";
+        }
+        let search_predicate = "";
+        if( req.body.topics.length > 0 ) {
+          search_query += "INNER JOIN search_table " +
+            "ON sets.set_id = search_table.set_id ";
+          search_predicate = "(";
+          for( index in req.body.topics ) {
+            search_predicate += "search_table.name = \'" + req.body.topics[index] + "\' OR "
+          }
+          search_predicate = search_predicate.slice(
+            0,
+            search_predicate.length - 3
+          );
+          search_predicate += ") ";
+        }
+        if( req.body.subject_level > 1 || req.body.topics.length > 0 ) {
+          search_query += "WHERE ";
+          if( req.body.topics.length > 0 ) {
+            search_query += search_predicate;
+          }
+          if( req.body.subject_level > 1 && req.body.topics.length > 0 ) {
+            search_query += " AND ";
+          }
+          if( req.body.subject_level > 1 ) {
+            search_query += subject_predicate;
+          }
+        }
 
-          "(SELECT COUNT(sets.set_id) AS page_count " +
-          "FROM sets " +
-          "INNER JOIN cardset_search_topics " +
-          "ON sets.set_id = cardset_search_topics.set_id " +
-          cardset_search_topics_predicate +
-          ")" +
-          ") as tmp_table;";
+        const page_offset = Number( req.body.page_num ) * 10;
+        search_query += "GROUP BY sets.set_id, sets.name, sets.set_creator " +
+          "ORDER BY sets.name " +
+          "LIMIT 10 OFFSET " + page_offset + "; " +
+          "SELECT FOUND_ROWS();"
+
+        console.log( search_query );
+        const [search_rows,search_fields] = await sqlPool.query( search_query );
+        res.send( JSON.stringify({
+          "result": "success",
+          "set_rows": search_rows[0],
+          "page_count": search_rows[1][0]["FOUND_ROWS()"]/10,
+          "search_type": req.body.search_type
+        }));
+        return;
       }
-
-      const [out_row,out_field] =
-        await sqlPool.query( card_search_query );
-
-      const [page_row,page_field] =
-        await sqlPool.query( page_query );
-
-      let page_count = 0;
-      if( page_row.length != 0 ) {
-        page_count = page_row[0].page_count/10;
-      }
-
-      res.send( JSON.stringify({
-        "result": "success",
-        "set_rows": out_row,
-        "page_count": page_count,
-        "search_type": req.body.search_type
-      }));
     } catch(error) {
       error_log.log_error(
         sqlPool,
