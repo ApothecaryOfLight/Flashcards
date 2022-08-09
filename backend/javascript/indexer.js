@@ -141,7 +141,7 @@ async function attach_route_rebuild_search_index( error_log, app, sqlPool, sanit
             let card_search_terms = [];
             card_question_object.forEach( (question_object) => {
               if( question_object.type == "text" ) {
-                card_question_text += question_object.content.toLowerCase();
+                card_question_text += question_object.content.toLowerCase() + " " + card_text.answer;
                 card_search_terms = card_question_text.split(" ");
               }
             })
@@ -154,7 +154,6 @@ async function attach_route_rebuild_search_index( error_log, app, sqlPool, sanit
               insertion_query.length - 2
             );
             insertion_query += ";"
-            //console.log( insertion_query );
             const [insertion_rows,insertion_fields] = await sqlPool.query( insertion_query );
           } catch( error ) {
             console.log( card_text.question );
