@@ -1,8 +1,9 @@
-function render_subject_tags( search_tags, level, parent_id ) {
+function render_subject_tags( subject_tags, level, parent_id ) {
     let up_button = document.getElementById("subject_tab_bar_up_button");
     if( level == 1 ) {
-        //hide up button
+        up_button.style["display"] = "none";
     } else {
+        up_button.style["display"] = "block";
         up_button.replaceWith( up_button.cloneNode(true) );
         up_button = document.getElementById("subject_tab_bar_up_button");
         up_button.addEventListener(
@@ -14,16 +15,16 @@ function render_subject_tags( search_tags, level, parent_id ) {
     while( subject_tab_container.firstChild ) {
         subject_tab_container.firstChild.remove();
     }
-    search_tags.forEach( (search_tag) => {
-        const new_search_tag = document.createElement("div");
-        new_search_tag.classList = "subject_tab";
-        new_search_tag.innerText = search_tag.name;
+    subject_tags.forEach( (subject_tag) => {
+        const new_subject_tag = document.createElement("div");
+        new_subject_tag.classList = "subject_tab";
+        new_subject_tag.innerText = subject_tag.name;
         if( level < 4 ) {
-            new_search_tag.onclick = () => {
-                get_subject_tags( level+1, search_tag.id );
+            new_subject_tag.onclick = () => {
+                get_subject_tags( level+1, subject_tag.id );
             }
         }
-        subject_tab_container.appendChild( new_search_tag );
+        subject_tab_container.appendChild( new_subject_tag );
     });
 }
 
