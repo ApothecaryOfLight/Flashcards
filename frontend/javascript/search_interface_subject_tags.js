@@ -52,7 +52,9 @@ function get_subject_tags_above( interface_state, level, child_id ) {
     fetch( get_subjects_tags )
     .then( json => json.json() )
     .then( parsed_object => {
-        //search_interface_run_search( interface_state );
-        render_subject_tags( interface_state, parsed_object.search_tags, level_above, child_id );
+        interface_state.search_interface_state.subject_parent_id = parsed_object.parent_id;
+        interface_state.search_interface_state.subject_level = level-1;
+        search_interface_run_search( interface_state );
+        render_subject_tags( interface_state, parsed_object.search_tags, level_above, parsed_object.parent_id );
     });
 }

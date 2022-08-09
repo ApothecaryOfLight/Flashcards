@@ -214,8 +214,8 @@ async function attach_get_subjects_above( error_log, app, sqlPool ) {
                 req.params.level + "_level_subjects.name, " +
                 req.params.level + "_level_subject_id as id " +
                 "FROM " + req.params.level + "_level_subjects";
+            const parent_level = Number(req.params.level) - 1;
             if( req.params.level > 1 ) {
-                const parent_level = Number(req.params.level) - 1;
                 get_subjects_query += " WHERE " +
                     "member_of_" + parent_level + "_level_subject_id = (" +
                     "SELECT " +
@@ -229,8 +229,18 @@ async function attach_get_subjects_above( error_log, app, sqlPool ) {
             get_subjects_query += ";"
             const [rows,fields] = await sqlPool.query( get_subjects_query );
 
+            let parent_id = null;
+            if( req.params.level > 1 ) {
+                const get_parent_id_query = "SELECT member_of_" + parent_level +"_level_subject_id as id " +
+                    "FROM " + req.params.level + "_level_subjects " +
+                    "WHERE " + req.params.level + "_level_subject_id = " + req.params.child_id + ";";
+                const [parent_row,parent_field] = await sqlPool.query( get_parent_id_query );
+                parent_id = parent_row[0].id;
+            }
+
             const response_object = {
-                search_tags: rows
+                search_tags: rows,
+                parent_id: parent_id
             };
 
             res.send( JSON.stringify(response_object) );

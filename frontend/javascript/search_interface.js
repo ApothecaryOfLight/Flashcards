@@ -124,8 +124,6 @@ function search_interface_run_search( interface_state ) {
     subject_parent_id: interface_state.search_interface_state.subject_parent_id
   });
 
-  console.dir( search_request_object );
-
   //Send search
   const search_request = new Request(
     ip + 'searchlist',
@@ -144,7 +142,6 @@ function search_interface_run_search( interface_state ) {
     .then( json => {
     if( json.result == "success" ) {
       if( json.search_type == "card" ) {
-        console.dir( json );
         render_search_cards({
           data:json.set_rows,
           "page_count": json.page_count,
