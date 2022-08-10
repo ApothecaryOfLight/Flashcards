@@ -15,21 +15,29 @@
 }
 
 .subject_tab {
-    border: 2px solid black;
+    border: 3px solid #B1CFE7;
+    background-color: #DBF1FF;
     width: fit-content;
     border-radius: 50% 50% 0px 0px;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    padding-top: 0.1rem;
+    padding-top: 0.3rem;
     margin-top: 0.3rem;
     font-size: 1.4rem;
     font-weight: bold;
+    font-family: 'Indie Flower', cursive;
     margin-right: .2rem;
+    height: 2rem;
+    transition: font-weight 1s;
 }
 
 .subject_tab:hover {
-    color: #6699FF;
-    border: 2px solid #6699FF;
+    text-decoration: underline;
+    background-color: #BFD1FD;
+}
+
+.subject_tab:active {
+    background-color: #003399;
 }
 
 .subject_tab:active {
