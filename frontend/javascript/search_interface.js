@@ -108,7 +108,7 @@ function search_interface_run_search( interface_state ) {
       return;
     }
   } else if( interface_state.search_interface_state.search_type == "card" ) {
-    if( search_terms.length == 0 ) {
+    if( search_terms.length == 0 && interface_state.search_interface_state.subject_level == 1 ) {
       //Run card search without search terms.
       getCardList( interface_state );
       return;
