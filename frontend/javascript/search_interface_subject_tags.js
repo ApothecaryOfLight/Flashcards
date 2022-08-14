@@ -36,6 +36,8 @@ function get_subject_tags( interface_state, level, parent_id ) {
     fetch( get_subjects_tags )
     .then( json => json.json() )
     .then( parsed_object => {
+        interface_state.search_interface_state.subject_levels.current_level = level;
+        //interface_state.search_interface_state.subject_levels.
         interface_state.search_interface_state.subject_parent_id = parent_id;
         interface_state.search_interface_state.subject_level = level;
         search_interface_run_search( interface_state );
