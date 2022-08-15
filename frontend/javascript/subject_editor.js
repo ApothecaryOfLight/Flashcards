@@ -25,8 +25,8 @@ function get_hierarchy_depth( levels ) {
     }
 }
 
-function get_subjects( first, second, third, level ) {
-    const URL_params = (first??1) + "/" + (second??-1) + "/" + (third??-1);
+function get_subjects( subject_values, level ) {
+    const URL_params = (subject_values[0]??1) + "/" + (subject_values[1]??-1) + "/" + (subject_values[2]??-1);
     const get_subjects_request = new Request(
         ip + 'get_subjects/' + URL_params
     );
@@ -40,7 +40,7 @@ function get_subjects( first, second, third, level ) {
         for( i=level; i<=4; i++ ) {
             const key = "level_" + i;
             const element = i + "_level_subject_dropdown";
-            populate_dropdown( levels[key], element, i );
+            populate_dropdown( levels[key], element, i, subject_values[i-1] );
         }
         hide_input_fields_above( get_hierarchy_depth(levels) );
     });
@@ -67,20 +67,20 @@ function option_change( level ) {
     const third_dropdown_ref = document.getElementById("3_level_subject_dropdown");
     if( level == 1 ) {
         const first_dropdown_val = Number(first_dropdown_ref.value);
-        get_subjects( first_dropdown_val, -1, -1, 1 );
+        get_subjects( [first_dropdown_val, -1, -1], 1 );
     } else if( level == 2 ) {
         const first_dropdown_val = Number(first_dropdown_ref.value);
         const second_dropdown_val = Number(second_dropdown_ref.value);
-        get_subjects( first_dropdown_val, second_dropdown_val, -1, 2 );
+        get_subjects( [first_dropdown_val, second_dropdown_val, -1], 2 );
     } else if( level == 3 ) {
         const first_dropdown_val = Number(first_dropdown_ref.value);
         const second_dropdown_val = Number(second_dropdown_ref.value);
         const third_dropdown_val = Number(third_dropdown_ref.value);
-        get_subjects( first_dropdown_val, second_dropdown_val, third_dropdown_val, 3 );
+        get_subjects( [first_dropdown_val, second_dropdown_val, third_dropdown_val], 3 );
     }
 }
 
-function populate_dropdown( subjects, target_dropdown, level ) {
+function populate_dropdown( subjects, target_dropdown, level, current_value ) {
     let select_element = document.getElementById(target_dropdown);
     while( select_element.firstChild ) {
         select_element.firstChild.remove();
@@ -97,6 +97,9 @@ function populate_dropdown( subjects, target_dropdown, level ) {
         select_element.appendChild( option );
     });
     select_element.addEventListener( 'change', option_change.bind(null,level) );
+    if( current_value && current_value != -1 ) {
+        select_element.value = current_value;
+    }
 }
 
 function add_subject( level ) {
