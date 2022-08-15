@@ -658,8 +658,9 @@ function create_set( interface_state, set_name ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
+        console.dir( json );
         //Upon success, launch the set editor for this new set.
-        interface_state.set_editor_interface.set_id = json.set_id;
+        interface_state.set_editor_interface_state.set_id = json.set_id;
         launch_set_editor_interface( interface_state, false );
       } else if( json.result == "error" ) {
         //Otherwise, on error, notify the user.
