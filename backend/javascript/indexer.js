@@ -1,5 +1,8 @@
 async function index_search_data( error_log, sqlPool, sanitizer, card_id, set_id, question, answer ) {
   try {
+    if( answer == null ) {
+      answer = "";
+    }
     const card_question_object = JSON.parse(question);
     let card_question_text = "";
     let card_search_terms = [];
@@ -8,17 +11,30 @@ async function index_search_data( error_log, sqlPool, sanitizer, card_id, set_id
         card_question_text += question_object.content.toLowerCase() + " " + answer;
         card_search_terms = card_question_text.split(" ");
       }
-    })
-    let insertion_query = "INSERT INTO search_table (name, card_id, set_id) VALUES ";
-    card_search_terms.forEach( (term) => {
-      insertion_query += "( \'" + term + "\', " + card_id + ", " + set_id + "), "
     });
-    insertion_query = insertion_query.slice(
-      0,
-      insertion_query.length - 2
-    );
-    insertion_query += ";"
-    const [insertion_rows,insertion_fields] = await sqlPool.query( insertion_query );
+    if( card_id ) {
+      let insertion_query = "INSERT INTO search_table (name, card_id, set_id) VALUES ";
+      card_search_terms.forEach( (term) => {
+        insertion_query += "( \'" + term + "\', " + card_id + ", " + set_id + "), "
+      });
+      insertion_query = insertion_query.slice(
+        0,
+        insertion_query.length - 2
+      );
+      insertion_query += ";"
+      const [insertion_rows,insertion_fields] = await sqlPool.query( insertion_query );
+    } else {
+      let insertion_query = "INSERT INTO search_table (name, set_id) VALUES ";
+      card_search_terms.forEach( (term) => {
+        insertion_query += "( \'" + term + "\', " + set_id + "), "
+      });
+      insertion_query = insertion_query.slice(
+        0,
+        insertion_query.length - 2
+      );
+      insertion_query += ";"
+      const [insertion_rows,insertion_fields] = await sqlPool.query( insertion_query );
+    }
   } catch( error_obj ) {
     console.error( error_obj );
     error_log.log_error(
@@ -66,7 +82,6 @@ async function attach_route_rebuild_search_index( error_log, app, sqlPool, sanit
             insertion_query += ";"
             const [insertion_rows,insertion_fields] = await sqlPool.query( insertion_query );
           } catch( error_obj ) {
-            console.log( card_text.question );
             console.error( error_obj );
             error_log.log_error(
               sqlPool,

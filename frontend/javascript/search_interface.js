@@ -643,13 +643,15 @@ set_name: Name of the new set.
 */
 function create_set( interface_state, set_name ) {
   //Create the request to send to the server to ask for the new set to be created.
+  const subjects = interface_state.search_interface_state.subjects;
   const new_set = new Request(
     ip + 'new_set',
     {
       method: 'POST',
       body: JSON.stringify({
-        "set_name":set_name,
-        "username_hash": interface_state.username_hash
+        set_name:set_name,
+        username_hash: interface_state.username_hash,
+        subjects: subjects
       }),
       headers: {
         'Content-Type': 'application/json'

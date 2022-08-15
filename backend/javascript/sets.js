@@ -64,15 +64,27 @@ function attach_new_set_route( error_log, app, sqlPool, indexer, sanitizer ) {
         " );";
       const [new_set_row,new_set_field] = await sqlPool.query( insert_query );
 
-      //3) Index search terms (new sets can only have search text).
+      //3) Add subjects, if present.
+      if( req.body.subjects ) {
+        const set_subject_values = "INSERT INTO subject_set_listing " +
+          "(set_id, 1_level_subject_id, 2_level_subject_id, " +
+          "3_level_subject_id, 4_level_subject_id) " +
+          "VALUES (" + new_set_id + "," + req.body.subjects.levels[0] + "," +
+          req.body.subjects.levels[1] + "," +
+          req.body.subjects.levels[2] + "," +
+          req.body.subjects.levels[3] + ");";
+          const [subj_row,subj_field] = await sqlPool.query( set_subject_values );
+      }
+
+      //4) Index search terms (new sets can only have search text).
       indexer.index_search_data(
         error_log,
+        sqlPool,
         sanitizer,
-        new_set_id,
         null,
-        req.body.set_name,
-        false,
-        sqlPool
+        new_set_id,
+        JSON.stringify([{type:"text",content:req.body.set_name}]),
+        null
       );
 
       //4) Notify client of success.
