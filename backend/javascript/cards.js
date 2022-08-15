@@ -42,7 +42,6 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
         const [add_image_row, add_image_field] = await sqlPool.query( new_images_query );
       }
 
-
       const new_card_query = "INSERT INTO cards (card_id,question,answer,set_id) " +
         "VALUES ( " + new_card_id + ", " +
         "\'" + sanitizer.process_input(JSON.stringify(req.body.question)) + "\', " +
@@ -50,25 +49,14 @@ function attach_add_card_route( error_log, app, sqlPool, indexer, sanitizer, fs 
         req.body.set_id + ");"
       const [add_card_row,add_card_field] = await sqlPool.query( new_card_query );
 
-      const outText = req.body.question;
-      outText.push({type:'text',content:" " + req.body.answer});
-      indexer.index_search_data(
+      await indexer.index_search_data(
         error_log,
+        sqlPool,
         sanitizer,
         new_card_id,
-        null,
-        outText,
-        true,
-        sqlPool
-      );
-      indexer.index_search_data(
-        error_log,
-        sanitizer,
-        new_card_id,
-        req.body.tags,
-        null,
-        true,
-        sqlPool
+        req.body.set_id,
+        JSON.stringify(req.body.question),
+        req.body.answer
       );
 
       res.send( JSON.stringify({

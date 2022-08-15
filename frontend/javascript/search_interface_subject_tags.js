@@ -23,12 +23,25 @@ function render_subject_tags( interface_state, subject_tags, level, parent_id ) 
             new_subject_tag.onclick = () => {
                 get_subject_tags( interface_state, level+1, subject_tag.id );
             }
+        } else if( level == 4 ) {
+            new_subject_tag.onclick = () => {
+                run_search_at_final_granularity( interface_state, level, subject_tag.id );
+            }
         }
         subject_tab_container.appendChild( new_subject_tag );
     });
 }
 
+function run_search_at_final_granularity( interface_state, level, parent_id ) {
+    console.log( "Running search of subject: " + parent_id + " at level: " + level );
+    interface_state.search_interface_state.subjects.levels[3] = parent_id;
+    interface_state.search_interface_state.subjects.current_level = 5;
+
+    search_interface_run_search( interface_state );
+}
+
 function get_subject_tags( interface_state, level, parent_id ) {
+    console.log( "Getting subject tags at level: " + level + " with parent ID of " + parent_id );
     const URL_params = "get_subjects_by_level/" + level + "/" + (parent_id??-1);
     const get_subjects_tags = new Request(
         ip + URL_params
@@ -36,10 +49,11 @@ function get_subject_tags( interface_state, level, parent_id ) {
     fetch( get_subjects_tags )
     .then( json => json.json() )
     .then( parsed_object => {
-        interface_state.search_interface_state.subject_levels.current_level = level;
-        //interface_state.search_interface_state.subject_levels.
-        interface_state.search_interface_state.subject_parent_id = parent_id;
-        interface_state.search_interface_state.subject_level = level;
+        interface_state.search_interface_state.subjects.current_level = level;
+        if( level > 1 ) {
+            interface_state.search_interface_state.subjects.levels[level-2] = parent_id;
+        }
+
         search_interface_run_search( interface_state );
         render_subject_tags( interface_state, parsed_object.search_tags, level, parent_id );
     });
@@ -54,8 +68,12 @@ function get_subject_tags_above( interface_state, level, child_id ) {
     fetch( get_subjects_tags )
     .then( json => json.json() )
     .then( parsed_object => {
-        interface_state.search_interface_state.subject_parent_id = parsed_object.parent_id;
-        interface_state.search_interface_state.subject_level = level-1;
+        interface_state.search_interface_state.subjects.current_level = level_above;
+        interface_state.search_interface_state.subjects.levels[level_above] = null;
+        if( level_above == 1 ) {
+            interface_state.search_interface_state.subjects.levels[0] = null;
+        }
+
         search_interface_run_search( interface_state );
         render_subject_tags( interface_state, parsed_object.search_tags, level_above, parsed_object.parent_id );
     });

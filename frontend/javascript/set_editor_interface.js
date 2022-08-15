@@ -135,6 +135,7 @@ Function to create a new card.
 */
 function set_editor_interface_new_button( interface_state ) {
   //Launch the card editor inteface to create a new card in the set.
+  interface_state.card_editor_interface_state.set_id = interface_state.set_editor_interface_state.set_id;
   interface_state.card_editor_interface_state.prev_interface = "set_editor";
   interface_state.card_editor_interface_state.isNew = true;
   launch_card_editor_interface( interface_state );

@@ -102,13 +102,13 @@ function search_interface_run_search( interface_state ) {
     iterator = iterator.nextSibling;
   }
   if( interface_state.search_interface_state.search_type == "set" ) {
-    if( search_terms.length == 0 && interface_state.search_interface_state.subject_level == 1 ) {
+    if( search_terms.length == 0 && interface_state.search_interface_state.subjects.level == 1 ) {
       //Run set search without search terms.
       getSetList( interface_state );
       return;
     }
   } else if( interface_state.search_interface_state.search_type == "card" ) {
-    if( search_terms.length == 0 && interface_state.search_interface_state.subject_level == 1 ) {
+    if( search_terms.length == 0 && interface_state.search_interface_state.subjects.current_level == 1 ) {
       //Run card search without search terms.
       getCardList( interface_state );
       return;
@@ -116,12 +116,14 @@ function search_interface_run_search( interface_state ) {
   }
 
   //Compose the search message.
+  const current_level = interface_state.search_interface_state.subjects.current_level
+  const parent_id = interface_state.search_interface_state.subjects.levels[current_level-2];
   const search_request_object = JSON.stringify({
     topics: search_terms,
     search_type: interface_state.search_interface_state.search_type,
     page_num: (interface_state.search_interface_state.curr_page ?? 0),
-    subject_level: interface_state.search_interface_state.subject_level,
-    subject_parent_id: interface_state.search_interface_state.subject_parent_id
+    subject_level: current_level,
+    subject_parent_id: parent_id
   });
 
   //Send search
@@ -658,7 +660,6 @@ function create_set( interface_state, set_name ) {
     .then( json => json.json() )
     .then( json => {
       if( json.result == "success" ) {
-        console.dir( json );
         //Upon success, launch the set editor for this new set.
         interface_state.set_editor_interface_state.set_id = json.set_id;
         launch_set_editor_interface( interface_state, false );

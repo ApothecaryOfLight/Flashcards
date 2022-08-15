@@ -120,6 +120,6 @@ function set_editor_interface_update_subjects( interface_state ) {
     fetch( update_subjects )
     .then( json => json.json() )
     .then( parsed_object => {
-        console.dir( parsed_object );
+        //TODO: Implement error message for user.
     });
 }

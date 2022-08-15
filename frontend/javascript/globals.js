@@ -7,7 +7,11 @@ window.addEventListener( 'load', (loaded_event) => {
       curr_page: 0,
       max_pages: 1,
       search_type: "set",
-      scrollY: 0
+      scrollY: 0,
+      subjects: {
+        current_level: 1,
+        levels: [null,null,null,null]
+      }
     },
     set_editor_interface_state: {
       set_id: null
