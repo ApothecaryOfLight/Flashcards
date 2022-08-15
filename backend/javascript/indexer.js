@@ -50,9 +50,11 @@ exports.index_search_data = index_search_data;
 async function attach_route_rebuild_search_index( error_log, app, sqlPool, sanitizer ) {
   app.get('/rebuild_search_index', async function(req,res) {
     try {
+      //1) Delete the contents of the search table.
       const truncate_search_table = "TRUNCATE search_table;";
       const [truncate_rows,truncate_fields] = await sqlPool.query( truncate_search_table );
 
+      //2) Repopulate the search table with the data from all cards.
       const get_cardlist = "SELECT card_id FROM cards;";
       const [all_card_ids_rows,all_card_ids_fields] = await sqlPool.query( get_cardlist );
       all_card_ids_rows.forEach( async (card) => {
@@ -92,6 +94,37 @@ async function attach_route_rebuild_search_index( error_log, app, sqlPool, sanit
           }
         });
       });
+
+      //2) Repopulate the search table with data from all set names.
+      const get_set_names = "SELECT name, set_id FROM sets;";
+      const [set_name_rows,set_name_fields] = await sqlPool.query( get_set_names );
+      set_name_rows.forEach( (set) => {
+        try {
+          const search_terms = set.name.toLowerCase().split(" ");
+          try{
+            search_terms.forEach( async (term) => {
+              const index_set_name_query = "INSERT INTO search_table (name, set_id) VALUES (" +
+                "\'" + term + "\'" + "," + set.set_id + ");";
+              const [insert_row,insert_field] = await sqlPool.query( index_set_name_query );
+            });
+          } catch( error_obj ) {
+            error_log.log_error(
+              sqlPool,
+              "indexer.js::rebuild_search_index():: Iterating through each set name.",
+              "User",
+              error_obj
+            );
+          }
+        } catch( error_obj ) {
+          error_log.log_error(
+            sqlPool,
+            "indexer.js::rebuild_search_index():: Rebuilding index from set names.",
+            "User",
+            error_obj
+          );
+        }
+      });
+
       res.send( JSON.stringify({
         response: "Success!",
         content: all_card_ids_rows
