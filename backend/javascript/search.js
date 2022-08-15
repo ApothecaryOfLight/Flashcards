@@ -2,7 +2,6 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
   /*Get a list of either sets or cards for the Serach Interface*/
   app.post( '/searchlist', async function(req,res) {
     try {
-      console.log("search!" );
       if( req.body.search_type == "card" ) {
         let subject_predicate = "";
         let search_query = "SELECT SQL_CALC_FOUND_ROWS " +
@@ -107,7 +106,6 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           "ORDER BY sets.name " +
           "LIMIT 10 OFFSET " + page_offset + "; " +
           "SELECT FOUND_ROWS();"
-console.log( search_query );
         const [search_rows,search_fields] = await sqlPool.query( search_query );
         res.send( JSON.stringify({
           "result": "success",

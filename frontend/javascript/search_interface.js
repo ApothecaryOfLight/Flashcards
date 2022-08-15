@@ -10,7 +10,9 @@ function launch_search_interface( interface_state ) {
   //Show or hide login/logout buttons as is appropraite.
   set_logged_elements( interface_state );
 
-  get_subject_tags( interface_state, 1 );
+  const subject_level = interface_state.search_interface_state.subjects.current_level;
+  const subject_id = interface_state.search_interface_state.subjects.levels[ subject_level-2 ];
+  get_subject_tags( interface_state, subject_level??1, subject_id??-1 );
 
   search_interface_run_search( interface_state );
 }
