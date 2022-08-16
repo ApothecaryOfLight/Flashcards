@@ -150,7 +150,7 @@ function pad_with_zero( inNumber ) {
   with an asynchronous MySQL query call. Because it is asynchronous, we use await
   to prevent the function from returning before the query is compelte.
   */
-  async function log_event( sqlPool, code_source, message, ip, details ) {
+  async function log_event( sqlPool, code_source, ip, details ) {
     const timestamp_string = get_datetime();
     const new_event_id_query =
       "SELECT ketris_db.generate_new_id( 0 ) as new_id;";
@@ -160,11 +160,10 @@ function pad_with_zero( inNumber ) {
   
     const add_event_query =
       "INSERT INTO event_log " +
-      "(event_id, code_source, message, ip, timestamp, details) VALUES " +
+      "(event_id, code_source, ip, timestamp, details) VALUES " +
       "(" + new_event_id +
       ", \'" + code_source +
-      "\', \'" + await process_text( message.toString() ) +
-      "\', " +
+      "\'," +
       "\'" + ip + "\', " +
       "\'" + timestamp_string + "\', " +
       "\'" + JSON.stringify( details ) + "\'" +
@@ -199,7 +198,7 @@ function pad_with_zero( inNumber ) {
     app.get('/get_event_log', async function(req,res) {
       try {
         const get_event_log_query = "SELECT timestamp, ip, code_source, details " +
-          "FROM error_log;"
+          "FROM event_log;"
         const [event_rows,event_fields] = await sqlPool.query( get_event_log_query );
   
         res.send( JSON.stringify( event_rows ) );
