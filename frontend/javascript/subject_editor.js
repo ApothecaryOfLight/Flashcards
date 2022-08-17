@@ -33,6 +33,10 @@ function get_subjects( subject_values, level ) {
     fetch( get_subjects_request )
     .then( json => json.json() )
     .then( levels => {
+        if( levels.result == false ) {
+            console.error( "No subjects found. Has database been populated?" );
+            return;
+        }
         level = (level??1);
         if( level == 1 ) {
             level = 2;

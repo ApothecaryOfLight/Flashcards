@@ -1,14 +1,26 @@
 async function attach_get_subjects( error_log, app, sqlPool ) {
     app.get( '/get_subjects/:first/:second/:third', async function (req,res) {
         try {
-            const response = {};
+            const response = {
+                result: false,
+                level_1: [],
+                level_2: [],
+                level_3: [],
+                level_4: []
+            };
             const first_level_query = "SELECT " +
                 "1_level_subjects.name as name, " + 
                 "1_level_subjects.1_level_subject_id as id " +
                 "FROM 1_level_subjects;";
-            const [first_rows,first_fields] =
-                await sqlPool.query( first_level_query);
+            const [first_rows,first_fields] = await sqlPool.query( first_level_query);
+
+            if( first_rows.length == 0 ) {
+                res.send(JSON.stringify(response));
+                return;
+            }
+
             response.level_1 = first_rows;
+            response.result = true;
 
             if( req.params.first != -1 ) {
                 const second_level_query = "SELECT " +
@@ -116,28 +128,91 @@ exports.attach_get_subjects = attach_get_subjects;
 
 async function attach_add_subject( error_log, app, sqlPool ) {
     app.get( '/add_subject/:level/:subject_name/:parent_id', async function (req,res) {
+        let new_subject_id;
         try {
-            const parent_level = Number(req.params.level) - 1;
-            const insert_query = "INSERT INTO " +
-                req.params.level + "_level_subjects " +
-                "(name,member_of_" + parent_level + "_level_subject_id) " +
-                "VALUES (\'" +
-                req.params.subject_name + "\'," +
-                req.params.parent_id + ");"
-            const [rows,fields] = await sqlPool.query( insert_query );
-            res.send( JSON.stringify({yay:"yayer"}));
-        } catch( error ) {
+            const new_subject_id_query = "SELECT Flashcards.generate_new_id(6) AS new_subject_id;";
+            const [new_subject_id_row,new_subject_id_field] = await sqlPool.query( new_subject_id_query );
+            new_subject_id = new_subject_id_row[0].new_subject_id;
+        } catch( error_obj ) {
+            error_obj.sql_statement = new_subject_id_query;
             error_log.log_error(
               sqlPool,
-              "subjects.js::attach_add_subject()",
+              "subjects.js::attach_add_subject():: Error while generating new subject id.",
               req.ip,
-              error
+              error_obj
             );
   
             res.send( JSON.stringify({
               "result": "failure",
-              "error_message": "Error adding subject."
+              "error_message": "Error generating new subject id."
             }));
+        }
+
+        if( req.params.parent_id != -1 ) {
+            try {
+                const parent_level = Number(req.params.level) - 1;
+                const insert_query = "INSERT INTO " +
+                    req.params.level + "_level_subjects " +
+                    "(" +
+                    "name, " +
+                    "member_of_" + parent_level + "_level_subject_id, " +
+                    req.params.level + "_level_subject_id " +
+                    ") " +
+                    "VALUES (\'" +
+                    req.params.subject_name + "\', " +
+                    req.params.parent_id + ", " +
+                    new_subject_id +
+                    ");"
+                const [rows,fields] = await sqlPool.query( insert_query );
+                res.send(JSON.stringify({
+                    result: "Successfully created subject."
+                }));
+            } catch( error_obj ) {
+                if( typeof(insert_query) !== "undefined" ) {
+                    error_obj.sql_statement = insert_query;
+                }
+                error_log.log_error(
+                  sqlPool,
+                  "subjects.js::attach_add_subject():: Error while inserting with subject with parents.",
+                  req.ip,
+                  error_obj
+                );
+      
+                res.send( JSON.stringify({
+                  "result": "failure",
+                  "error_message": "Error while inserting with subject with parents."
+                }));
+            }
+        } else {
+            try{
+                const insert_query = "INSERT INTO " +
+                    "1_level_subjects " +
+                    "(" +
+                    "name, " +
+                    "1_level_subject_id " +
+                    ") " +
+                    "VALUES (\'" +
+                    req.params.subject_name + "\', " +
+                    new_subject_id +
+                    ");"
+                const [rows,fields] = await sqlPool.query( insert_query );
+                res.send(JSON.stringify({
+                    result: "Successfully created subject."
+                }));
+            } catch( error_obj ) {
+                error_obj.sql_statement = insert_query;
+                error_log.log_error(
+                  sqlPool,
+                  "subjects.js::attach_add_subject():: Error while inserting with subject without parents.",
+                  req.ip,
+                  error_obj
+                );
+      
+                res.send( JSON.stringify({
+                  "result": "failure",
+                  "error_message": "Error while inserting with subject without parents."
+                }));
+            }
         }
     });
 }
