@@ -64,7 +64,9 @@ window.onload = () => {
         switch_interface( "subject_editor_container" );
         
         //Get the subjects from the server.
-        get_initial_subjects();
+        attach_dropdown_event_listeners();
+        //get_initial_subjects();
+        get_subjects( [null,null,null,null], 1 );
         attach_add_subject_events();
     });
     
