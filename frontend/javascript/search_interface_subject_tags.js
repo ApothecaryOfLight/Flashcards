@@ -21,7 +21,7 @@ function render_subject_tags( interface_state, subject_tags, level, parent_id ) 
         new_subject_tag.innerText = subject_tag.name;
         if( level < 4 ) {
             new_subject_tag.onclick = () => {
-                get_subject_tags( interface_state, level+1, subject_tag.id );
+                get_subject_tags( interface_state, level+1, subject_tag.subject_id );
             }
         } else if( level == 4 ) {
             new_subject_tag.onclick = () => {
@@ -33,7 +33,6 @@ function render_subject_tags( interface_state, subject_tags, level, parent_id ) 
 }
 
 function run_search_at_final_granularity( interface_state, level, parent_id ) {
-    console.log( "Running search of subject: " + parent_id + " at level: " + level );
     interface_state.search_interface_state.subjects.levels[3] = parent_id;
     interface_state.search_interface_state.subjects.current_level = 5;
 
@@ -41,7 +40,6 @@ function run_search_at_final_granularity( interface_state, level, parent_id ) {
 }
 
 function get_subject_tags( interface_state, level, parent_id ) {
-    console.log( "Getting subject tags at level: " + level + " with parent ID of " + parent_id );
     const URL_params = "get_subjects_by_level/" + level + "/" + (parent_id??-1);
     const get_subjects_tags = new Request(
         ip + URL_params
@@ -61,15 +59,16 @@ function get_subject_tags( interface_state, level, parent_id ) {
 
 function get_subject_tags_above( interface_state, level, child_id ) {
     const level_above = Number(level) - 1;
-    const URL_params = "get_subjects_above/" + level_above + "/" + (child_id??-1);
+    const parent_id = interface_state.search_interface_state.subjects.levels[level_above-2]??-1;
+    const URL_params = "get_subjects_by_level/" + level_above + "/" + parent_id;
     const get_subjects_tags = new Request(
         ip + URL_params
     );
     fetch( get_subjects_tags )
     .then( json => json.json() )
     .then( parsed_object => {
-        interface_state.search_interface_state.subjects.current_level = level_above;
-        interface_state.search_interface_state.subjects.levels[level_above] = null;
+        //interface_state.search_interface_state.subjects.levels[level] = null;
+        interface_state.search_interface_state.subjects.current_level--;
         if( level_above == 1 ) {
             interface_state.search_interface_state.subjects.levels[0] = null;
         }

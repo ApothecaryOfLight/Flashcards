@@ -73,7 +73,6 @@ async function attach_add_subject( error_log, app, sqlPool ) {
                     new_subject_id + ", " +
                     req.params.parent_id + ", " +
                     req.params.level + ");";
-                console.log( insert_query );
                 const [insert_rows,insert_fields] = await sqlPool.query( insert_query );
                 res.send(JSON.stringify({
                     result: "Successfully created subject."
@@ -149,15 +148,16 @@ async function attach_get_subjects_by_level( error_log, app, sqlPool ) {
     app.get( '/get_subjects_by_level/:level/:parent_id', async function (req,res) {
         try {
             let get_subjects_query = "SELECT " +
-                "name, " +
-                req.params.level + "_level_subject_id as id " +
-                "FROM " + req.params.level + "_level_subjects ";
+                "name, subject_id " +
+                "FROM subject_level_listing " ;
             if( req.params.parent_id != -1 ) {
                 const parent_level = Number(req.params.level) - 1;
                 get_subjects_query += "WHERE " +
-                    "member_of_" + parent_level + "_level_subject_id = " +
-                    req.params.parent_id;
+                    "parent_id = " + req.params.parent_id;
+            } else {
+                get_subjects_query += "WHERE level = 1"
             }
+            get_subjects_query += " ORDER BY name"
             get_subjects_query += ";"
             const [rows,fields] = await sqlPool.query( get_subjects_query );
 

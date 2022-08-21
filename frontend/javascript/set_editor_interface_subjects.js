@@ -7,7 +7,11 @@ function set_editor_interface_get_subjects( interface_state ) {
     .then( json => json.json() )
     .then( parsed_object => {
         interface_state.set_editor_interface_state.all_subjects = parsed_object.all_subjects;
-        interface_state.set_editor_interface_state.set_subjects = parsed_object.set_subjects[0];
+        if( typeof(parsed_object.set_subjects[0]) === "undefined" ) {
+            interface_state.set_editor_interface_state.set_subjects = [null,null,null,null];
+        } else {
+            interface_state.set_editor_interface_state.set_subjects = parsed_object.set_subjects[0];
+        }
         format_all_sets( interface_state );
         set_editor_interface_populate_subjects( interface_state );
     });

@@ -13,11 +13,12 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           const subject_parent_level = req.body.subject_level - 1;
           search_query += "INNER JOIN subject_set_listing " +
             "ON cards.set_id = subject_set_listing.set_id " +
-            "INNER JOIN " + subject_parent_level + "_level_subjects " +
-            "ON subject_set_listing." + subject_parent_level + "_level_subject_id = " +
-            subject_parent_level + "_level_subjects." + subject_parent_level + "_level_subject_id ";
-          subject_predicate = subject_parent_level + "_level_subjects." + 
-            subject_parent_level + "_level_subject_id = " + req.body.subject_parent_id + " ";
+            "INNER JOIN subject_level_listing " +
+            "ON subject_set_listing." + req.body.subject_level + "_level_subject_id = " +
+            "subject_level_listing.subject_id ";
+
+          subject_predicate = "subject_level_listing.parent_id = " + 
+            req.body.subject_parent_id + " ";
         }
         let search_predicate = "";
         if( req.body.topics.length > 0 ) {
@@ -68,11 +69,12 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           const subject_parent_level = req.body.subject_level - 1;
           search_query += "INNER JOIN subject_set_listing " +
             "ON sets.set_id = subject_set_listing.set_id " +
-            "INNER JOIN " + subject_parent_level + "_level_subjects " +
-            "ON subject_set_listing." + subject_parent_level + "_level_subject_id = " +
-            subject_parent_level + "_level_subjects." + subject_parent_level + "_level_subject_id ";
-          subject_predicate = subject_parent_level + "_level_subjects." + 
-            subject_parent_level + "_level_subject_id = " + req.body.subject_parent_id + " ";
+            "INNER JOIN subject_level_listing " +
+            "ON subject_set_listing." + req.body.subject_level + "_level_subject_id = " +
+            "subject_level_listing.subject_id ";
+
+          subject_predicate = "subject_level_listing.parent_id = " + 
+            req.body.subject_parent_id + " ";
         }
         let search_predicate = "";
         if( req.body.topics.length > 0 ) {
@@ -106,6 +108,7 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           "ORDER BY sets.name " +
           "LIMIT 10 OFFSET " + page_offset + "; " +
           "SELECT FOUND_ROWS();"
+
         const [search_rows,search_fields] = await sqlPool.query( search_query );
         res.send( JSON.stringify({
           "result": "success",
