@@ -183,61 +183,6 @@ async function attach_get_subjects_by_level( error_log, app, sqlPool ) {
 }
 exports.attach_get_subjects_by_level = attach_get_subjects_by_level;
 
-async function attach_get_subjects_above( error_log, app, sqlPool ) {
-    app.get( '/get_subjects_above/:level/:child_id', async function (req,res) {
-        try {
-            let get_subjects_query = "SELECT " +
-                req.params.level + "_level_subjects.name, " +
-                req.params.level + "_level_subject_id as id " +
-                "FROM " + req.params.level + "_level_subjects";
-            const parent_level = Number(req.params.level) - 1;
-            if( req.params.level > 1 ) {
-                get_subjects_query += " WHERE " +
-                    "member_of_" + parent_level + "_level_subject_id = (" +
-                    "SELECT " +
-                    req.params.level + "_level_subjects." +
-                    "member_of_" + parent_level + "_level_subject_id " +
-                    "FROM " + req.params.level + "_level_subjects " +
-                    "WHERE " + req.params.level + "_level_subjects." +
-                    req.params.level + "_level_subject_id = " +
-                    req.params.child_id + ")";
-            }
-            get_subjects_query += ";"
-            const [rows,fields] = await sqlPool.query( get_subjects_query );
-
-            let parent_id = null;
-            if( req.params.level > 1 ) {
-                const get_parent_id_query = "SELECT member_of_" + parent_level +"_level_subject_id as id " +
-                    "FROM " + req.params.level + "_level_subjects " +
-                    "WHERE " + req.params.level + "_level_subject_id = " + req.params.child_id + ";";
-                const [parent_row,parent_field] = await sqlPool.query( get_parent_id_query );
-                parent_id = parent_row[0].id;
-            }
-
-            const response_object = {
-                search_tags: rows,
-                parent_id: parent_id
-            };
-
-            res.send( JSON.stringify(response_object) );
-        } catch( error ) {
-            error_log.log_error(
-              sqlPool,
-              "subjects.js::attach_get_subjects_above()",
-              req.ip,
-              error
-            );
-  
-            res.send( JSON.stringify({
-              "result": "failure",
-              "error_message": "Error getting subjects above."
-            }));
-        }
-    });
-}
-exports.attach_get_subjects_above = attach_get_subjects_above;
-
-
 async function attach_get_subjects_by_set( error_log, app, sqlPool ) {
     app.get( '/get_subjects_by_set/:set_id', async function (req,res) {
         try {
