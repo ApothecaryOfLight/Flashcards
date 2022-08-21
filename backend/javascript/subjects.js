@@ -30,6 +30,13 @@ async function attach_get_subjects( error_log, app, sqlPool ) {
             const [subjects_rows,subjects_fields] = await sqlPool.query( get_subjects_query + where_predicate + ";" );
             res.send( JSON.stringify( subjects_rows) );
             return;
+        } catch( error ) {
+            error_log.log_error(
+              sqlPool,
+              "subjects.js::attach_get_subjects()",
+              req.ip,
+              error
+            );
         }
     });
 }
@@ -60,27 +67,18 @@ async function attach_add_subject( error_log, app, sqlPool ) {
 
         if( req.params.parent_id != -1 ) {
             try {
-                const parent_level = Number(req.params.level) - 1;
-                const insert_query = "INSERT INTO " +
-                    req.params.level + "_level_subjects " +
-                    "(" +
-                    "name, " +
-                    "member_of_" + parent_level + "_level_subject_id, " +
-                    req.params.level + "_level_subject_id " +
-                    ") " +
-                    "VALUES (\'" +
-                    req.params.subject_name + "\', " +
+                const insert_query = "INSERT INTO subject_level_listing " +
+                    "(name, subject_id, parent_id, level) VALUES " +
+                    "(\'" + req.params.subject_name + "\', " +
+                    new_subject_id + ", " +
                     req.params.parent_id + ", " +
-                    new_subject_id +
-                    ");"
-                const [rows,fields] = await sqlPool.query( insert_query );
+                    req.params.level + ");";
+                console.log( insert_query );
+                const [insert_rows,insert_fields] = await sqlPool.query( insert_query );
                 res.send(JSON.stringify({
                     result: "Successfully created subject."
                 }));
             } catch( error_obj ) {
-                if( typeof(insert_query) !== "undefined" ) {
-                    error_obj.sql_statement = insert_query;
-                }
                 error_log.log_error(
                   sqlPool,
                   "subjects.js::attach_add_subject():: Error while inserting with subject with parents.",
@@ -95,17 +93,12 @@ async function attach_add_subject( error_log, app, sqlPool ) {
             }
         } else {
             try{
-                const insert_query = "INSERT INTO " +
-                    "1_level_subjects " +
-                    "(" +
-                    "name, " +
-                    "1_level_subject_id " +
-                    ") " +
-                    "VALUES (\'" +
-                    req.params.subject_name + "\', " +
+                const insert_query = "INSERT INTO subject_level_listing "
+                    "(name, subject_id, level) VALUES " +
+                    "(\'" + req.params.subject_name + "\', " +
                     new_subject_id +
-                    ");"
-                const [rows,fields] = await sqlPool.query( insert_query );
+                    ", 1);";
+                const [insert_rows,insert_fields] = await sqlPool.query( insert_query );
                 res.send(JSON.stringify({
                     result: "Successfully created subject."
                 }));
@@ -131,10 +124,8 @@ exports.attach_add_subject = attach_add_subject;
 async function attach_delete_subject( error_log, app, sqlPool ) {
     app.get( '/delete_subject/:level/:subject_id', async function (req,res) {
         try {
-            const delete_query = "DELETE FROM " +
-                req.params.level + "_level_subjects " +
-                "WHERE " + req.params.level + "_level_subject_id = " +
-                req.params.subject_id + ";"
+            const delete_query = "DELETE FROM subject_level_listing " +
+                "WHERE subject_id = " + req.params.subject_id;
             const [rows,fields] = await sqlPool.query( delete_query );
             res.send( JSON.stringify({yay:"yayer"}));
         } catch( error ) {
@@ -252,57 +243,21 @@ async function attach_get_subjects_by_set( error_log, app, sqlPool ) {
         try {
             const get_curr_subjects_query = "SELECT " +
                 "subject_set_listing.set_id, " +
-                "1_level_subjects.1_level_subject_id as 1_id, " +
-                "2_level_subjects.2_level_subject_id as 2_id, " +
-                "3_level_subjects.3_level_subject_id as 3_id, " +
-                "4_level_subjects.4_level_subject_id as 4_id " +
+                "1_level_subject_id as 1_id, " +
+                "2_level_subject_id as 2_id, " +
+                "3_level_subject_id as 3_id, " +
+                "4_level_subject_id as 4_id " +
                 "FROM subject_set_listing " +
-                "LEFT JOIN 1_level_subjects " +
-                "ON subject_set_listing.1_level_subject_id = 1_level_subjects.1_level_subject_id " +
-                "LEFT JOIN 2_level_subjects " +
-                "ON subject_set_listing.2_level_subject_id = 2_level_subjects.2_level_subject_id " +
-                "LEFT JOIN 3_level_subjects " +
-                "ON subject_set_listing.3_level_subject_id = 3_level_subjects.3_level_subject_id " +
-                "LEFT JOIN 4_level_subjects " +
-                "ON subject_set_listing.4_level_subject_id = 4_level_subjects.4_level_subject_id " +
                 "WHERE subject_set_listing.set_id = " + req.params.set_id + ";";
             const [curr_set_rows,fields] = await sqlPool.query( get_curr_subjects_query );
 
-            const get_available_subjects_1_query = "SELECT " +
-                "1_level_subjects.name, " +
-                "1_level_subjects.1_level_subject_id as id " +
-                "FROM 1_level_subjects;";
-            const [subjects_1_rows,fields_1] = await sqlPool.query( get_available_subjects_1_query );
-
-            const get_available_subjects_2_query = "SELECT " +
-                "2_level_subjects.name, " +
-                "2_level_subjects.2_level_subject_id as id, " +
-                "2_level_subjects.member_of_1_level_subject_id as parent_id " +
-                "FROM 2_level_subjects;";
-            const [subjects_2_rows,fields_2] = await sqlPool.query( get_available_subjects_2_query );
-            
-            const get_available_subjects_3_query = "SELECT " +
-                "3_level_subjects.name, " +
-                "3_level_subjects.3_level_subject_id as id, " +
-                "3_level_subjects.member_of_2_level_subject_id as parent_id " +
-                "FROM 3_level_subjects;";
-            const [subjects_3_rows,fields_3] = await sqlPool.query( get_available_subjects_3_query );
-            
-            const get_available_subjects_4_query = "SELECT " +
-                "4_level_subjects.name, " +
-                "4_level_subjects.4_level_subject_id as id, " +
-                "4_level_subjects.member_of_3_level_subject_id as parent_id " +
-                "FROM 4_level_subjects;";
-            const [subjects_4_rows,fields_4] = await sqlPool.query( get_available_subjects_4_query );
+            const get_all_subjects_query = "SELECT * " +
+                "FROM subject_level_listing;";
+            const [all_set_rows,all_set_fields] = await sqlPool.query( get_all_subjects_query );
 
             const response_object = {
                 set_subjects: curr_set_rows,
-                all_subjects: [
-                    subjects_1_rows,
-                    subjects_2_rows,
-                    subjects_3_rows,
-                    subjects_4_rows
-                ]
+                all_subjects: all_set_rows
             };
             res.send( JSON.stringify( response_object ) );
         } catch( error ) {

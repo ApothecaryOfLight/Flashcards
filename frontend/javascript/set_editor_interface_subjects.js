@@ -8,98 +8,96 @@ function set_editor_interface_get_subjects( interface_state ) {
     .then( parsed_object => {
         interface_state.set_editor_interface_state.all_subjects = parsed_object.all_subjects;
         interface_state.set_editor_interface_state.set_subjects = parsed_object.set_subjects[0];
-        if( parsed_object.set_subjects.length == 0 ) {
-            interface_state.set_editor_interface_state.set_subjects = [];
-            set_editor_interface_populate_default_subjects( interface_state, 1 );
-        }
-        set_editor_interface_render_subjects( interface_state );
+        format_all_sets( interface_state );
+        set_editor_interface_populate_subjects( interface_state );
     });
 }
 
-function set_editor_interface_populate_default_subjects( interface_state, start_level ) {
-    const subjects = interface_state.set_editor_interface_state.set_subjects;
-    const avail_subjects = interface_state.set_editor_interface_state.all_subjects;
-    if( start_level == 1 ) {
-        subjects["1_id"] = avail_subjects[0][0].id;
-        start_level++;
+function format_all_sets( interface_state ) {
+    const new_all_subjects = [];
+    const all_subjects = interface_state.set_editor_interface_state.all_subjects;
+    all_subjects.forEach( (subject) => {
+        if( typeof( new_all_subjects[subject.level] ) === "undefined" ) {
+            new_all_subjects[subject.level] = [];
+        };
+        new_all_subjects[subject.level].push( subject );
+    });
+    interface_state.set_editor_interface_state.all_subjects = new_all_subjects;
+
+    const curr_subjects = interface_state.set_editor_interface_state.set_subjects;
+    const new_curr_subjects = [];
+    for( let i=1; i<=Object.keys(curr_subjects).length-1; i++ ) {
+        const subject_id_key = i+ "_id";
+        new_curr_subjects[i] = curr_subjects[subject_id_key];
     }
-    for( let index = start_level-1; index<4; index++ ) {
-        const subject_id = index + 1 + "_id";
-        let is_any_subject_avail = false;
-        for( let avail_index = 0; avail_index<avail_subjects[index].length; avail_index++ ) {
-            const parent_subject_id = index + "_id";
-            const parent_id = subjects[parent_subject_id];
-            if( avail_subjects[index][avail_index].parent_id == parent_id ) {
-                subjects[subject_id] = avail_subjects[index][avail_index].id;
-                is_any_subject_avail = true;
-                break;
-            }
-        }
-        if( !is_any_subject_avail ) {
-            subjects[subject_id] = null;
-        }
-    }
+    interface_state.set_editor_interface_state.set_subjects = new_curr_subjects;
 }
 
-function set_editor_interface_subjects_change_dropdown( interface_state, dropdown_element_name, level ) {
+function cleanDropdown( dropdown_name ) {
+    const target_dropdown = document.getElementById(dropdown_name);
+    while( target_dropdown.firstChild ) {
+        target_dropdown.firstChild.remove();
+    }
+    target_dropdown.replaceWith( target_dropdown.cloneNode() );
+}
+
+function set_editor_interface_populate_subjects( interface_state ) {
+    const all_subjects = interface_state.set_editor_interface_state.all_subjects;
+    const curr_subjects = interface_state.set_editor_interface_state.set_subjects;
+    all_subjects.forEach( (level_element, level_index) => {
+        const target_dropdown_name = level_index + "_subject_dropdown";
+        cleanDropdown( target_dropdown_name );
+        const target_dropdown = document.getElementById(target_dropdown_name);
+        target_dropdown.addEventListener( 'change', set_editor_interface_subject_change.bind( null, interface_state, target_dropdown_name, level_index ) );
+        let valid_subject_id_for_level = null;
+        if( level_index == 1 ) {
+            level_element.forEach( (subject) => {
+                const new_option = document.createElement("option");
+                new_option.innerText = subject.name;
+                new_option.value = subject.subject_id;
+                target_dropdown.appendChild( new_option );
+                if( valid_subject_id_for_level == null ) {
+                    valid_subject_id_for_level = subject.subject_id;
+                }
+            });
+        } else {
+            level_element.forEach( (subject) => {
+                const parent_level = level_index - 1;
+                const old_dropdown_name = parent_level + "_subject_dropdown";
+                const old_dropdown = document.getElementById( old_dropdown_name );
+                if( old_dropdown.options.length > 0 ) {
+                    const parent_id = old_dropdown.options[old_dropdown.selectedIndex].value;
+                    if( subject.parent_id == parent_id ) {
+                        const new_option = document.createElement("option");
+                        new_option.innerText = subject.name;
+                        new_option.value = subject.subject_id;
+                        target_dropdown.appendChild( new_option );
+                        if( valid_subject_id_for_level == null ) {
+                            valid_subject_id_for_level = subject.subject_id;
+                        }
+                    }
+                }
+            });
+        }
+        if( curr_subjects.length != 0 ) {
+            if( curr_subjects[level_index] == null ) {
+                curr_subjects[level_index] = valid_subject_id_for_level;
+            }
+        } else {
+            curr_subjects[level_index] = valid_subject_id_for_level;
+        }
+        target_dropdown.value = curr_subjects[level_index];
+    })
+}
+
+function set_editor_interface_subject_change( interface_state, dropdown_element_name, level ) {
     const element_ref = document.getElementById( dropdown_element_name );
     const new_value = element_ref.value;
-    const set_id = level + "_id";
-    interface_state.set_editor_interface_state.set_subjects[set_id] = Number(new_value);
-    set_editor_interface_populate_default_subjects( interface_state, level+1 )
-    set_editor_interface_render_subjects( interface_state );
-}
-
-function set_editor_interface_render_dropdown( interface_state, dropdown_element_name, options, level, parent_value, value ) {
-    const element_ref = document.getElementById(dropdown_element_name);
-    while( element_ref.firstChild ) {
-        element_ref.firstChild.remove();
+    interface_state.set_editor_interface_state.set_subjects[level] = Number(new_value);
+    for( let i=level+1; i<=4; i++ ) {
+        interface_state.set_editor_interface_state.set_subjects[i] = null;
     }
-    options.forEach( (option) => {
-        if( !parent_value && level == 1 ) {
-            const new_option = document.createElement("option");
-            new_option.innerText = option.name;
-            new_option.value = option.id;
-            element_ref.appendChild( new_option );
-        } else {
-            if( option.parent_id == parent_value ) {
-                const new_option = document.createElement("option");
-                new_option.innerText = option.name;
-                new_option.value = option.id;
-                element_ref.appendChild( new_option );
-            }
-        }
-        if( value ) {
-            element_ref.value = value;
-        }
-    });
-    element_ref.onclick = set_editor_interface_subjects_change_dropdown.bind(
-        null,
-        interface_state,
-        dropdown_element_name,
-        level
-    );
-}
-
-function set_editor_interface_render_subjects( interface_state ) {
-    const all_subjects = interface_state.set_editor_interface_state.all_subjects;
-    const set_subjects = interface_state.set_editor_interface_state.set_subjects;
-    const set_id = interface_state.set_editor_interface_state.set_id;
-    for( let i=0; i<4; i++ ) {
-        const level = Number(i+1);
-        const dropdown_name = level + "_subject_dropdown";
-        const parent_set_id = i + "_id";
-        const set_id = level + "_id";
-        const parent_value = document.getElementById( i + "_subject_dropdown" )?.value;
-        set_editor_interface_render_dropdown(
-            interface_state,
-            dropdown_name,
-            all_subjects[i],
-            level,
-            set_subjects?.[parent_set_id] ?? parent_value,
-            set_subjects?.[set_id]
-        )
-    }
+    set_editor_interface_populate_subjects( interface_state );
 }
 
 function set_editor_interface_update_subjects( interface_state ) {

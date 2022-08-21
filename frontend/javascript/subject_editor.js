@@ -25,7 +25,6 @@ function add_subject( level ) {
     });
 }
 
-
 function delete_subject( level ) {
     const dropdown_name = level + "_level_subject_dropdown";
     const dropdown_ref = document.getElementById(dropdown_name);
@@ -43,7 +42,6 @@ function delete_subject( level ) {
         console.dir( json );
     });
 }
-
 
 function attach_add_subject_events() {
     for( i=1; i<5; i++ ) {
@@ -68,11 +66,6 @@ function detach_add_subject_events() {
         delete_button_ref.replaceWith( delete_button_ref.cloneNode(true) );
     }
 }
-
-
-
-
-
 
 function get_subjects( subject_values, level ) {
     let URL_params = "";
