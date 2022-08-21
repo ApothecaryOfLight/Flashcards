@@ -11,14 +11,23 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           "ON cards.set_id = sets.set_id ";
         if( req.body.subject_level > 1 ) {
           const subject_parent_level = req.body.subject_level - 1;
+          let subject_level = req.body.subject_level;
+          if( subject_level == 5 ) {
+            subject_level--;
+          }
           search_query += "INNER JOIN subject_set_listing " +
             "ON cards.set_id = subject_set_listing.set_id " +
             "INNER JOIN subject_level_listing " +
-            "ON subject_set_listing." + req.body.subject_level + "_level_subject_id = " +
+            "ON subject_set_listing." + subject_level + "_level_subject_id = " +
             "subject_level_listing.subject_id ";
 
-          subject_predicate = "subject_level_listing.parent_id = " + 
-            req.body.subject_parent_id + " ";
+          if( req.body.subject_level <= 4 ) {
+            subject_predicate = "subject_level_listing.parent_id = " + 
+              req.body.subject_parent_id + " ";
+          } else {
+            subject_predicate = "subject_level_listing.subject_id = " + 
+              req.body.subject_parent_id + " ";
+          }
         }
         let search_predicate = "";
         if( req.body.topics.length > 0 ) {
@@ -67,14 +76,23 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
           "FROM sets ";
         if( req.body.subject_level > 1 ) {
           const subject_parent_level = req.body.subject_level - 1;
+          let subject_level = req.body.subject_level;
+          if( subject_level == 5 ) {
+            subject_level--;
+          }
           search_query += "INNER JOIN subject_set_listing " +
             "ON sets.set_id = subject_set_listing.set_id " +
             "INNER JOIN subject_level_listing " +
-            "ON subject_set_listing." + req.body.subject_level + "_level_subject_id = " +
+            "ON subject_set_listing." + subject_level + "_level_subject_id = " +
             "subject_level_listing.subject_id ";
 
-          subject_predicate = "subject_level_listing.parent_id = " + 
-            req.body.subject_parent_id + " ";
+          if( req.body.subject_level <= 4 ) {
+            subject_predicate = "subject_level_listing.parent_id = " + 
+              req.body.subject_parent_id + " ";
+          } else {
+            subject_predicate = "subject_level_listing.subject_id = " + 
+              req.body.subject_parent_id + " ";
+          }
         }
         let search_predicate = "";
         if( req.body.topics.length > 0 ) {
@@ -107,8 +125,8 @@ function attach_searchlist_route( error_log, app, sqlPool ) {
         search_query += "GROUP BY sets.set_id, sets.name, sets.set_creator " +
           "ORDER BY sets.name " +
           "LIMIT 10 OFFSET " + page_offset + "; " +
-          "SELECT FOUND_ROWS();"
-
+          "SELECT FOUND_ROWS();";
+          
         const [search_rows,search_fields] = await sqlPool.query( search_query );
         res.send( JSON.stringify({
           "result": "success",

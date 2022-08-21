@@ -120,6 +120,7 @@ function search_interface_run_search( interface_state ) {
   //Compose the search message.
   const current_level = interface_state.search_interface_state.subjects.current_level
   const parent_id = interface_state.search_interface_state.subjects.levels[current_level-2];
+  
   const search_request_object = JSON.stringify({
     topics: search_terms,
     search_type: interface_state.search_interface_state.search_type,

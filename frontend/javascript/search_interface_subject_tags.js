@@ -25,7 +25,7 @@ function render_subject_tags( interface_state, subject_tags, level, parent_id ) 
             }
         } else if( level == 4 ) {
             new_subject_tag.onclick = () => {
-                run_search_at_final_granularity( interface_state, level, subject_tag.id );
+                run_search_at_final_granularity( interface_state, level, subject_tag.subject_id );
             }
         }
         subject_tab_container.appendChild( new_subject_tag );
