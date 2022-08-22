@@ -51,7 +51,7 @@ function get_subject_tags( interface_state, level, parent_id ) {
         if( level > 1 ) {
             interface_state.search_interface_state.subjects.levels[level-2] = parent_id;
         }
-
+        interface_state.search_interface_state.scrollY = 0;
         search_interface_run_search( interface_state );
         render_subject_tags( interface_state, parsed_object.search_tags, level, parent_id );
     });
@@ -72,7 +72,7 @@ function get_subject_tags_above( interface_state, level, child_id ) {
         if( level_above == 1 ) {
             interface_state.search_interface_state.subjects.levels[0] = null;
         }
-
+        interface_state.search_interface_state.scrollY = 0;
         search_interface_run_search( interface_state );
         render_subject_tags( interface_state, parsed_object.search_tags, level_above, parsed_object.parent_id );
     });
