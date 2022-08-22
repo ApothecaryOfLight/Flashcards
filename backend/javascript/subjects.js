@@ -92,7 +92,7 @@ async function attach_add_subject( error_log, app, sqlPool ) {
             }
         } else {
             try{
-                const insert_query = "INSERT INTO subject_level_listing "
+                const insert_query = "INSERT INTO subject_level_listing " +
                     "(name, subject_id, level) VALUES " +
                     "(\'" + req.params.subject_name + "\', " +
                     new_subject_id +
@@ -102,7 +102,6 @@ async function attach_add_subject( error_log, app, sqlPool ) {
                     result: "Successfully created subject."
                 }));
             } catch( error_obj ) {
-                error_obj.sql_statement = insert_query;
                 error_log.log_error(
                   sqlPool,
                   "subjects.js::attach_add_subject():: Error while inserting with subject without parents.",
