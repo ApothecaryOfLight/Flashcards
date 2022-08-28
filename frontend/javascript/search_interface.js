@@ -544,7 +544,7 @@ function render_search_sets( inSetListObj, interface_state ) {
     if( interface_state.isLogged && interface_state.username_hash == set_username_hash ) {
       const set_delete_button = document.createElement("div");
       set_delete_button.classList = "button search_item_delete_button";
-      set_delete_button.onclick = prompt_delete_set.bind( null, set.set_id );
+      set_delete_button.onclick = prompt_delete_set.bind( null, set.set_id, interface_state );
       set_delete_button.innerText = "Delete";
       search_item.appendChild( set_delete_button );
     }

@@ -1,4 +1,4 @@
-async function delete_set( error_log, set_id ) {
+async function delete_set( error_log, set_id, sqlPool ) {
     try {
         //1) Get list of card ids
         const card_ids_query =
@@ -150,7 +150,7 @@ function attach_delete_set_route( error_log, app, sqlPool ) {
   /*Delete Set*/
   app.post('/delete_set/:set_id', async function(req,res) {
     try {
-      const result = await sets.delete_set( error_log, req.params.set_id );
+      const result = await delete_set( error_log, req.params.set_id, sqlPool );
       if( result == "success" ) {
         res.send( JSON.stringify({
           "result": "success"

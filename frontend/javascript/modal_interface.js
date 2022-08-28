@@ -119,7 +119,7 @@ inSetID: Unique identifier of the set to delete.
 
 NB: This function is in this file because it is only called through a modal.
 */
-function delete_set( inSetID ) {
+function delete_set( inSetID, interface_state ) {
   //Compose the message to the server requesting a set deletion.
   const delete_set_req = new Request(
     ip + 'delete_set/' + inSetID,
@@ -132,7 +132,8 @@ function delete_set( inSetID ) {
     .then( json => {
       if( json.result == "success" ) {
         //Upon success, return to the search interface.
-        launch_search_interface( true );
+        interface_state.search_interface_state.scrollY = window.scrollY;
+        search_interface_run_search( interface_state );
       } else if( json.result == "error" ) {
         //Upon failure, display an error to the user.
         const options = {
@@ -163,9 +164,9 @@ function prompt_delete_card( inCardID, inSetID ) {
 Function to launch a modal prompting the user to confirm that they want to delete
 a set.
 */
-function prompt_delete_set( inSetID ) {
+function prompt_delete_set( inSetID, interface_state ) {
   const options = {
-    "Delete Set": delete_set.bind( this, inSetID ),
+    "Delete Set": delete_set.bind( this, inSetID, interface_state ),
     "Cancel": close_modal
   }
 
