@@ -115,14 +115,15 @@ function attach_update_sets_route( error_log, app, indexer, sanitizer, sqlPool )
     /*Update set*/
     app.post( '/update_set', async function(req,res) {
       try {
+        console.log( req.body.tags );
         indexer.index_search_data(
           error_log,
+          sqlPool,
           sanitizer,
-          req.body.set_id,
-          req.body.tags,
           null,
-          false,
-          sqlPool
+          req.body.set_id,
+          JSON.stringify(req.body.tags),
+          null
         );
   
         res.send( JSON.stringify({

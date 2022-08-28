@@ -212,7 +212,7 @@ function set_editor_interface_update_tags( interface_state ) {
   const set_editor_tags = [];
   let iterator = document.getElementById("set_editor_interface_tags_list").firstChild;
   while( iterator ) {
-    set_editor_tags.push( iterator.firstChild.data );
+    set_editor_tags.push( {type:"text",content:iterator.firstChild.data} );
     iterator = iterator.nextSibling;
   }
 

@@ -1,14 +1,15 @@
 async function index_search_data( error_log, sqlPool, sanitizer, card_id, set_id, question, answer ) {
   try {
-    if( answer == null ) {
-      answer = "";
-    }
+    console.log( question );
     const card_question_object = JSON.parse(question);
     let card_question_text = "";
     let card_search_terms = [];
     card_question_object.forEach( (question_object) => {
       if( question_object.type == "text" ) {
-        card_question_text += question_object.content.toLowerCase() + " " + answer;
+        card_question_text += question_object.content.toLowerCase();
+        if( answer != null ) {
+          card_question_text += " " + answer;
+        }
         card_search_terms = card_question_text.split(" ");
       }
     });
@@ -33,6 +34,7 @@ async function index_search_data( error_log, sqlPool, sanitizer, card_id, set_id
         insertion_query.length - 2
       );
       insertion_query += ";"
+      console.log( insertion_query );
       const [insertion_rows,insertion_fields] = await sqlPool.query( insertion_query );
     }
   } catch( error_obj ) {
